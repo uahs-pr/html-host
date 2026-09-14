@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>加密器 - 先解密后显示（悬浮卡片密码框）</title>
+<style>
+textarea{width:95%;height:400px;margin:10px}
+button{padding:8px 30px;font-size:16px;cursor:pointer}
+.copy-btn{margin-left:10px;padding:4px 14px;font-size:14px;cursor:pointer}
+#output{width:95%;height:400px;margin:10px}
+label{font-size:16px;margin-right:10px}
+input[type="password"]{width:300px;padding:8px;font-size:16px;margin:10px}
+</style>
+</head>
+<body>
+<div class="glass header">
+  <div class="title" style="font-size:22px;color:#fff;text-shadow:0 0 6px #0cf,0 0 12px #0cf,0 0 24px #0088ff;">发发制作</div>
+  <div class="author" style="font-size:18px;color:#fff;text-shadow:0 0 5px #ff3699,0 0 10px #ff3699,0 0 20px #ff0066;">旺旺848108099</div>
+  <div class="author">先解密后显示版（悬浮卡片密码框）</div>
+</div>
+<h3>粘贴完整HTML源码（无需任何修改）</h3>
+<textarea id="input" placeholder="把你的完整HTML源码粘贴到这里..."></textarea>
+<br>
+<label for="password">设置登录密码（用户打开页面时输入）：</label>
+<input type="password" id="password" placeholder="例如: 123456">
+<br>
+<button onclick="runEncode()">生成加密页面</button>
+<button class="copy-btn" onclick="copyOutput()">复制结果</button>
+<h3>输出加密后的完整代码（登录密码可在代码中修改）</h3>
+<textarea id="output" readonly></textarea>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+function utf8ToB64(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+    function(m, p1){return String.fromCharCode('0x'+p1)}));
+}
+
+function runEncode(){
+  let originalHtml = document.getElementById('input').value;
+  if(!originalHtml.trim()){ alert('请先粘贴HTML源码'); return; }
+  let loginPassword = document.getElementById('password').value;
+  if(!loginPassword.trim()){ alert('请设置登录密码'); return; }
+
+  // AES-256-CBC 加密
+  const internalSalt = CryptoJS.lib.WordArray.random(128/8);
+  const internalIv = CryptoJS.lib.WordArray.random(128/8);
+  const AES_KEY = "_aes_internal_fixed_key_2024_";
+  const key = CryptoJS.PBKDF2(AES_KEY, internalSalt, {
+    keySize: 256/32,
+    iterations: 100000,
+    hasher: CryptoJS.algo.SHA256
+  });
+  
+  const encrypted = CryptoJS.AES.encrypt(originalHtml, key, {
+    iv: internalIv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7
+  });
+  
+  const saltB64 = internalSalt.toString(CryptoJS.enc.Base64);
+  const ivB64 = internalIv.toString(CryptoJS.enc.Base64);
+  const cipherB64 = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+
+  // 生成解密壳（悬浮卡片密码框 + 先解密后显示）
+  let wrap = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安全页面</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0f172a;color:#fff;font-family:sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
+  #app{display:none;width:100%;min-height:100vh}
+  
+  /* 悬浮卡片遮罩层 */
+  #loginOverlay{
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(8px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999
+  }
+  
+  /* 悬浮卡片 */
+  .login-card{
+    background:linear-gradient(145deg,#1e293b,#0f172a);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:20px;
+    padding:40px 35px;
+    width:340px;
+    box-shadow:0 25px 50px rgba(0,0,0,0.5),0 0 40px rgba(59,130,246,0.1);
+    text-align:center;
+    animation:fadeIn 0.4s ease
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+  
+  .login-card .icon{font-size:48px;margin-bottom:15px}
+  .login-card h3{font-size:20px;margin-bottom:8px;color:#fff}
+  .login-card .sub{font-size:13px;color:#94a3b8;margin-bottom:25px}
+  
+  .login-card input{
+    width:100%;
+    padding:14px 16px;
+    font-size:16px;
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    color:#fff;
+    outline:none;
+    transition:border-color 0.3s,box-shadow 0.3s;
+    margin-bottom:20px;
+    box-sizing:border-box
+  }
+  .login-card input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.2)}
+  .login-card input::placeholder{color:#64748b}
+  
+  .login-card button{
+    width:100%;
+    padding:14px;
+    font-size:16px;
+    font-weight:600;
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    transition:transform 0.2s,box-shadow 0.2s;
+    box-shadow:0 4px 15px rgba(59,130,246,0.3)
+  }
+  .login-card button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,0.4)}
+  .login-card button:active{transform:translateY(0)}
+  
+  .login-card .error{
+    color:#ef4444;
+    font-size:14px;
+    margin-top:12px;
+    min-height:20px
+  }
+</style>
+</head>
+<body>
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="icon">🔒</div>
+    <h3>访问受限</h3>
+    <div class="sub">请输入密码查看内容</div>
+    <input type="password" id="passInput" placeholder="输入密码">
+    <button onclick="checkLogin()">确认进入</button>
+    <div class="error" id="errorMsg"></div>
+  </div>
+</div>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><\/script>
+<script>
+// ============================================================
+// ★★★ 修改登录密码请修改下面这个变量的值 ★★★
+// ============================================================
+var ACCESS_PASSWORD = "${loginPassword}";
+
+// 加密数据
+var ENCRYPTED_DATA = {
+  s: "${saltB64}",
+  i: "${ivB64}",
+  d: "${cipherB64}"
+};
+
+// ★★★ 页面加载时立即自动解密（但内容先隐藏）★★★
+(function autoDecrypt() {
+  try{
+    var salt = CryptoJS.enc.Base64.parse(ENCRYPTED_DATA.s);
+    var iv = CryptoJS.enc.Base64.parse(ENCRYPTED_DATA.i);
+    var key = CryptoJS.PBKDF2("${AES_KEY}", salt, {
+      keySize: 256/32,
+      iterations: 100000,
+      hasher: CryptoJS.algo.SHA256
+    });
+    var cipherParams = CryptoJS.lib.CipherParams.create({
+      ciphertext: CryptoJS.enc.Base64.parse(ENCRYPTED_DATA.d)
+    });
+    var decrypted = CryptoJS.AES.decrypt(cipherParams, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    var raw = decrypted.toString(CryptoJS.enc.Utf8);
+    if(!raw) throw new Error('解密失败');
+    
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = raw;
+    var scripts = tempDiv.querySelectorAll('script');
+    var scriptContents = [];
+    scripts.forEach(function(s){
+      scriptContents.push(s.textContent || s.innerHTML || '');
+      s.parentNode && s.parentNode.removeChild(s);
+    });
+    var appDiv = document.getElementById('app');
+    appDiv.innerHTML = tempDiv.innerHTML;
+    
+    scriptContents.forEach(function(code){
+      if(code.trim()){
+        try{
+          var globalEval = eval;
+          globalEval(code);
+        }catch(e){}
+      }
+    });
+    
+    window.__DECRYPT_DONE__ = true;
+  }catch(e){
+    console.error('自动解密失败:', e);
+    document.getElementById('app').innerHTML = '解密失败：' + e.message;
+  }
+})();
+
+function checkLogin() {
+  var inputPass = document.getElementById('passInput').value;
+  var errorMsg = document.getElementById('errorMsg');
+  
+  if(inputPass === ACCESS_PASSWORD) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    errorMsg.innerText = '密码错误，请重试';
+    document.getElementById('passInput').value = '';
+    document.getElementById('passInput').focus();
+  }
+}
+
+document.getElementById('passInput').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter') checkLogin();
+});
+<\/script>
+</body>
+</html>`;
+
+  document.getElementById('output').value = wrap;
+}
+
+function copyOutput(){
+  let out = document.getElementById('output');
+  out.select();
+  document.execCommand('copy');
+  alert('已复制到剪贴板');
+}
+</script>
+</body>
+</html>
