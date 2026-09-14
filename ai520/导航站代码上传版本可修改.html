@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发发必赢导航站</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: system-ui,-apple-system,sans-serif;
+}
+body{
+  background:#edf4ff;
+  background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='net' width='120' height='120' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='20' cy='20' r='1.2' fill='%23b4ccf0'/%3E%3Ccircle cx='70' cy='60' r='1.2' fill='%23b4ccf0'/%3E%3Ccircle cx='100' cy='90' r='1.2' fill='%23b4ccf0'/%3E%3Cline x1='20' y1='20' x2='70' y2='60' stroke='%23c2d4f2' stroke-width='0.6'/%3E%3Cline x1='70' y1='60' x2='100' y2='90' stroke='%23c2d4f2' stroke-width='0.6'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23net)' /%3E%3C/svg%3E");
+  padding-bottom:40px;
+}
+/* 顶部宣传图 */
+.top-promo{
+  margin:0;
+  width:100%;
+  height:50px;
+  overflow:hidden;
+  border-radius:0 0 22px 22px;
+  position:relative;
+  background:#eaf3ff;
+}
+.top-promo img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.banner-wrap{
+  margin:12px;
+  border-radius:16px;
+  overflow:hidden;
+  position:relative;
+  height:170px;
+}
+.banner-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.banner-arrow-left,.banner-arrow-right{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#ffffffcc;
+  border:none;
+  font-size:16px;
+  z-index:10;
+}
+.banner-arrow-left{left:8px;}
+.banner-arrow-right{right:8px;}
+.info-bar{
+  margin:0 12px 10px;
+  background:#3488f8;
+  color:#fff;
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:14px;
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+}
+.notice-track{
+  display:inline-block;
+  white-space:nowrap;
+  animation:noticeMarquee 30s linear infinite;
+}
+@keyframes noticeMarquee{
+  0%{
+    transform:translateX(100vw);
+  }
+  100%{
+    transform:translateX(-100%);
+  }
+}
+.tab-row-1{
+  margin:0 12px 8px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.tab-row-2{
+  margin:0 12px 18px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.tab-btn{
+  padding:10px 4px;
+  text-align:center;
+  border:1px solid #93b7ee;
+  background:#ffffffdd;
+  border-radius:10px;
+  font-size:14px;
+  transition: all 0.22s ease;
+}
+.tab-btn.active{
+  background:#3488f8;
+  color:#ffffff;
+  border-color:#3488f8;
+  box-shadow:0 3px 10px #3488f844;
+}
+.page{
+  display:none;
+  margin:0 12px;
+}
+.page.show{
+  display:block;
+}
+.page-title{
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  color:#122345;
+  margin-bottom:18px;
+  position:relative;
+}
+.page-title::after{
+  content:"";
+  position:absolute;
+  width:100px;
+  height:4px;
+  background:linear-gradient(90deg,transparent,#3488f8,transparent);
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-6px;
+}
+.grid-two{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.grid-one{
+  display:grid;
+  grid-template-columns:1fr;
+}
+.card{
+  background:rgba(255,255,255,0.42);
+  border:1px solid rgba(255,255,255,0.85);
+  border-radius:20px;
+  padding:12px;
+  position:relative;
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:
+    0 10px 30px rgba(31,78,121,0.12),
+    0 2px 8px rgba(31,78,121,0.06),
+    inset 0 1px 1px rgba(255,255,255,0.9);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+.card:hover{
+  transform:translateY(-4px) scale(1.01);
+  background:rgba(255,255,255,0.52);
+  box-shadow:
+    0 15px 35px rgba(52,136,248,0.16),
+    0 4px 12px rgba(31,78,121,0.08),
+    inset 0 1px 2px rgba(255,255,255,1);
+}
+.card::before{
+  content:"";
+  position:absolute;
+  left:1px;
+  right:1px;
+  top:1px;
+  height:45%;
+  border-radius:19px 19px 50% 50%;
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,0.28),
+    rgba(255,255,255,0)
+  );
+  pointer-events:none;
+}
+.badge{
+  position:absolute;
+  top:8px;
+  right:8px;
+  padding:2px 7px;
+  border-radius:6px;
+  color:#fff;
+  font-size:11px;
+}
+.badge-hot{background:#ff5432;}
+.badge-new{background:#ff8721;}
+.badge-official{background:#2787ff;}
+.card-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:6px;
+}
+.card-icon-img{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  object-fit:cover;
+}
+.card-name{
+  font-size:16px;
+  font-weight:bold;
+}
+.card-desc{
+  font-size:12px;
+  color:#545454;
+  margin-top:2px;
+}
+.star-rate{
+  font-size:13px;
+  margin:6px 0 10px;
+  background: linear-gradient(90deg,#ff7363,#ffbb60,#ffe260,#60e09e,#489cff,#c99cff);
+  background-size: 500% 500%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 6px rgba(120, 180, 255, 0.35);
+  animation: slowRainbow 15s linear infinite;
+}
+@keyframes slowRainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+/* 跳转按钮 */
+.card-btn{
+  width:100%;
+  display:block;
+  text-align:center;
+  background:#3488f8;
+  color:#fff;
+  padding:8px 0;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:14px;
+  transition:background 0.2s;
+}
+.card-btn:hover{
+  background:#2078ee;
+}
+.footer{
+  margin-top:30px;
+  text-align:center;
+  color:#566788;
+  font-size:12px;
+}
+/* 动态粒子 */
+#particleCanvas{
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+/*  */
+.banner-wrap,
+.info-bar,
+.tab-row-1,
+.tab-row-2,
+.page{
+  position:relative;
+  z-index:1;
+}
+
+/* 音乐列表 */
+.music-search-bar{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+}
+.music-search-input{
+  flex:1;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid rgba(147, 183, 238,0.6);
+  background:rgba(255,255,255,0.55);
+  backdrop-filter:blur(16px);
+  font-size:15px;
+  outline:none;
+}
+.music-search-btn{
+  padding:0 16px;
+  border-radius:12px;
+  border:none;
+  background:#3488f8;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+.music-count-tip{
+  font-size:14px;
+  color:#445477;
+  margin-bottom:12px;
+}
+.music-item{
+  margin-bottom:10px;
+  cursor:pointer;
+}
+/* 名字容器，防止溢出 */
+.music-song-title{
+  font-size:14px;
+  font-weight:500;
+  color:#1f2c44;
+  overflow:hidden;
+  white-space:nowrap;
+  width:100%;
+}
+.marquee-el{
+  display:inline-block;
+}
+/* 跑马灯调慢，22秒走完一圈 */
+.marquee-el.run{
+  animation:musicMarquee 22s linear infinite;
+  padding-left:100%;
+}
+@keyframes musicMarquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-100%)}
+}
+.music-play-text{
+  margin-top:6px;
+  font-size:13px;
+  color:#3488f8;
+}
+.music-loading,.music-empty,.music-error{
+  text-align:center;
+  padding:26px 10px;
+  color:#566788;
+}
+.music-error{
+  color:#dd4466;
+}
+/* 列表容器，防止内容跑出去，横向禁止滚动 */
+#musicListWrap{
+  max-width:100%;
+  overflow-x:hidden;
+}
+/* =====播放器默认隐藏===== */
+.audio-fixed-wrap{
+  position:fixed;
+  left:14px;
+  right:14px;
+  bottom:18px;
+  max-width:720px;
+  margin:0 auto;
+  z-index:99;
+  background:rgba(255,255,255,0.55);
+  backdrop-filter:blur(20px);
+  border-radius:14px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,0.75);
+  box-shadow:0 8px 24px rgba(31,78,121,0.15);
+  display:none;
+}
+.audio-fixed-wrap h4{
+  font-size:14px;
+  color:#2c3b5c;
+  margin-bottom:8px;
+  overflow:hidden;
+  white-space:nowrap;
+}
+audio{
+  width:100%;
+}
+</style>
+</head>
+<body>
+<!-- ==========宣传========== -->
+<div class="top-promo">
+  <img src="https://koy.dpdns.org/i/2026/09/03/d5rT7U.jpeg" alt="顶部宣传图">
+</div>
+<!-- ==========Banner======= -->
+<div class="banner-wrap">
+  <img class="banner-img" src="https://koy.dpdns.org/i/2026/09/03/1GwJ7O.jpeg">
+  <button class="banner-arrow-left">◀</button>
+  <button class="banner-arrow-right">▶</button>
+</div>
+<!-- ==========【站长联系】========== -->
+<div class="info-bar">
+  <div class="notice-track">
+    【以下平台存款满700-电子流水满4000(参与时间1-10号｜11-20号｜21-月底)达标后联系返现(旺旺848108099)】【搭建站点联系飞机:@td6699 / 旺旺:848108099】
+  </div>
+</div>
+<!-- ==========切换标签========== -->
+<div class="tab-row-1">
+  <div class="tab-btn active" data-page="pageA">热门平台</div>
+  <div class="tab-btn" data-page="pageC">联系方式</div>
+  <div class="tab-btn" data-page="pageD">试玩模拟器</div>
+</div>
+<div class="tab-row-2">
+  <div class="tab-btn" data-page="pageB">PC28预测</div>
+  <div class="tab-btn" data-page="pageMusic">工具合集</div>
+  <div class="tab-btn" data-page="pageE">免费VPN</div>
+</div>
+
+<!-- ========== pageMusic：工具合集页面 ========== -->
+<div id="pageMusic" class="page">
+  <div class="page-title">【DJ音乐播放器】</div>
+
+  <div class="music-search-bar">
+    <input class="music-search-input" id="searchInput" placeholder="搜索DJ歌曲">
+    <button class="music-search-btn" id="searchBtn">搜索</button>
+  </div>
+
+  <div class="music-count-tip" id="countTip">共 0 首歌曲</div>
+
+  <div id="loadingDom" class="music-loading">正在加载歌单……</div>
+  <div id="errorDom" class="music-error" style="display:none"></div>
+  <div id="emptyDom" class="music-empty" style="display:none">没有匹配歌曲</div>
+
+  <div id="musicListWrap" class="grid-one"></div>
+
+  <div class="footer"></div>
+</div>
+
+<!-- ==========页面A【热门平台】原样不动 ========== -->
+<div id="pageA" class="page show">
+  <div class="page-title">【新人必红】</div>
+  <div class="grid-two">
+    <div class="card">
+      <span class="badge badge-new">新台</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786859159.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">纵横国际</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="http://xnqwzf.tckqxx.com/app/register.php?site_id=1067&topId=7231786338812108&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-new">新台</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786788176.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">聚鑫汇</div>
+          <div class="card-desc">世界杯官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://ybkvbz.tckqxx.com/app/register.php?site_id=1066&topId=1781786198723440&aPlanId=1&isAllProxy=1" target="_blank" class="card-btn">点击注册</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-official">官方</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ng5.ysas231.vip/app/admin/upload/img/20260706/6a4b9693eaff.jpg">
+        <div class="card-text-wrap">
+          <div class="card-name">TOP1体育</div>
+          <div class="card-desc">世界杯官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/FZFpJ4GZE37dO1eS27YirvxXU2DHqet9SeLk4nUs6zgnTuynZ7Tq7KIQcOQMT5Ai19bvxt9hAtPW92WZxcpLyDiD3h" target="_blank" class="card-btn">点击注册</a>
+    </div>
+    <div class="card">
+    <span class="badge badge-official">官方</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860099.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">领航国际</div>
+          <div class="card-desc">世界杯官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://rsesra.hfjcl.com/app/register.php?site_id=1064&pt=00E840CC-4AE4-42F1-D5EC-B200877305B1" target="_blank" class="card-btn">点击注册</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-hot">热门</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860572.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">龙腾国际</div>
+          <div class="card-desc">世界杯官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/jadUTHKABVcWBt6d5iWloC5xeYkE9SzpydJviyU1Sq0kOYOQmofyYXCb8pQhrYVpnw8qSMS7wWb8jzym9KSMulrj2ID" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+      <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786859904.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">汇赢国际</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://eqglsg.hcjwj.com/app/register.php?site_id=1062&topId=353302&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+      <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860229.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">君临国际</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://tfajn.hcjwj.com/app/register.php?site_id=2081&pt=817FEBBC-8E7F-B9C9-0B13-8B3D41868DD8" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+      <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786788291.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">非凡娱乐</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/YpUpVo9jo0GaFvQn8svhVvVSrxZsQ0FPMzcDdEb8afwvG8mAh2Dn22lcArOsulZc35pnp2NPSIvpcLg5pt504CPJEx" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+      <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860415.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">胜天国际</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://dspeoql.tprsmi.com/app/register.php?site_id=1058&topId=9941786203300962&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+      <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860307.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">28圈</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://149.30.210.144:35384/#/link?invite_friend=EwslsO10550386" target="_blank" class="card-btn">点击注册</a>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786699277.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">亿万28</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/0ql5RQM83MOTf7g5QFjjQIwEzncoO60wHc6ysanIOZsyQaYFxeMvwN06q89eYbL8e0emKTI6wWrB9pEaMhCP5rsBbUoVUSJKTs7ong1ppLKcA7XQSjFubOeHnEF" target="_blank" class="card-btn">点击注册</a>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786705631.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">超凡国际</div>
+          <div class="card-desc">官方</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://mgokgd.jgqvji.com/app/register.php?site_id=1032&pt=B4E00117-B69C-21CD-625F-5A952BA227B4" target="_blank" class="card-btn">点击注册</a>
+    </div>
+  </div>
+<div class="footer">
+    <p>发发永久域名：shturl.cc/2B1L · 选择大于努力！</p>
+    <p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]</p>
+    <p>© 2026</p>
+  </div>
+</div>
+<!-- ==========页面B：预测分析========== -->
+<div id="pageB" class="page">
+  <div class="page-title">【加拿大预测】</div>
+  <div class="card-desc"> 【后续将持续更新更多预测内容|所有数据仅供参考】</div>
+  <div class="grid-one">
+    <div class="card">
+      <span class="badge badge-hot">准度</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🇨🇦最终哈希</div>
+          <div class="card-desc">JND预测</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/jmd28.HX.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-hot">热门</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🇨🇦复杀少杀</div>
+          <div class="card-desc">JND预测</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/jnd28.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+
+<div class="card">
+      <span class="badge badge-hot">准度</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🇨🇦矩阵积数</div>
+          <div class="card-desc">JND预测</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/jnd.gz.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+
+<div class="card">
+      <span class="badge badge-hot">预测</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">🇨🇦预测</div>
+          <div class="card-desc">JND预测</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://kai28.cc" target="_blank" class="card-btn">点击进入</a>
+    </div>
+<div class="card">
+      <span class="badge badge-hot">准度</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🌟分分9w</div>
+          <div class="card-desc">需要密码请联系站长</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/fenfen9w.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+<div class="card">
+      <span class="badge badge-hot">热门</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🎲比特矩阵积数</div>
+          <div class="card-desc">需要密码请联系站长</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/btc28.gz.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-hot">热门</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/m56drm">
+        <div class="card-text-wrap">
+          <div class="card-name">发发🎲比特9w</div>
+          <div class="card-desc">需要密码请联系站长</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://icc.gt.tc/ai520/btc28.9w.html?i=1" target="_blank" class="card-btn">点击进入</a>
+    </div>
+  </div>
+<div class="footer">
+    <p>发发永久域名：shturl.cc/2B1L · 选择大于努力！</p>
+    <p>[28类/各种热门彩票API对接,请联系站长TG / 旺旺]</p>
+    <p>© 2026</p>
+  </div>
+</div>
+<!-- ==========页面D：试玩模拟器========== -->
+<div id="pageD" class="page">
+  <div class="page-title">【试玩模拟器】</div>
+  <div class="grid-two">
+    <div class="card">
+      <span class="badge badge-new">电子</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://io.koy.dpdns.org/s/sunbhb">
+        <div class="card-text-wrap">
+          <div class="card-name">PG</div>
+          <div class="card-desc">游戏试玩无需VPN</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/ZcX3M5D9znDjdxCt28mqdAxx" target="_blank" class="card-btn">点击进入</a>
+    </div>
+
+      <div class="card">
+      <span class="badge badge-new">电子</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786861150.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">PP</div>
+          <div class="card-desc">游戏试玩无需VPN</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="shturl.cc/H6V6qygbWLtKkhaHrxZhnbZz" target="_blank" class="card-btn">点击进入</a>
+    </div>
+  </div>
+<div class="footer">
+    <p>发发永久域名：shturl.cc/2B1L · 选择大于努力！</p>
+    <p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]
+    <p>© 2026</p>
+  </div>
+</div>
+<!-- ==========页面C========== -->
+<div id="pageC" class="page">
+  <div class="page-title">【联系方式】</div>
+  <div class="grid-two">
+    <div class="card">
+    <span class="badge badge-hot">在线</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">飞机</div>
+          <div class="card-desc">点击跳转联系</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://t.me/td6699" target="_blank" class="card-btn">点击联系</a>
+    </div>
+    <div class="card">
+    <span class="badge badge-hot">在线</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786861011.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">旺商聊</div>
+          <div class="card-desc">添加旺旺：848108099</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://qxhome.bploav.com" target="_blank" class="card-btn">点击联系</a>
+    </div>
+      <div class="card">
+      <span class="badge badge-hot">在线</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">搭建</div>
+          <div class="card-desc">站点搭建联系TG</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://t.me/td6699" target="_blank" class="card-btn">点击联系</a>
+    </div>
+  </div>
+  <div class="footer">
+    <p>发发永久域名：shturl.cc/2B1L · 选择大于努力！</p>
+    <p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]</p>
+    <p>© 2026</p>
+  </div>
+</div>
+<!-- ==========页面E ========== -->
+<div id="pageE" class="page">
+  <div class="page-title">【飞机免费代理】</div>
+  <div class="grid-two">
+    <div class="card">
+      <span class="badge badge-hot">在线</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">TG免费代理</div>
+          <div class="card-desc">点击跳转免费代理链接1</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="tg://socks?server=216.173.68.36&port=1080" target="_blank" class="card-btn">立即连接</a>
+    </div>
+    <div class="card">
+      <span class="badge badge-hot">在线</span>
+      <div class="card-header">
+        <img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg">
+        <div class="card-text-wrap">
+          <div class="card-name">TG免费代理</div>
+          <div class="card-desc">点击跳转免费代理链接2</div>
+        </div>
+      </div>
+      <div class="star-rate">★★★★★ 9.9分</div>
+      <a href="https://t.me/socks?server=38.175.197.50&port=5555" target="_blank" class="card-btn">立即连接</a>
+    </div>
+  </div>
+<div class="footer">
+    <p>发发永久域名：shturl.cc/2B1L · 选择大于努力！</p>
+    <p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]
+    <p>© 2026</p>
+  </div>
+</div>
+
+<!-- 底部固定播放器，全局悬浮【默认隐藏】 -->
+<div class="audio-fixed-wrap" id="audioWrap">
+  <h4 id="nowTitle">请选择歌曲</h4>
+  <audio id="player" controls>
+</div>
+
+<!-- ==========【轮播图】========== -->
+<script>
+const tabButtons = document.querySelectorAll('.tab-btn');
+tabButtons.forEach(btn=>{
+  btn.onclick = function(){
+    tabButtons.forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const targetPage = this.getAttribute("data-page");
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+    document.getElementById(targetPage).classList.add("show");
+  }
+})
+const leftBtn = document.querySelector('.banner-arrow-left');
+const rightBtn = document.querySelector('.banner-arrow-right');
+const bannerImg = document.querySelector('.banner-img');
+const bannerImgList = [
+  "https://koy.dpdns.org/i/2026/09/03/OX1Y8T.jpeg",
+  "https://koy.dpdns.org/i/2026/09/03/P4gSHF.jpeg",
+];
+let bannerIndex = 0;
+rightBtn.onclick = ()=>{
+  bannerIndex++;
+  if(bannerIndex >= bannerImgList.length) bannerIndex = 0;
+  bannerImg.src = bannerImgList[bannerIndex];
+}
+leftBtn.onclick = ()=>{
+  bannerIndex--;
+  if(bannerIndex <0) bannerIndex = bannerImgList.length -1;
+  bannerImg.src = bannerImgList[bannerIndex];
+}
+</script>
+
+<!-- DJ音乐JS -->
+<script>
+const WORKER_BASE = "https://yw.vyle.eu.cc";
+
+const playerEl = document.getElementById("player");
+const audioWrap = document.getElementById("audioWrap");
+const nowTitle = document.getElementById("nowTitle");
+const listWrap = document.getElementById("musicListWrap");
+const loadingEl = document.getElementById("loadingDom");
+const errorBox = document.getElementById("errorDom");
+const emptyBox = document.getElementById("emptyDom");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const countTip = document.getElementById("countTip");
+
+let allSongList = [];
+let currentList = [];
+
+//播放显示播放器；暂停/播放完毕隐藏
+playerEl.addEventListener('play', ()=>{
+  audioWrap.style.display = "block";
+});
+playerEl.addEventListener('pause', ()=>{
+  audioWrap.style.display = "none";
+});
+playerEl.addEventListener('ended', ()=>{
+  audioWrap.style.display = "none";
+});
+
+function showError(msg){
+  loadingEl.style.display="none";
+  errorBox.style.display="block";
+  errorBox.innerText=msg;
+}
+
+function showEmpty(){
+  loadingEl.style.display="none";
+  emptyBox.style.display="block";
+  listWrap.innerHTML="";
+  countTip.innerText = "共 0 首歌曲";
+}
+
+async function loadAllList(){
+  try{
+    const res = await fetch(`${WORKER_BASE}/api/dj?page=1&size=216`);
+    if(!res.ok) throw new Error("接口异常 "+res.status);
+    const json = await res.json();
+    loadingEl.style.display="none";
+
+    if(!json.data || !Array.isArray(json.data)){
+      showError("接口数据格式错误");
+      return;
+    }
+
+    allSongList = json.data;
+    currentList = allSongList;
+    renderUI(currentList);
+  }catch(e){
+    showError(e.message);
+  }
+}
+
+function renderUI(arr){
+  listWrap.innerHTML="";
+  emptyBox.style.display="none";
+  errorBox.style.display="none";
+
+  if(arr.length===0){
+    showEmpty();
+    return;
+  }
+
+  countTip.innerText = `共 ${arr.length} 首歌曲`;
+
+  arr.forEach((item,idx)=>{
+    const div = document.createElement("div");
+    div.className="card music-item";
+    div.innerHTML=`
+      <div class="card-header">
+        <div style="width:28px;text-align:center;font-weight:bold;color:#2c3b5c">${idx+1}</div>
+        <div style="flex:1;min-width:0;overflow:hidden;">
+          <div class="music-song-title">
+            <span class="marquee-el">${item.name}</span>
+          </div>
+          <div class="music-play-text">点击播放</div>
+        </div>
+      </div>
+    `;
+
+    const titleDom = div.querySelector(".marquee-el");
+    setTimeout(()=>{
+      if(titleDom.scrollWidth > titleDom.parentElement.clientWidth){
+        titleDom.classList.add("run");
+      }
+    },20);
+
+    div.onclick=()=>{
+      playSong(item);
+    };
+
+    listWrap.appendChild(div);
+  });
+}
+
+function playSong(item){
+  nowTitle.innerText = item.name;
+  playerEl.src = item.audio;
+  playerEl.play().catch(err=>console.log(err));
+}
+
+function searchSong(){
+  const keyword = searchInput.value.trim().toLowerCase();
+
+  if(!keyword){
+    currentList = allSongList;
+    renderUI(currentList);
+    countTip.innerText = `共 ${allSongList.length} 首歌曲`;
+    return;
+  }
+
+  currentList = allSongList.filter(item=>
+    item.name.toLowerCase().includes(keyword)
+  );
+
+  renderUI(currentList);
+
+  if(currentList.length > 0){
+    countTip.innerText = `已找到 ${currentList.length} 首歌曲`;
+  }else{
+    countTip.innerText = "共 0 首歌曲";
+  }
+}
+
+searchBtn.onclick = searchSong;
+searchInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter") searchSong();
+});
+
+loadAllList();
+</script>
+
+<script>
+const canvas = document.createElement("canvas");
+canvas.id = "particleCanvas";
+document.body.prepend(canvas);
+const ctx = canvas.getContext("2d");
+let particles = [];
+const PARTICLE_COUNT = 65;
+const MAX_DISTANCE = 120;
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+for(let i = 0; i < PARTICLE_COUNT; i++){
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2 + 1,
+    vx: (Math.random() - 0.5) * 0.45,
+    vy: (Math.random() - 0.5) * 0.45
+  });
+}
+function animateParticles(){
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if(p.x < 0 || p.x > canvas.width){
+      p.vx *= -1;
+    }
+    if(p.y < 0 || p.y > canvas.height){
+      p.vy *= -1;
+    }
+  });
+
+  for(let i = 0; i < particles.length; i++){
+    for(let j = i + 1; j < particles.length; j++){
+      const p1 = particles[i];
+      const p2 = particles[j];
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      const distance = Math.sqrt(
+        dx * dx + dy * dy
+      );
+      if(distance < MAX_DISTANCE){
+        const opacity =
+          (1 - distance / MAX_DISTANCE) * 0.35;
+        ctx.beginPath();
+        ctx.moveTo(
+          p1.x,
+          p1.y
+        );
+        ctx.lineTo(
+          p2.x,
+          p2.y
+        );
+        ctx.strokeStyle = "rgba(80,150,240," + opacity + ")";
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+  }
+
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      Math.PI * 2
+    );
+    ctx.fillStyle =
+      "rgba(70,145,240,0.7)";
+    ctx.fill();
+  });
+  requestAnimationFrame(
+    animateParticles
+  );
+}
+animateParticles();
+</script>
+<div style="margin-top:60px;display:flex;justify-content:center;padding-bottom:80px;">
+  <div class="tab-btn" onclick="window.open(' https://io.shturl.cc/2B1L/mianze.html','_blank')" style="width:160;text-align:center;">免责声明</div>
+</div>
+</body>
+</html>
