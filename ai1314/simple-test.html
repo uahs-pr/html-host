@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>简易安全测试</title>
+<style>
+body{font-family:system-ui;background:#0f0c29;color:#fff;padding:20px}
+.item{background:rgba(255,255,255,.05);border-radius:10px;padding:14px;margin-bottom:10px}
+.pass{border-left:4px solid #22c55e}
+.fail{border-left:4px solid #ef4444}
+</style>
+</head>
+<body>
+<h2>🍪 Cookie读取检测</h2>
+<div class="item" id="box">
+状态：等待检测
+</div>
+
+<script>
+const cookieVal = document.cookie;
+const box = document.getElementById('box');
+if(cookieVal === ""){
+    box.className = "item pass";
+    box.innerHTML = "✅ 安全！document.cookie是空<br>HttpOnly Cookie防护生效，JS拿不到管理员登录凭证";
+}else{
+    box.className = "item fail";
+    box.innerHTML = "❌ 危险！读到Cookie内容：<br>"+cookieVal;
+}
+</script>
+</body>
+</html>
