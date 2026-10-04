@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+
+
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="摸金秘藏">
+<meta name="theme-color" content="#0d0a12">
+<meta name="format-detection" content="telephone=no,email=no,address=no">
+<meta name="x5-orientation" content="landscape">
+<meta name="x5-fullscreen" content="true">
+<meta name="x5-page-mode" content="app">
+<meta name="screen-orientation" content="landscape">
+<meta name="full-screen" content="yes">
+<meta name="browsermode" content="application">
+<meta name="imagemode" content="force">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="HandheldFriendly" content="true">
+<meta name="MobileOptimized" content="320">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="tap-highlight" content="no">
+<meta name="msapplication-tooltip" content="摸金秘藏">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="摸金秘藏 - 盗墓主题地牢探险游戏">
+<meta name="keywords" content="摸金,盗墓,地牢,探险,Roguelike">
+<meta property="og:title" content="摸金秘藏">
+<meta property="og:description" content="盗墓主题地牢探险游戏">
+<meta property="og:type" content="game">
+<title>摸金秘藏 - 地牢探险</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#e8dcc8;font-family:'Microsoft YaHei','PingFang SC',sans-serif;overflow:hidden;user-select:none}
+#gameContainer{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+#gameCanvas{display:block;background:#0a0a0f;image-rendering:pixelated}
+.overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:100;background:rgba(5,5,10,0.92)}
+.overlay.hidden{display:none}
+.panel{background:linear-gradient(145deg,#1a1520,#0d0a12);border:2px solid #8b6914;border-radius:12px;padding:40px;max-width:700px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 0 40px rgba(139,105,20,0.3),inset 0 0 20px rgba(0,0,0,0.5)}
+.panel::-webkit-scrollbar{width:6px}
+.panel::-webkit-scrollbar-track{background:#1a1520}
+.panel::-webkit-scrollbar-thumb{background:#8b6914;border-radius:3px}
+.game-title{font-size:48px;text-align:center;color:#d4a843;text-shadow:0 0 20px rgba(212,168,67,0.5),2px 2px 4px #000;margin-bottom:8px;letter-spacing:8px}
+.game-subtitle{text-align:center;color:#8a7a5a;font-size:14px;margin-bottom:30px;letter-spacing:4px}
+.menu-v3{position:relative;width:100%;height:100%;display:flex;flex-direction:column;padding:10px 12px;box-sizing:border-box;overflow:hidden}
+.menu-v3-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 30% 20%,#1a1408 0%,#0a0805 60%,#050403 100%);z-index:-1}
+.menu-v3-bg::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(45deg,transparent,transparent 50px,rgba(212,168,67,0.015) 50px,rgba(212,168,67,0.015) 51px)}
+.menu-v3-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(212,168,67,0.15)}
+.menu-v3-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-top:0;margin-right:88px;padding-right:2px;max-width:120px}
+.menu-v3-user-top{display:flex;align-items:center;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.menu-v3-user-top .u3-name{font-size:10px;color:#6a5a4a}
+.menu-v3-user-top .u3-btn{padding:1px 5px;font-size:8px}
+.menu-v3-title{font-size:24px;font-weight:bold;color:#d4a843;letter-spacing:4px;text-shadow:0 0 12px rgba(212,168,67,0.3)}
+.menu-v3-gold{padding:4px 12px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.25);border-radius:14px;color:#f0d870;font-size:13px;font-weight:bold}
+.menu-v3-main{flex:1;display:flex;gap:10px;min-height:0}
+.menu-v3-left{width:40%;display:flex;flex-direction:column}
+.menu-v3-right{width:60%;display:flex;flex-direction:column;gap:6px;overflow:visible;height:247px}
+.menu-v3-label{font-size:11px;color:#8a7a5a;margin-bottom:6px;font-weight:bold;letter-spacing:2px}
+.char-grid.char-grid-v3{display:grid;grid-template-columns:1fr 1fr 1fr !important;gap:6px}
+.char-grid-v3 .char-card{padding:6px 4px;margin:0}
+.char-grid-v3 .char-avatar{width:32px;height:32px;font-size:16px}
+.char-grid-v3 .char-name{font-size:11px}
+.char-grid-v3 .char-desc{display:none}
+.char-grid-v3 .char-stats{font-size:8px}
+.char-grid-v3 .char-skill{font-size:8px}
+.menu-v3-mode-card{display:flex;align-items:center;gap:8px;padding:10px;background:rgba(0,0,0,0.5);border:2px solid #3a3020;border-radius:8px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.menu-v3-mode-card:hover{border-color:#5a4a2a;transform:translateX(2px)}
+.menu-v3-mode-card.active{border-color:#d4a843;background:rgba(212,168,67,0.1);box-shadow:0 0 10px rgba(212,168,67,0.15)}
+.menu-v3-mode-card.horror.active{border-color:#c06060;background:rgba(192,96,96,0.1);box-shadow:0 0 10px rgba(192,96,96,0.15)}
+.mode-v3-icon{font-size:24px;flex-shrink:0}
+.mode-v3-text{flex:1}
+.mode-v3-name{font-size:13px;color:#e8d8a8;font-weight:bold}
+.mode-v3-desc{font-size:10px;color:#6a5a4a}
+.menu-v3-bottom{padding-top:8px;border-top:1px solid rgba(212,168,67,0.15)}
+.menu-v3-actions{display:flex;justify-content:center;gap:5px;margin:8px 0;flex-wrap:wrap}
+.ss-timer-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.ss-floor-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ss-btn{padding:8px 4px;font-size:12px;background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:6px;color:#8a7a5a;cursor:pointer;transition:all .15s;text-align:center;font-weight:bold}
+.ss-btn:hover{border-color:#5a4a2a;color:#c8b898}
+.ss-btn.active{background:rgba(212,168,67,0.15);border-color:#d4a843;color:#f0d870}
+.ss-tip{font-size:10px;color:#6a5a4a;text-align:center;line-height:1.4;margin-top:4px}
+.a3-btn{width:clamp(44px,9vmin,60px);height:clamp(32px,7vmin,44px);font-size:clamp(13px,2.6vmin,18px);background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:6px;color:#c8b898;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.a3-btn:hover{border-color:#d4a843;color:#f0d870;background:rgba(212,168,67,0.1)}
+.menu-v3-user{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.u3-name{font-size:11px;color:#6a5a4a}
+.u3-btn{padding:3px 10px;font-size:10px;background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:4px;color:#8a7a5a;cursor:pointer;transition:all .15s}
+.u3-btn:hover{border-color:#5a4a2a;color:#c8b898}
+.u3-btn.danger:hover{border-color:#c06060;color:#e08080}
+.warehouse-panel{max-width:440px !important;padding:12px !important}
+.warehouse-panel .shop-header{margin-bottom:8px !important}
+.warehouse-panel .section-title{font-size:16px !important}
+.warehouse-panel .wh-equip-bar{margin-bottom:8px !important;gap:6px !important}
+.warehouse-panel .wh-equip-slot{padding:6px !important}
+.warehouse-panel .wh-eq-label{font-size:10px !important;margin-bottom:2px !important}
+.warehouse-panel .wh-eq-item{font-size:20px !important;margin:2px 0 !important}
+.warehouse-panel .wh-eq-name{font-size:10px !important;margin-bottom:2px !important}
+.warehouse-panel .wh-panel{padding:8px !important}
+.warehouse-panel .wh-panel-title{font-size:12px !important;margin-bottom:6px !important}
+.warehouse-panel .wh-grid{gap:4px !important;margin-bottom:6px !important}
+.warehouse-panel .wh-slot{font-size:18px !important}
+.warehouse-panel .wh-count{font-size:9px !important;bottom:1px !important;right:2px !important}
+.warehouse-panel .wh-tabs{gap:3px !important;margin-bottom:6px !important}
+.warehouse-panel .wh-tab{padding:3px 4px !important;font-size:10px !important}
+.warehouse-panel .wh-hint{font-size:9px !important}
+.warehouse-panel .wh-transfer-box{padding:10px !important}
+.warehouse-panel .wh-transfer-title{font-size:12px !important;margin-bottom:4px !important}
+.warehouse-panel .wh-transfer-avail{font-size:10px !important;margin-bottom:6px !important}
+.warehouse-panel .wh-transfer-btns{gap:4px !important}
+.warehouse-panel .btn-small{padding:4px 8px !important;font-size:10px !important}
+.warehouse-panel .center{margin-top:8px !important}
+.shop-panel-v2{max-width:440px !important;padding:12px !important}
+.shop-tabs{display:flex;gap:4px;margin-bottom:10px;border-bottom:1px solid #3a3020;padding-bottom:8px}
+.shop-tab{flex:1;padding:10px 6px;min-height:40px;font-size:12px;background:rgba(0,0,0,0.3);border:1px solid #3a3020;border-radius:4px;color:#8a7a5a;cursor:pointer;transition:all .15s;text-align:center;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.shop-tab:hover{border-color:#5a4a2a;color:#c8b898}
+.shop-tab.active{background:rgba(212,168,67,0.15);border-color:#d4a843;color:#f0d870}
+.shop-panel-v2 .shop-header{margin-bottom:8px !important}
+.shop-panel-v2 .section-title{font-size:16px !important}
+.shop-panel-v2 .shop-item{padding:8px !important}
+.shop-panel-v2 .shop-item-icon{font-size:24px !important;margin-bottom:4px !important}
+.shop-panel-v2 .shop-item-name{font-size:12px !important;margin-bottom:2px !important}
+.shop-panel-v2 .shop-item-desc{font-size:10px !important;margin-bottom:4px !important}
+.shop-panel-v2 .shop-item-price{font-size:12px !important;margin-bottom:6px !important}
+.shop-panel-v2 .btn-small{padding:4px 8px !important;font-size:10px !important}
+.shop-panel-v2 .center{margin-top:10px !important}
+.start-v3-btn{width:100%;padding:10px;font-size:15px;font-weight:bold;background:linear-gradient(135deg,#8a6a20,#d4a843);border:2px solid #f0d870;border-radius:8px;color:#1a1408;cursor:pointer;transition:all .2s;letter-spacing:4px;text-shadow:0 1px 0 rgba(255,255,255,0.3);box-shadow:0 0 15px rgba(212,168,67,0.3)}
+.start-v3-btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(212,168,67,0.5)}
+.start-v3-btn:active{transform:translateY(0)}
+.a3-with-text{width:auto;padding:0 clamp(10px,2vmin,18px);gap:6px;font-size:clamp(12px,2.6vmin,14px);flex-direction:row;min-width:clamp(48px,10vmin,72px)}
+.a3-with-text span{font-size:11px;color:#c8b898}
+.a3-with-text:hover span{color:#f0d870}
+.char-grid-v3 .char-card{padding:8px 6px;margin:0}
+.char-grid-v3 .char-avatar{width:36px;height:36px;font-size:18px}
+.char-grid-v3 .char-name{font-size:12px;font-weight:bold}
+.char-grid-v3 .char-desc{display:none}
+.char-grid-v3 .char-stats{font-size:9px;color:#a89878}
+.char-grid-v3 .char-skill{font-size:9px;color:#c8a868;margin-top:2px}
+.torch-bar-wrap{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:3px;margin-bottom:6px;width:220px}
+.torch-bar{height:14px;border-radius:2px;transition:width .2s;background:linear-gradient(90deg,#ff6600,#ffaa00);position:relative}
+.torch-bar-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;text-shadow:1px 1px 2px #000;white-space:nowrap}
+.login-panel{max-width:380px !important;padding:24px !important}
+.login-input{width:100%;padding:10px 12px;background:rgba(0,0,0,0.5);border:2px solid #5a4a2a;border-radius:6px;color:#f0d870;font-size:14px;box-sizing:border-box;outline:none}
+.login-input:focus{border-color:#d4a843;box-shadow:0 0 8px rgba(212,168,67,0.3)}
+.login-input::placeholder{color:#5a4a3a}
+.char-card .char-avatar{width:44px;height:44px;margin:0 auto 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.char-card .char-name{font-size:13px;color:#f0d870;font-weight:bold;margin-bottom:2px}
+.char-card .char-desc{font-size:10px;color:#8a7a5a;margin-bottom:4px}
+.char-card .char-stats{font-size:9px;color:#a09070;margin-bottom:2px}
+.char-card .char-skill{font-size:9px;color:#d4a843}
+.section-title{color:#d4a843;font-size:18px;margin-bottom:16px;border-left:3px solid #d4a843;padding-left:10px}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.char-card{background:rgba(0,0,0,0.4);border:2px solid #3a3020;border-radius:8px;padding:16px;cursor:pointer;transition:all .2s;text-align:center}
+.char-card:hover{border-color:#d4a843;transform:translateY(-2px);box-shadow:0 4px 16px rgba(212,168,67,0.3)}
+.char-card.selected{border-color:#d4a843;background:rgba(212,168,67,0.1);box-shadow:0 0 20px rgba(212,168,67,0.4)}
+.char-avatar{width:64px;height:64px;margin:0 auto 10px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px}
+.char-name{color:#d4a843;font-size:16px;font-weight:bold;margin-bottom:6px}
+.char-desc{color:#9a8a6a;font-size:11px;line-height:1.5;margin-bottom:8px}
+.char-stats{font-size:11px;color:#7a6a4a}
+.char-skill{font-size:11px;color:#6a9a6a;margin-top:6px;font-style:italic}
+.btn{display:inline-block;padding:12px 32px;background:linear-gradient(145deg,#8b6914,#5a4410);border:2px solid #d4a843;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;transition:all .2s;letter-spacing:2px}
+.btn:hover{background:linear-gradient(145deg,#a87e1a,#6a5210);box-shadow:0 0 16px rgba(212,168,67,0.5)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-secondary{background:linear-gradient(145deg,#3a3040,#201a28);border-color:#5a5060}
+.btn-secondary:hover{background:linear-gradient(145deg,#4a4050,#2a2438)}
+.btn-danger{background:linear-gradient(145deg,#8b1a1a,#5a1010);border-color:#c43030}
+.btn-danger:hover{background:linear-gradient(145deg,#a82020,#6a1515)}
+.btn-small{padding:6px 16px;font-size:13px}
+.center{text-align:center}
+#hud{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50}
+#hud.hidden{display:none}
+.hud-top-left{position:absolute;top:16px;left:16px}
+.hud-bar-wrap{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:3px;margin-bottom:6px;width:220px}
+.hud-bar{height:18px;border-radius:2px;transition:width .2s;position:relative}
+.hud-bar.hp{background:linear-gradient(90deg,#8b1a1a,#c43030)}
+.hud-bar-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;color:#fff;text-shadow:1px 1px 2px #000;white-space:nowrap}
+.hud-info{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:6px 10px;font-size:13px;color:#d4a843;display:flex;gap:16px;width:220px}
+.hud-buffs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;width:220px}
+.hud-buff{background:rgba(0,0,0,0.75);border:1px solid #d4a843;border-radius:4px;padding:2px 6px;font-size:11px;color:#f0d870;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.hud-buff .buff-time{font-size:9px;color:#a09070}
+.hud-top-right{position:absolute;top:16px;right:16px;text-align:right;pointer-events:auto}
+.hud-timer{background:rgba(0,0,0,0.6);border:1px solid #5a4a2a;border-radius:4px;padding:4px 8px;font-size:13px;color:#d4a843;font-weight:bold;letter-spacing:1px;text-align:center;margin-top:6px;width:140px;box-sizing:border-box}
+.hud-timer.hud-timer.danger{color:#ff4040;border-color:#ff4040;animation:timerPulse 0.8s infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.floor-info{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:6px 12px;font-size:14px;color:#d4a843;margin-bottom:8px;width:140px;text-align:center;box-sizing:border-box;margin-left:auto}
+#minimap{border:2px solid #5a4a2a;border-radius:4px;background:rgba(0,0,0,0.8);pointer-events:auto;cursor:pointer;position:relative;z-index:60}
+.hud-bottom{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
+.skill-slot{width:56px;height:56px;background:rgba(0,0,0,0.8);border:2px solid #5a4a2a;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.skill-slot .icon{font-size:24px}
+.skill-slot .key{position:absolute;top:2px;left:4px;font-size:10px;color:#d4a843}
+.skill-slot .cd-overlay{position:absolute;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.7);transition:height .1s linear}
+.skill-slot .cd-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;color:#fff;text-shadow:1px 1px 2px #000;z-index:2}
+.skill-slot .potion-count{position:absolute;bottom:2px;right:4px;font-size:13px;font-weight:bold;color:#6ad46a;text-shadow:1px 1px 2px #000;z-index:2}
+#toastContainer{position:absolute;top:50px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none}
+.toast{background:rgba(0,0,0,0.8);border:1px solid rgba(212,168,67,0.6);border-radius:3px;padding:4px 12px;font-size:12px;color:#e8dcc8;animation:toastIn .2s,toastOut .2s 2.3s forwards;white-space:nowrap;line-height:1.4}
+.toast.damage{border-color:#c43030;color:#f0a0a0}
+.toast.loot{border-color:#6ad46a;color:#a0f0a0}
+.toast.gold{border-color:#d4a843;color:#f0d870}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px)}}
+.inv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.inv-slot{width:60px;height:60px;background:rgba(0,0,0,0.5);border:1px solid #3a3020;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;cursor:pointer}
+.inv-slot:hover{border-color:#d4a843}
+.inv-slot .count{position:absolute;bottom:2px;right:4px;font-size:11px;color:#fff;text-shadow:1px 1px 1px #000}
+.inv-equip{display:flex;gap:16px;margin-bottom:16px}
+.equip-slot{flex:1;background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:4px;padding:8px;text-align:center}
+.equip-slot .label{font-size:11px;color:#7a6a4a;margin-bottom:4px}
+.equip-slot .item{font-size:20px}
+.equip-slot .name{font-size:11px;color:#d4a843;margin-top:2px}
+.result-title{font-size:36px;text-align:center;margin-bottom:20px;letter-spacing:6px}
+.result-title.win{color:#d4a843;text-shadow:0 0 20px rgba(212,168,67,0.5)}
+.result-title.lose{color:#c43030;text-shadow:0 0 20px rgba(196,48,48,0.5)}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.result-stat{background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:4px;padding:10px;text-align:center}
+.result-stat .v{font-size:22px;color:#d4a843}
+.result-stat .l{font-size:11px;color:#7a6a4a;margin-top:2px}
+/* 商店样式 */
+.shop-panel{max-width:750px}
+.shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.shop-gold{font-size:20px;color:#f0d870;font-weight:bold}
+.shop-close-btn{width:36px;height:36px;border-radius:50%;background:rgba(139,26,26,0.6);border:2px solid #c43030;color:#f0a0a0;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1;margin-right:60px}
+.shop-close-btn:hover{background:rgba(196,48,48,0.8);color:#fff;transform:scale(1.1)}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.shop-item{background:rgba(0,0,0,0.4);border:2px solid #3a3020;border-radius:8px;padding:14px;text-align:center;transition:all .2s}
+.shop-item:hover{border-color:#8b6914}
+.shop-item.shop-item.equipped{border-color:#d4a843;box-shadow:0 0 12px rgba(212,168,67,0.3)}
+.shop-item-icon{font-size:36px;margin-bottom:8px}
+.shop-item-name{color:#d4a843;font-size:14px;font-weight:bold;margin-bottom:4px}
+.shop-item-desc{color:#9a8a6a;font-size:11px;margin-bottom:8px;line-height:1.4}
+.shop-item-price{color:#f0d870;font-size:14px;margin-bottom:10px}
+.shop-item-btns{display:flex;gap:6px;justify-content:center}
+/* 存档样式 */
+/* 仓库样式 */
+.wh-equip-bar{display:flex;gap:12px;margin-bottom:16px;justify-content:center}
+.wh-equip-slot{background:rgba(0,0,0,0.4);border:1px solid #5a4a2a;border-radius:6px;padding:10px 16px;text-align:center;min-width:140px}
+.wh-eq-label{font-size:11px;color:#7a6a4a;margin-bottom:4px}
+.wh-eq-item{font-size:28px;margin-bottom:2px}
+.wh-eq-name{font-size:12px;color:#d4a843;margin-bottom:6px}
+.wh-split{display:flex;gap:16px}
+.wh-panel{flex:1;background:rgba(0,0,0,0.3);border:1px solid #3a3020;border-radius:6px;padding:12px}
+.wh-panel-title{font-size:14px;color:#d4a843;margin-bottom:10px;text-align:center;font-weight:bold}
+.wh-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.wh-tab{flex:1;min-width:40px;padding:4px 6px;font-size:11px;background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:4px;color:#8a7a5a;cursor:pointer;transition:all .15s}
+.wh-tab:hover{border-color:#5a4a2a;color:#c8b898}
+.wh-tab.active{background:rgba(212,168,67,0.2);border-color:#d4a843;color:#d4a843}
+.wh-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px}
+.wh-slot{width:100%;aspect-ratio:1;background:rgba(0,0,0,0.5);border:1px solid #3a3020;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;position:relative;transition:all .15s}
+.wh-slot:hover{border-color:#d4a843;background:rgba(60,50,30,0.6)}
+.wh-slot.equipped{border-color:#d4a843;box-shadow:0 0 8px rgba(212,168,67,0.4)}
+.wh-slot.wh-count{position:absolute;bottom:1px;right:3px;font-size:11px;font-weight:bold;color:#fff;text-shadow:1px 1px 1px #000}
+.wh-hint{font-size:11px;color:#7a6a4a;text-align:center}
+.wh-transfer{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:200}
+.wh-transfer.hidden{display:none}
+.wh-transfer-box{background:#1a1420;border:2px solid #5a4a2a;border-radius:8px;padding:20px;text-align:center}
+.wh-transfer-title{font-size:16px;color:#d4a843;margin-bottom:8px}
+.wh-transfer-avail{font-size:13px;color:#7a6a4a;margin-bottom:12px}
+.wh-transfer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+/* 关闭按钮 */
+.close-x{position:absolute;top:10px;right:96px;width:30px;height:30px;border-radius:50%;border:1px solid #5a4a2a;background:rgba(0,0,0,0.5);color:#d4a843;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1}
+.close-x:hover{background:rgba(196,48,48,0.4);border-color:#c43030;color:#fff}
+/* 设置界面 */
+.setting-group{margin-bottom:16px;padding:10px 12px;background:rgba(0,0,0,0.3);border:1px solid #3a3020;border-radius:6px}
+.setting-label{font-size:13px;color:#d4a843;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.setting-slider{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:#2a2018;border-radius:3px;outline:none}
+.setting-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#d4a843;cursor:pointer;border:2px solid #8a6a20}
+.setting-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#d4a843;cursor:pointer;border:2px solid #8a6a20}
+.setting-hint{font-size:11px;color:#7a6a4a;margin-top:8px;line-height:1.5}
+.help-panel{max-width:720px !important}
+.help-section{margin-bottom:18px}
+.help-section h3{color:#d4a843;font-size:17px;margin-bottom:12px;border-left:4px solid #d4a843;padding-left:10px;padding-top:4px;padding-bottom:4px;background:linear-gradient(90deg,rgba(212,168,67,0.1),transparent)}
+.help-section p{color:#c8b898;font-size:14px;line-height:2.0;margin-bottom:10px}
+.help-section .hl{color:#f0d870;font-weight:bold;font-size:14px}
+.help-section .red{color:#e89090}
+.help-section .green{color:#90d090}
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.help-card{background:rgba(0,0,0,0.35);border:1px solid #4a3a20;border-radius:6px;padding:14px;margin-bottom:12px}
+.help-card .name{color:#d4a843;font-size:15px;font-weight:bold;margin-bottom:8px}
+.help-card .desc{color:#b0a080;font-size:13px;line-height:1.9}
+.help-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.help-tab{padding:6px 10px;font-size:12px;background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:6px;color:#8a7a5a;cursor:pointer;transition:all .15s;font-weight:bold}
+.help-tab:hover{border-color:#5a4a2a;color:#c8b898}
+.help-tab.active{background:rgba(212,168,67,0.2);border-color:#d4a843;color:#f0d870}
+.help-content-wrap{max-height:60vh;overflow-y:auto;padding-right:4px}
+.help-tab-content{display:none}
+.help-tab-content.active{display:block}
+.help-section h3{font-size:16px;color:#d4a843;margin-bottom:10px}
+.help-section p{font-size:14px;line-height:1.9;color:#b0a080;margin-bottom:8px}
+.help-section .hl{font-size:14px}
+.help-grid{gap:10px}
+.help-card{padding:12px}
+.help-card .name{font-size:15px}
+.btn-adjust-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,15,10,0.97);border:2px solid #d4a843;border-radius:12px;padding:18px;z-index:1001;min-width:280px;box-shadow:0 0 30px rgba(212,168,67,0.4)}
+.bap-title{color:#d4a843;font-size:17px;font-weight:bold;text-align:center;margin-bottom:14px;letter-spacing:2px}
+.bap-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#f0d870;font-size:13px}
+.bap-row input[type=range]{flex:1;accent-color:#d4a843}
+.bap-row span:last-child{min-width:48px;text-align:right;font-size:12px;color:#a09070}
+.layout-selected{outline:3px solid #d4a843 !important;outline-offset:4px;box-shadow:0 0 20px rgba(212,168,67,0.6) !important}
+/* 编辑布局模式 */
+.layout-editing .tbtn,.layout-editing #joystickZone,.layout-editing #sideButtons{cursor:move !important;outline:2px dashed #d4a843 !important;outline-offset:4px}
+.layout-editing .tbtn:active{cursor:grabbing !important}
+/* 横屏提示 */
+#rotateOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:99999;flex-direction:column;align-items:center;justify-content:center;color:#d4a843;font-size:20px;gap:12px}
+.rotate-icon{font-size:60px;animation:rotatePhone 2s ease-in-out infinite}
+@keyframes rotatePhone{0%,100%{transform:rotate(0)}50%{transform:rotate(90deg)}}
+.rotate-sub{font-size:13px;color:#7a6a4a}
+/* 触控UI - 王者荣耀风格 */
+#touchControls{display:none;position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:80}
+#joystickZone{position:absolute;bottom:25px;left:25px;width:130px;height:130px;pointer-events:auto;touch-action:none}
+#joystickBase{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,0.35);border:2px solid rgba(212,168,67,0.35)}
+#joystickKnob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,220,150,0.8),rgba(180,140,60,0.7));border:2px solid #d4a843;box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:transform .05s}
+#actionButtons{position:absolute;bottom:18px;right:38px;pointer-events:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.skill-top-row{display:flex;gap:10px;align-items:flex-end;padding-right:4px;padding-bottom:2px}
+.skill-bottom-row{display:flex;gap:10px;align-items:center;position:relative}
+.tbtn-skill2{border-color:rgba(180,100,200,0.7);background:radial-gradient(circle at 35% 30%,rgba(55,30,70,0.95),rgba(25,15,35,0.98));box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 12px rgba(150,80,180,0.2)}
+.tbtn{position:relative;width:58px;height:58px;border-radius:50%;border:2px solid rgba(180,160,100,0.6);background:radial-gradient(circle at 35% 30%,rgba(60,50,35,0.9),rgba(25,20,15,0.95));color:#d4a843;font-size:24px;cursor:pointer;touch-action:none;user-select:none;display:flex;align-items:center;justify-content:center;transition:all .1s;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1)}
+.tbtn:active{transform:scale(0.92);box-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.tbtn-icon{position:relative;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))}
+.tbtn-attack{width:82px;height:82px;font-size:34px;border-color:rgba(200,160,80,0.8);background:radial-gradient(circle at 35% 30%,rgba(80,55,25,0.95),rgba(40,25,10,0.98));box-shadow:0 4px 14px rgba(0,0,0,0.6),inset 0 2px 0 rgba(255,200,100,0.15),0 0 15px rgba(200,150,50,0.2)}
+.tbtn-attack:active{box-shadow:0 2px 6px rgba(0,0,0,0.6),0 0 8px rgba(200,150,50,0.3)}
+.tbtn-skill{border-color:rgba(100,150,220,0.7);background:radial-gradient(circle at 35% 30%,rgba(30,45,75,0.95),rgba(15,20,40,0.98));box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 12px rgba(80,130,200,0.2)}
+.tbtn-potion{border-color:rgba(100,200,120,0.7);background:radial-gradient(circle at 35% 30%,rgba(25,60,35,0.95),rgba(10,30,20,0.98));box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 12px rgba(80,180,100,0.2)}
+.tbtn-ultimate{width:56px;height:56px;font-size:24px;border-color:rgba(212,168,67,0.8);background:radial-gradient(circle at 35% 30%,rgba(60,45,20,0.95),rgba(30,20,10,0.98));box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 15px rgba(212,168,67,0.3)}
+.tbtn-ultimate.ready{animation:ultGlow 1.5s ease-in-out infinite}
+.tbtn-ultimate.charging{transform:scale(1.15);animation:ultCharge 0.5s ease-in-out infinite alternate}
+@keyframes ultCharge{from{box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 15px rgba(212,168,67,0.4)}to{box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 30px rgba(255,215,0,0.8)}}
+.floor-btn{position:absolute;left:65%;top:50%;transform:translate(-50%,-50%);min-width:120px;text-align:center;padding:12px 24px;background:rgba(0,0,0,0.7);border:2px solid #d4a843;border-radius:12px;color:#ffd700;font-size:16px;font-weight:bold;cursor:pointer;z-index:60;pointer-events:auto;touch-action:none;text-shadow:0 1px 3px #000}
+.floor-btn:active{background:rgba(212,168,67,0.3)}
+@keyframes ultGlow{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 15px rgba(212,168,67,0.3)}50%{box-shadow:0 3px 10px rgba(0,0,0,0.5),0 0 25px rgba(255,215,0,0.6)}}
+.ult-cd{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:bold;color:#ffd700;text-shadow:0 1px 2px #000;z-index:3;pointer-events:none;font-family:Arial}
+.tbtn-cd{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:conic-gradient(rgba(0,0,0,0.75) var(--cd,0%),transparent 0);pointer-events:none;z-index:1;transition:background .1s linear}
+.tbtn-cd-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:bold;color:#fff;text-shadow:0 1px 3px #000,0 0 4px #000;z-index:3;pointer-events:none;font-family:Arial,sans-serif}
+.tbtn-count{position:absolute;top:6px;right:8px;font-size:13px;font-weight:bold;color:#fff;text-shadow:0 1px 2px #000,0 0 4px #000;z-index:4;pointer-events:none;background:rgba(0,0,0,0.5);border-radius:8px;padding:0 4px;line-height:16px}
+#sideButtons{position:absolute;top:8px;left:50%;transform:translateX(-50%);pointer-events:auto;display:flex;flex-direction:row;gap:6px;z-index:50}
+.tbtn-small{width:42px;height:42px;border-radius:10px;border:1px solid rgba(180,160,100,0.5);background:rgba(0,0,0,0.6);color:#d4a843;font-size:18px;cursor:pointer;touch-action:none;box-shadow:0 2px 6px rgba(0,0,0,0.4)}
+.tbtn-small:active{background:rgba(212,168,67,0.3)}
+/* 关闭按钮 */
+.close-x{position:absolute;top:10px;right:120px;width:32px;height:32px;border-radius:50%;border:1px solid #5a4a2a;background:rgba(0,0,0,0.5);color:#d4a843;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1}
+.close-x:hover{background:rgba(196,48,48,0.5);border-color:#c43030;color:#fff}
+#invOverlay .close-x{right:120px}
+/* 移动端适配 */
+@media (max-width:900px),(pointer:coarse){
+ #touchControls{display:block}
+ .panel{max-width:96vw !important;max-height:95vh;overflow-y:auto;padding:10px !important}
+ .game-title{font-size:22px !important;margin-bottom:4px !important}
+ .game-subtitle{font-size:11px !important;margin-bottom:10px !important}
+ .section-title{font-size:13px !important;margin:8px 0 6px !important}
+ .menu-actions{gap:6px !important;margin-bottom:12px !important}
+ .char-grid{grid-template-columns:1fr 1fr 1fr !important;gap:6px !important}
+ .char-card{padding:5px !important}
+ .char-avatar{width:30px !important;height:30px !important;font-size:15px !important}
+ .char-name{font-size:11px !important}
+ .char-desc,.char-stats,.char-skill{font-size:9px !important}
+ .shop-grid{grid-template-columns:1fr 1fr !important;gap:6px !important}
+ .shop-item{padding:5px !important}
+ .shop-item-icon{font-size:20px !important}
+ .shop-item-name{font-size:11px !important}
+ .shop-item-desc{font-size:9px !important}
+ .shop-item-price{font-size:10px !important;margin:3px 0 !important}
+ .shop-item-btns{gap:4px !important}
+ .wh-equip-bar{gap:8px !important;margin-bottom:10px !important}
+ .wh-equip-slot{padding:5px 8px !important;min-width:100px !important}
+ .wh-eq-item{font-size:20px !important}
+ .wh-eq-name{font-size:11px !important;margin-bottom:4px !important}
+ .wh-panel{padding:8px !important}
+ .wh-panel-title{font-size:12px !important;margin-bottom:6px !important}
+ .wh-grid{grid-template-columns:repeat(6,1fr) !important;gap:4px !important}
+ .wh-slot{font-size:18px !important}
+ .wh-count{font-size:10px !important}
+ .wh-hint{font-size:10px !important}
+ .hud-top-left{top:6px !important;left:6px !important;transform:scale(0.75);transform-origin:top left}
+ .hud-top-right{top:6px !important;right:6px !important;transform:scale(0.85);transform-origin:top right}
+ .hud-bottom{display:none !important}
+ .skill-slot{width:40px !important;height:40px !important}
+ #minimap{width:90px !important;height:90px !important}
+ .floor-info{width:90px !important;padding:3px 6px !important;font-size:11px !important;margin-bottom:4px !important}
+ .hud-timer,.agent-timer,.agent-gold-display{width:90px !important;padding:2px 6px !important;font-size:11px !important;margin-top:3px !important}
+ #pendingUpgradeBadge{width:50px !important;height:50px !important}
+ .btn{padding:6px 12px !important;font-size:12px !important}
+ .btn-small{padding:3px 8px !important;font-size:10px !important}
+ .toast{font-size:11px !important;padding:3px 10px !important}
+ .result-stats{gap:6px !important;margin-bottom:14px !important}
+ .result-stat{padding:6px !important}
+ .result-stat .v{font-size:18px !important}
+ .result-stat .l{font-size:10px !important}
+ .inv-equip{gap:8px !important;margin-bottom:10px !important}
+ .equip-slot{padding:4px !important}
+ .equip-slot .label{font-size:9px !important;margin-bottom:2px !important}
+ .equip-slot .item{font-size:16px !important}
+ .equip-slot .name{font-size:9px !important;margin-top:1px !important}
+ .inv-grid{gap:4px !important;margin-bottom:10px !important}
+ .inv-slot{width:42px !important;height:42px !important;font-size:18px !important}
+ .inv-slot .count{font-size:9px !important;bottom:1px !important;right:2px !important}
+}
+@media (orientation:landscape) and (max-height:500px){
+ .panel{padding:8px !important;max-height:96vh}
+ .game-title{font-size:18px !important}
+ .char-avatar{width:26px !important;height:26px !important;font-size:13px !important}
+ .char-name{font-size:10px !important}
+ .char-desc,.char-stats,.char-skill{font-size:8px !important}
+ .shop-item-icon{font-size:18px !important}
+ .btn{padding:5px 10px !important;font-size:11px !important}
+ .char-grid{gap:6px !important;margin-bottom:0 !important}
+ .char-card{padding:4px !important}
+}
+@media (orientation:portrait) and (max-width:900px){
+ #rotateOverlay{display:flex !important}
+ #gameContainer{display:none !important}
+}
+/* 技能拖动取消区域 */
+.skill-cancel-zone{position:fixed;width:76px;height:76px;border-radius:50%;background:rgba(160,30,30,0.25);border:2px dashed rgba(200,60,60,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:95;pointer-events:none;transition:all .15s;opacity:0}
+.skill-cancel-zone.show{opacity:1}
+.skill-cancel-zone.active{background:rgba(200,40,40,0.55);border:2px solid rgba(255,80,80,0.95);transform:scale(1.12);box-shadow:0 0 20px rgba(255,60,60,0.5)}
+.skill-cancel-zone .sc-icon{font-size:26px;color:#ff6060;line-height:1}
+.skill-cancel-zone.active .sc-icon{color:#fff}
+.skill-cancel-zone .sc-text{font-size:10px;color:#ff9090;margin-top:3px;letter-spacing:1px}
+.skill-cancel-zone.active .sc-text{color:#fff}
+/* 技能瞄准方向指示器 */
+@media (max-width:900px),(pointer:coarse){
+ .skill-cancel-zone{width:66px;height:66px}
+ .skill-cancel-zone .sc-icon{font-size:22px}
+}
+.menu-v3-mode-card.endless.active{border-color:#60a0ff;background:rgba(40,70,140,0.4);box-shadow:0 0 16px rgba(80,140,255,0.4)}
+.menu-v3-mode-card.mojin.active{border-color:#d4a843;background:rgba(120,90,30,0.4);box-shadow:0 0 16px rgba(212,168,67,0.5)}
+.agent-upgrade-card{background:rgba(0,0,0,0.5);border:2px solid #3a3020;border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.agent-upgrade-card:hover{border-color:#d4a843;background:rgba(40,30,10,0.6);transform:translateY(-2px)}
+.agent-upgrade-icon{font-size:36px;margin-bottom:8px}
+.agent-upgrade-name{font-size:14px;color:#f0d870;font-weight:bold;margin-bottom:6px}
+.agent-upgrade-desc{font-size:11px;color:#a09070;line-height:1.5}
+.agent-hud{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:6px 10px;margin-top:6px;width:220px}
+.agent-level-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.agent-lv{font-size:14px;color:#60a0ff;font-weight:bold}
+.agent-skills-btn{background:rgba(40,70,140,0.6);border:1px solid #60a0ff;border-radius:4px;color:#a0c0ff;font-size:11px;padding:2px 8px;cursor:pointer;position:relative;z-index:10;pointer-events:auto}
+.agent-skills-btn:hover{background:rgba(60,90,160,0.8)}
+@keyframes pulseBadge{0%,100%{box-shadow:0 0 15px rgba(212,168,67,0.6)}50%{box-shadow:0 0 25px rgba(212,168,67,0.9)}}
+#pendingUpgradeBadge:hover{transform:translateY(-50%) scale(1.1)}
+.agent-exp-bar{position:relative;height:14px;background:rgba(0,0,0,0.5);border:1px solid #3a3020;border-radius:3px;overflow:hidden}
+.agent-exp-fill{height:100%;background:linear-gradient(90deg,#4080ff,#60a0ff);transition:width .2s;width:0%}
+.agent-exp-text{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;text-shadow:0 0 3px #000}
+.agent-skill-section{margin-bottom:12px}
+.agent-skill-section-title{font-size:12px;color:#d4a843;margin-bottom:6px;font-weight:bold}
+.agent-skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.agent-skill-item{background:rgba(0,0,0,0.4);border:1px solid #3a3020;border-radius:4px;padding:6px 8px;display:flex;align-items:center;gap:6px}
+.agent-skill-item .asi-icon{font-size:18px}
+.agent-skill-item .asi-info{flex:1}
+.agent-skill-item .asi-name{font-size:11px;color:#d4a843}
+.agent-skill-item .asi-lv{font-size:10px;color:#60a0ff}
+.agent-skill-empty{font-size:11px;color:#7a6a4a;text-align:center;padding:8px}
+.agent-timer{background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:4px 8px;font-size:13px;color:#60a0ff;margin-top:6px;width:140px;box-sizing:border-box;text-align:center}
+/* ===== 布局：开始冒险按钮行；模式区不滚动；小屏温和压缩 ===== */
+.menu-v3-right{overflow:visible}
+.menu-v3-actions{flex-wrap:nowrap}
+.menu-start-row{display:flex;gap:8px;flex:1;align-items:center}
+.menu-start-row .start-v3-btn{flex:1;padding:10px 0}
+@media (max-height:560px){
+  .menu-v3{padding:6px 10px}
+  .menu-v3-top{margin-bottom:4px;padding-bottom:4px}
+  .menu-v3-title{font-size:20px;letter-spacing:3px}
+  .menu-v3-gold{padding:2px 10px;font-size:12px}
+  .menu-v3-top-right{margin-right:72px}
+  .menu-v3-actions{margin:3px 0;gap:4px}
+  .a3-btn{width:clamp(40px,10vmin,52px);height:clamp(28px,7.5vmin,36px);font-size:clamp(12px,3.2vmin,15px)}
+  .menu-v3-main{gap:8px}
+  .menu-v3-label{font-size:10px;margin-bottom:4px}
+  .char-grid-v3{gap:4px}
+  .char-grid-v3 .char-card{padding:4px 4px}
+  .char-grid-v3 .char-avatar{width:28px;height:28px;font-size:14px}
+  .menu-v3-mode-card{padding:5px 8px}
+  .mode-v3-icon{font-size:14px}
+  .mode-v3-name{font-size:11px}
+  .mode-v3-desc{font-size:9px}
+  .menu-start-row .start-v3-btn{padding:8px 0;font-size:14px}
+}
+#statsOverlay .panel{overflow-y:auto !important;}
+/* ===== 角色选择模块（自包含，独立类名，不受其他区域/媒体查询影响）===== */
+.bigchar-wrap{flex:1;display:flex;flex-direction:column;padding:14px 12px;margin:0;overflow:hidden;background:rgba(212,168,67,0.1);border:2px solid #d4a843;border-radius:8px;box-shadow:0 0 20px rgba(212,168,67,0.4);text-align:center}
+.bigchar-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.bigchar-avatar{width:60px;height:60px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px}
+.bigchar-name{color:#d4a843;font-size:18px;font-weight:bold;margin-bottom:6px}
+.bigchar-stats{font-size:12px;color:#a09070;margin-bottom:3px}
+.bigchar-skill{font-size:12px;color:#6a9a6a;margin-top:4px;font-style:italic}
+.bigchar-btn{width:100%;padding:7px 0;font-size:13px;letter-spacing:1px;margin-top:10px;flex-shrink:0}
+.charsel-panel{max-width:720px;width:90%;height:85vh;max-height:85vh;display:flex;flex-direction:column;position:relative}
+.charsel-panel .section-title{flex-shrink:0}
+.charsel-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow-y:auto;align-content:start;padding-right:4px;-webkit-overflow-scrolling:touch}
+.charsel-card{background:rgba(0,0,0,0.4);border:2px solid #3a3020;border-radius:8px;padding:6px 4px;cursor:pointer;transition:all .2s;text-align:center}
+.charsel-card:hover{border-color:#d4a843}
+.charsel-card .cs-avatar{width:32px;height:32px;margin:0 auto 4px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.charsel-card .cs-name{font-size:11px;color:#d4a843;font-weight:bold;margin-bottom:2px}
+.charsel-card .cs-stats{font-size:8px;color:#a09070;margin-bottom:2px}
+.charsel-card .cs-skill{font-size:8px;color:#6a9a6a}
+</style>
+</head>
+<body>
+<div id="fpsOverlay" style="position:fixed;top:8px;left:8px;z-index:2147483647;color:#ff0;font:bold 16px monospace;background:rgba(0,0,0,0.7);padding:3px 8px;border-radius:4px;pointer-events:none;">FPS:??</div>
+<div id="gameContainer">
+<canvas id="gameCanvas"></canvas>
+<div id="hud" class="hidden">
+<div class="hud-top-left">
+<div class="hud-bar-wrap"><div class="hud-bar hp" id="hpBar"><div class="hud-bar-text" id="hpText">100/100</div></div></div>
+<div class="torch-bar-wrap" id="torchBarWrap" style="display:none"><div class="torch-bar" id="torchBar" style="width:100%"><div class="torch-bar-text" id="torchText">🔥 100</div></div></div>
+<div class="hud-info"><span>💰 <span id="goldText">0</span></span><span>🔑 <span id="keyText">0</span></span><span>⚔️ <span id="atkText">10</span></span></div>
+<div class="hud-info" id="lootValueBar" style="display:none;background:rgba(60,40,10,0.8);border-color:#d4a843;"><span>💎 物资价值 <span id="lootValueText" style="color:#ffd700;font-weight:bold;">0</span></span></div>
+<div class="hud-buffs" id="hudBuffs"></div>
+<div class="agent-hud" id="agentHud" style="display:none">
+<div class="agent-level-info"><span class="agent-lv">Lv.<span id="agentLevel">1</span></span><button class="agent-skills-btn" onclick="showAgentSkillsPanel()">📋 技能</button></div>
+<div class="agent-exp-bar"><div class="agent-exp-fill" id="agentExpFill"></div><div class="agent-exp-text" id="agentExpText">0/20 EXP</div></div>
+</div>
+</div>
+<div class="hud-top-right"><div class="floor-info">第 <span id="floorText">1</span> 层</div><div id="hybridTrialBar" style="display:none;background:linear-gradient(135deg,rgba(40,50,80,0.9),rgba(20,25,45,0.9));border:1px solid #4a6ad8;border-radius:6px;padding:5px 10px;font-size:12px;color:#aab8ff;margin-top:4px;width:150px;text-align:center;line-height:1.5">🎯 <span id="hybridTrialText">目标</span><br>🪙 券 <span id="hybridVoucherText" style="color:#ffd700;font-weight:bold">0</span></div><canvas id="minimap" width="140" height="140"></canvas><div class="hud-timer" id="timerDisplay">⏱ 8:00</div><div class="agent-timer" id="agentTimer" style="display:none">⏱ 00:00</div><div class="agent-gold-display" id="agentGoldDisplay" style="display:none;background:rgba(0,0,0,0.7);border:1px solid #5a4a2a;border-radius:4px;padding:4px 10px;font-size:12px;color:#f0d870;margin-top:4px;width:140px;text-align:center">💰 0/0</div>
+<div id="pendingUpgradeBadge" onclick="event.stopPropagation();event.preventDefault();openPendingUpgrades()" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()" ontouchstart="event.stopPropagation();event.preventDefault();openPendingUpgrades()" style="display:none;background:linear-gradient(135deg,#d4a843,#8a6a2a);color:#fff;font-size:12px;font-weight:bold;padding:0;border-radius:8px;cursor:pointer;margin-top:4px;width:70px;height:70px;text-align:center;box-shadow:0 0 10px rgba(212,168,67,0.5);animation:pulseBadge 1s infinite;position:relative;z-index:9999;opacity:0.7;line-height:1.2;flex-direction:column;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent"><div style="font-size:20px">⬆️</div><div>待选</div><div id="pendingUpgradeCount" style="background:#fff;color:#8a6a2a;border-radius:10px;padding:0 6px;font-size:11px;margin-top:2px">0</div></div>
+</div>
+<div class="hud-bottom">
+<div class="skill-slot"><span class="key">右键</span><span class="icon" id="skill1Icon">🔮</span><div class="cd-overlay" id="cd1"></div><span class="cd-text" id="cdText1"></span></div>
+<div class="skill-slot"><span class="key">左键</span><span class="icon">⚔️</span></div>
+<div class="skill-slot"><span class="key">3</span><span class="icon">🧪</span><span class="potion-count" id="potionCount">0</span><div class="cd-overlay" id="cd3"></div></div>
+</div>
+<div class="hud-bottom hybrid-hud" id="hybridHud" style="display:none">
+<div class="skill-slot"><span class="key">右键</span><span class="icon" id="hyIcon1">🔮</span><div class="cd-overlay" id="hyCd1"></div><span class="cd-text" id="hyCdT1"></span></div>
+<div class="skill-slot"><span class="key">Q</span><span class="icon" id="hyIcon2">⚡</span><div class="cd-overlay" id="hyCd2"></div><span class="cd-text" id="hyCdT2"></span></div>
+<div class="skill-slot"><span class="key">R</span><span class="icon" id="hyIcon3">🌀</span><div class="cd-overlay" id="hyCd3"></div><span class="cd-text" id="hyCdT3"></span></div>
+</div>
+</div>
+<div id="toastContainer"></div>
+<!-- 我的主页 -->
+<div class="overlay hidden" id="profileOverlay" style="z-index:150">
+<div class="panel" style="max-width:420px;height:340px;max-height:86vh;position:relative">
+<button class="close-x" onclick="closeProfile()">✕</button>
+<div class="section-title" style="margin-bottom:12px">👤 我的主页</div>
+<div id="profileBody"></div>
+</div>
+</div>
+<!-- 起名 / 改名 -->
+<div class="overlay hidden" id="nameOverlay" style="z-index:210">
+<div class="panel" style="max-width:360px;position:relative">
+<div class="section-title" style="margin-bottom:10px" id="nameTitle">起个游戏名</div>
+<p style="color:#c8b898;font-size:12px;line-height:1.6;margin-bottom:10px" id="nameHint">名字可以重复，靠 ID 区分；起好后 30 天可改一次。</p>
+<input type="text" id="nameInput" class="login-input" maxlength="12" placeholder="1-12 位（中文/字母/数字）">
+<div id="nameMsg" style="font-size:12px;min-height:16px;margin:8px 0;color:#c43030"></div>
+<div style="display:flex;gap:10px">
+<button class="btn btn-secondary" id="nameCancelBtn" style="flex:1" onclick="closeNameDlg()">取消</button>
+<button class="btn" id="nameOkBtn" style="flex:1" onclick="submitName()">确定</button>
+</div>
+</div>
+</div>
+<style>
+.fr-split{display:grid;grid-template-columns:1fr 118px;gap:8px}
+.fr-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.fr-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.35);border:1px solid #3a3020;border-radius:6px;padding:8px;cursor:pointer}
+.fr-row:hover{border-color:#5a4a2a}
+.fr-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#4a4a4a}
+.fr-dot.on{background:#44dd66;box-shadow:0 0 6px #44dd66}
+.fr-meta{flex:1;min-width:0}
+.fr-name{font-size:14px;color:#e8dcc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr-id{font-size:11px;color:#8a7a5a;font-family:monospace}
+.fr-go{font-size:12px;color:#d4a843;white-space:nowrap}
+.fr-side{display:flex;flex-direction:column;gap:8px}
+.fr-side .btn{width:100%;padding:8px 6px;font-size:12px}
+.fr-badge{background:#c43030;color:#fff;border-radius:10px;font-size:10px;padding:0 5px;margin-left:4px}
+.fr-empty{color:#6a5a4a;font-size:13px;padding:16px;text-align:center}
+.fr-result{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;background:rgba(0,0,0,0.35);border:1px solid #3a3020;border-radius:6px;padding:10px;margin-top:8px}
+.fr-rright{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fr-sq{width:36px;height:36px;padding:0;font-size:18px;line-height:1}
+.fr-last{font-size:11px;color:#8a7a5a;white-space:nowrap}
+.fr-acts{display:flex;gap:6px}
+.fr-btn-xs{padding:5px 10px;font-size:12px}
+#chatBody{display:flex;flex-direction:column;gap:8px;height:300px;overflow-y:auto;padding:10px;background:rgba(0,0,0,0.3);border:1px solid #3a3020;border-radius:6px}
+.ch-bub{max-width:78%;font-size:13px;line-height:1.5;padding:7px 10px;border-radius:8px;word-break:break-word}
+.ch-bub.them{align-self:flex-start;background:rgba(0,0,0,0.45);border:1px solid #3a3020;color:#e8dcc8}
+.ch-bub.me{align-self:flex-end;background:rgba(212,168,67,0.85);color:#1a1408}
+.req-dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#ff3030;box-shadow:0 0 6px #ff3030;border:1px solid #3a1010;z-index:5}
+.msg-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff3030;box-shadow:0 0 6px #ff3030}
+.fr-av{width:28px;height:28px;flex:0 0 28px;border-radius:50%;background:rgba(212,168,67,0.12);border:1px solid #5a4a2a;display:flex;align-items:center;justify-content:center;font-size:16px}
+.fr-rec-title{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#d4a843;margin:14px 0 8px}
+.fr-rec{display:flex;flex-direction:column;gap:6px;height:260px;overflow-y:auto}
+.fr-rec .fr-row{padding:6px 8px}
+.av-item{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,0.35);border:2px solid #3a3020;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:border-color .15s}
+.av-item:hover{border-color:#5a4a2a}
+.av-item.av-cur{border-color:#ffd700;box-shadow:0 0 8px rgba(255,215,0,0.4)}
+#avatarBody{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;justify-items:center}
+.rp-label{font-size:13px;color:#d4a843;margin:12px 0 8px}
+#reportReasons{display:flex;flex-wrap:wrap;gap:8px}
+.rp-reason{padding:6px 14px;border-radius:6px;border:2px solid #5a4a2a;background:rgba(0,0,0,0.35);color:#e8dcc8;font-size:13px;cursor:pointer;transition:border-color .15s}
+.rp-reason:hover{border-color:#8b6914}
+.rp-reason.rp-cur{border-color:#ffd700;color:#ffd700;box-shadow:0 0 8px rgba(255,215,0,0.3)}
+</style>
+<!-- 好友列表 -->
+<div class="overlay hidden" id="friendsOverlay" style="z-index:150">
+<div class="panel" style="max-width:460px;height:460px;max-height:86vh;position:relative">
+<button class="close-x" onclick="closeFriends()">✕</button>
+<div class="section-title" style="margin-bottom:12px">👥 好友</div>
+<div id="friendsBody"></div>
+</div>
+</div>
+<!-- 加好友 -->
+<div class="overlay hidden" id="addFriendOverlay" style="z-index:160">
+<div class="panel" style="max-width:380px;position:relative">
+<button class="close-x" onclick="closeAddFriend()">✕</button>
+<div class="section-title" style="margin-bottom:10px">➕ 加好友</div>
+<div style="display:flex;gap:8px">
+<input type="text" id="addFriendInput" class="login-input" name="mj_friend_search" maxlength="7" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="输入 7 位数字 ID" onkeydown="if(event.key==='Enter'){event.preventDefault();searchFriend()}">
+<button class="btn" style="flex:0 0 auto" onclick="searchFriend()">搜索</button>
+</div>
+<div id="addFriendBody"></div>
+<div class="fr-rec-title">推荐好友 <button class="btn btn-secondary fr-btn-xs" onclick="refreshRecommend()">🔄 刷新</button></div>
+<div id="addFriendRecBody" class="fr-rec"></div>
+</div>
+</div>
+<!-- 好友申请 -->
+<div class="overlay hidden" id="friendReqOverlay" style="z-index:160">
+<div class="panel" style="max-width:380px;position:relative">
+<button class="close-x" onclick="closeFriendReq()">✕</button>
+<div class="section-title" style="margin-bottom:10px">📨 好友申请</div>
+<div id="friendReqBody"></div>
+</div>
+</div>
+<!-- 好友主页 -->
+<div class="overlay hidden" id="friendProfileOverlay" style="z-index:170">
+<div class="panel" style="max-width:380px;position:relative">
+<button class="close-x" onclick="closeFriendProfile()">✕</button>
+<div class="section-title" style="margin-bottom:12px">👤 好友主页</div>
+<div id="friendProfileBody"></div>
+</div>
+</div>
+<!-- 换头像 -->
+<div class="overlay hidden" id="avatarOverlay" style="z-index:210">
+<div class="panel" style="max-width:400px;position:relative">
+<button class="close-x" onclick="closeAvatarDlg()">✕</button>
+<div class="section-title" style="margin-bottom:12px">🎭 更换头像</div>
+<div id="avatarBody"></div>
+</div>
+</div>
+<!-- 聊天 -->
+<div class="overlay hidden" id="chatOverlay" style="z-index:170">
+<div class="panel" style="max-width:440px;position:relative">
+<button class="close-x" onclick="closeChat()">✕</button>
+<div class="section-title" style="margin-bottom:8px" id="chatTitle">—</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
+<div class="fr-id" id="chatSub">—</div>
+<div style="display:flex;gap:6px">
+<button class="btn btn-secondary fr-btn-xs" onclick="openReportDlg()">🚩 举报</button>
+<button class="btn btn-secondary fr-btn-xs" onclick="clearChat()">🗑 清除记录</button>
+<button class="btn btn-secondary fr-btn-xs" onclick="removeCurrentFriend()">❌ 删除</button>
+</div>
+</div>
+<div id="chatBody"></div>
+<div style="display:flex;gap:8px;margin-top:10px">
+<input type="text" id="chatInput" class="login-input" name="mj_chat_msg" maxlength="200" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="输入消息…" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}">
+<button class="btn" style="flex:0 0 auto" onclick="sendChat()">发送</button>
+</div>
+</div>
+</div>
+<!-- 举报 -->
+<div class="overlay hidden" id="reportOverlay" style="z-index:180">
+<div class="panel" style="max-width:380px;position:relative">
+<button class="close-x" onclick="closeReportDlg()">✕</button>
+<div class="section-title" style="margin-bottom:10px">🚩 举报</div>
+<div class="rp-label">举报原因</div>
+<div id="reportReasons"></div>
+<div class="rp-label">补充说明（可选）</div>
+<textarea id="reportText" class="login-input" rows="3" maxlength="200" style="resize:vertical;font-family:inherit" placeholder="请描述具体情况…"></textarea>
+<div style="display:flex;gap:8px;margin-top:12px">
+<button class="btn btn-secondary" style="flex:1" onclick="closeReportDlg()">取消</button>
+<button class="btn" style="flex:1" onclick="submitReport()">提交举报</button>
+</div>
+</div>
+</div>
+<!-- 主菜单 -->
+<!-- 登录界面 -->
+<div class="overlay" id="loginOverlay">
+<div class="panel login-panel" style="position:relative">
+<button onclick="toggleFullscreen()" title="全屏" style="position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:2px solid #5a4a2a;background:rgba(0,0,0,0.5);color:#d4a843;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10">⛶</button>
+<div class="game-title" style="font-size:36px;margin-bottom:4px">摸金秘藏</div>
+<div class="game-subtitle" style="margin-bottom:20px">— 账号登录 —</div>
+<div id="loginForm">
+<div style="margin-bottom:12px">
+<label style="display:block;color:#d4a843;font-size:13px;margin-bottom:4px">账号</label>
+<input type="text" id="loginUser" class="login-input" placeholder="请输入账号" autocomplete="off">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;color:#d4a843;font-size:13px;margin-bottom:4px">密码</label>
+<input type="password" id="loginPass" class="login-input" placeholder="请输入密码" autocomplete="off">
+</div>
+<div style="display:flex;gap:16px;justify-content:center;margin-bottom:12px;font-size:13px;color:#c8b888">
+<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="loginSaveAcc" onchange="onSaveAccChange()" style="width:15px;height:15px;accent-color:#d4a843">保存账号密码</label>
+<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="loginAutoLogin" onchange="onAutoLoginChange()" style="width:15px;height:15px;accent-color:#d4a843">自动登录</label>
+</div>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+<button class="btn" onclick="doLogin()">🔑 登录</button>
+<button class="btn btn-secondary" onclick="showRegister()">📝 注册</button>
+</div>
+<div id="loginMsg" style="text-align:center;margin-top:12px;font-size:12px;min-height:16px"></div>
+</div>
+<div id="registerForm" style="display:none">
+<div style="margin-bottom:12px">
+<label style="display:block;color:#d4a843;font-size:13px;margin-bottom:4px">账号</label>
+<input type="text" id="regUser" class="login-input" placeholder="3-16位字符" autocomplete="off">
+</div>
+<div style="margin-bottom:12px">
+<label style="display:block;color:#d4a843;font-size:13px;margin-bottom:4px">密码</label>
+<input type="password" id="regPass" class="login-input" placeholder="3-16位字符" autocomplete="off">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;color:#d4a843;font-size:13px;margin-bottom:4px">确认密码</label>
+<input type="password" id="regPass2" class="login-input" placeholder="再次输入密码" autocomplete="off">
+</div>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+<button class="btn" onclick="doRegister()">✅ 确认注册</button>
+<button class="btn btn-secondary" onclick="showLogin()">← 返回登录</button>
+</div>
+<div id="regMsg" style="text-align:center;margin-top:12px;font-size:12px;min-height:16px"></div>
+</div>
+</div>
+</div>
+<!-- 主菜单 -->
+<div class="overlay hidden" id="deleteAccountOverlay" style="z-index:200">
+<div class="panel" style="max-width:380px;position:relative">
+<button class="close-x" onclick="cancelDeleteAccount()">✕</button>
+<div class="section-title" style="margin-bottom:12px">⚠️ 注销账号</div>
+<p style="color:#c8b898;font-size:13px;margin-bottom:16px;line-height:1.6">注销后将永久删除本账号的所有数据（金币、仓库、装备、背包），且无法恢复。请输入密码确认注销。</p>
+<input type="password" id="deleteAccountPass" autocomplete="off" placeholder="请输入密码" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #5a4a2a;border-radius:4px;background:#1a1a20;color:#fff;font-size:14px;box-sizing:border-box">
+<div id="deleteAccountMsg" style="color:#c43030;font-size:12px;margin-bottom:12px;min-height:16px"></div>
+<div class="center">
+<button class="btn btn-danger" onclick="confirmDeleteAccount()">确认注销</button>
+<button class="btn btn-secondary" style="margin-left:12px" onclick="cancelDeleteAccount()">取消</button>
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="menuOverlay">
+<div class="menu-v3">
+<div class="menu-v3-bg"></div>
+<div class="menu-v3-top">
+<div class="menu-v3-title">摸金秘藏 <span style="font-size:14px;color:#8a7a5a;letter-spacing:1px">V2.19.0</span> <span style="display:inline-block;font-size:13px;color:#f0d870;font-weight:bold;background:rgba(212,168,67,0.18);border:1px solid #d4a843;border-radius:10px;padding:1px 8px;margin-left:6px;letter-spacing:1px;box-shadow:0 0 8px rgba(212,168,67,0.4)">玩家QQ交流群 247675521</span><br><span id="onlineCount" style="font-size:12px;color:#8a7a5a;font-weight:normal;letter-spacing:0;line-height:1.4">🌐 连接中…</span></div>
+<div class="menu-v3-top-right">
+<div class="menu-v3-gold">💰 <span id="menuGold">0</span></div>
+<div class="menu-v3-user-top">
+<span class="u3-name">👤 <span id="menuUser">—</span></span>
+<button class="u3-btn" onclick="doLogout()">退出</button>
+<button class="u3-btn danger" onclick="showDeleteAccount()">注销</button>
+</div>
+</div>
+</div>
+<div class="menu-v3-actions menu-actions">
+<button class="a3-btn a3-with-text" onclick="openProfile()" title="主页">👤<span>主页</span></button>
+<button class="a3-btn a3-with-text" style="position:relative" onclick="openFriends()" title="好友">👥<span>好友</span><span class="req-dot" id="friendsReqDot" style="display:none"></span></button>
+<button class="a3-btn a3-with-text" onclick="openShop()" title="商店">🏪<span>商店</span></button>
+<button class="a3-btn a3-with-text" onclick="openWarehouse()" title="背包">🎒<span>背包</span></button> <button class="a3-btn a3-with-text" onclick="openForge()" title="武器">⚒️<span>武器</span></button> <button class="a3-btn a3-with-text" onclick="openGem()" title="宝石">💎<span>宝石</span></button> <button class="a3-btn a3-with-text" onclick="openSkin()" title="皮肤">🎨<span>皮肤</span></button>
+<button class="a3-btn a3-with-text" onclick="openSettings()" title="设置">⚙️<span>设置</span></button>
+<button class="a3-btn a3-with-text" onclick="openHelp()" title="说明">📖<span>说明</span></button>
+    <button class="a3-btn a3-with-text" onclick="openStats()" title="战绩">🏆<span>战绩</span></button>
+<button class="a3-btn a3-with-text" onclick="toggleFullscreen()" title="全屏">⛶<span>全屏</span></button>
+</div>
+<div class="menu-v3-main">
+<div class="menu-v3-left">
+<div class="menu-v3-label">角色</div>
+<div class="bigchar-wrap">
+<div id="charBigBody" class="bigchar-body"></div>
+<button class="btn bigchar-btn" onclick="openCharSelect()">🔄 更换角色</button>
+</div>
+</div>
+<div class="menu-v3-right">
+<div class="menu-v3-label">模式</div>
+<div style="display:flex;gap:6px;flex:1;">
+<div class="menu-v3-mode-card active" id="modeNormal" onclick="selectMode('normal')" style="flex:1;">
+<div class="mode-v3-icon">⚔️</div>
+<div class="mode-v3-text"><div class="mode-v3-name">普通模式</div><div class="mode-v3-desc">标准探险</div></div>
+</div>
+<div class="menu-v3-mode-card horror" id="modeHorror" onclick="selectMode('horror')" style="flex:1;">
+<div class="mode-v3-icon">🔦</div>
+<div class="mode-v3-text"><div class="mode-v3-name">恐怖生存</div><div class="mode-v3-desc">黑暗稀缺</div></div>
+</div>
+</div>
+<div style="display:flex;flex:1;">
+<div class="menu-v3-mode-card hybrid" id="modeHybrid" onclick="selectMode('hybrid')" style="flex:1">
+<div class="mode-v3-icon">🔱</div>
+<div class="mode-v3-text"><div class="mode-v3-name">术启机关</div><div class="mode-v3-desc">随机三术</div></div>
+</div>
+</div>
+<div style="display:flex;gap:6px;flex:1;">
+<div class="menu-v3-mode-card mojin" id="modeMojin" onclick="selectMode('mojin')" style="flex:1;">
+<div class="mode-v3-icon">🏺</div>
+<div class="mode-v3-text"><div class="mode-v3-name">摸金模式</div><div class="mode-v3-desc">超大墓藏</div></div>
+</div>
+<div class="menu-v3-mode-card endless" id="modeAgent" onclick="selectMode('agent')" style="flex:1;">
+<div class="mode-v3-icon">🎯</div>
+<div class="mode-v3-text"><div class="mode-v3-name">特工突围</div><div class="mode-v3-desc">割草升级</div></div>
+</div>
+</div>
+<div class="menu-start-row">
+<button class="start-v3-btn" onclick="openStartSettings()">开始冒险</button>
+</div>
+</div>
+</div>
+<div class="menu-v3-bottom">
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="charSelectOverlay" style="z-index:160">
+<div class="panel charsel-panel">
+<button class="close-x" onclick="closeCharSelect()">✕</button>
+<div class="section-title" style="margin-bottom:16px">选择角色</div>
+<div class="charsel-grid" id="charSelectGrid"></div>
+</div>
+</div>
+<div class="overlay hidden" id="startSettingsOverlay" style="z-index:150">
+<div class="panel" style="max-width:400px;position:relative">
+<button class="close-x" onclick="closeStartSettings()">✕</button>
+<div class="section-title" style="margin-bottom:16px">冒险设置</div>
+<div id="normalSettings">
+
+<div class="setting-group">
+<div class="setting-label">挑战层数</div>
+<div class="ss-floor-btns">
+<button class="ss-btn" id="ssFloor1" onclick="selectFloor(1)">1层</button>
+<button class="ss-btn" id="ssFloor3" onclick="selectFloor(3)">3层</button>
+<button class="ss-btn active" id="ssFloor5" onclick="selectFloor(5)">5层</button>
+</div>
+</div>
+</div>
+<div id="agentSettings" style="display:none">
+<div class="setting-group">
+<div class="setting-label">模式选择</div>
+<div class="ss-floor-btns">
+<button class="ss-btn active" id="agentClear" onclick="setAgentMode('clear')">通关模式</button>
+<button class="ss-btn" id="agentEndless" onclick="setAgentMode('endless')">无尽模式</button>
+</div>
+<div class="ss-tip">通关模式：5波怪通关 · 无尽模式：波次无限，挑战极限</div>
+</div>
+</div>
+<div id="hybridSettings" style="display:none">
+<div class="setting-group">
+<div class="setting-label">术启机关</div>
+<div class="ss-tip">🔱 开局全随机：随机角色身板 + 随机三术（技能1/技能2/大招各抽1）</div>
+<div class="ss-tip">⚙️ 每层机关房试炼（限时/无伤）→ 通关得重铸券 → 术台可重铸任意一术</div>
+<div class="ss-tip">🏰 每5层为机关 Boss 房 · 无尽爬层</div>
+</div>
+</div>
+<div class="center" style="margin-top:20px">
+<button class="start-v3-btn" style="width:100%" onclick="confirmStartSettings()">确认开始</button>
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="mojinConfirmOverlay" style="z-index:150">
+<div class="panel" style="max-width:380px;text-align:center">
+<div class="section-title" style="margin-bottom:12px">摸金秘藏</div>
+<div id="mojinConfirmText" style="font-size:15px;color:#d0c8b0;line-height:1.8;margin-bottom:20px">确定使用【角色名】进入摸金模式吗？<br><span style="font-size:12px;color:#8a7a5a">摸金模式只有1层，搜索物资后从撤离点逃出</span></div><div id="mojinMapSelect" style="margin-bottom:16px;display:none">
+<div style="font-size:12px;color:#8a7a5a;margin-bottom:6px;font-weight:bold;letter-spacing:2px">选择地图</div>
+<div style="display:flex;gap:8px">
+<button class="ss-btn active" id="mapClassic" onclick="setMojinMap('classic')" style="flex:1;padding:10px 6px">🏛️ 经典墓室<br><span style="font-size:9px;color:#6a5a4a">140×100 随机地牢</span></button>
+<button class="ss-btn" id="mapSifen" onclick="setMojinMap('sifen')" style="flex:1;padding:10px 6px">🌲 四分古墟<br><span style="font-size:9px;color:#6a5a4a">240×240 超大废墟</span></button><button class="ss-btn" id="mapXuan" onclick="setMojinMap('xuan')" style="flex:1;padding:10px 6px">⭕ 环形玄宫<br><span style="font-size:9px;color:#6a5a4a">170×170 环形墓宫</span></button>
+</div>
+
+</div>
+
+<div style="display:flex;gap:10px">
+<button class="btn btn-secondary" style="flex:1" onclick="closeMojinConfirm()">取消</button>
+<button class="start-v3-btn" style="flex:1;padding:8px;font-size:14px" onclick="confirmMojinStart()">确认进入</button>
+</div>
+</div>
+</div>
+<!-- 术启机关：授术界面 -->
+<div class="overlay hidden" id="hybridGrantOverlay" style="z-index:180">
+<div class="panel" style="max-width:440px;position:relative;max-height:96vh;overflow-y:auto;padding:6px 8px">
+<button class="close-x" onclick="closeHybridGrant()">✕</button>
+<div class="section-title" style="margin-bottom:6px">🔱 术启机关 · 授术</div>
+<div id="hybridGrantContent"></div>
+<div class="center" style="margin-top:5px">
+<button class="start-v3-btn" style="padding:4px 0;font-size:12px" onclick="confirmHybridGrant()">确认，进入机关墓宫</button>
+</div>
+</div>
+</div>
+<!-- 术启机关：术台重铸 -->
+<div class="overlay hidden" id="hybridAltarOverlay" style="z-index:180">
+<div class="panel" style="max-width:640px;position:relative;max-height:94vh;overflow-y:auto">
+<div class="section-title" style="margin-bottom:8px">⚗️ 术台 · 重铸之选</div>
+<div id="hybridAltarText" style="font-size:13px;color:#d4a843;margin-bottom:10px"></div>
+<div id="hybridAltarContent"></div>
+<div class="center" style="margin-top:18px;display:flex;gap:10px">
+<button class="btn btn-secondary" style="flex:1" onclick="hybridCloseAltar()">继续爬层</button>
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="agentLevelUpOverlay" style="z-index:200">
+<div class="panel" style="max-width:520px">
+<div id="agentLevelUpContent"></div>
+</div>
+</div>
+<div class="overlay hidden" id="agentSkillsOverlay" style="z-index:180">
+<div class="panel" style="max-width:480px;position:relative">
+<button class="close-x" onclick="closeAgentSkillsPanel()">✕</button>
+<div class="section-title" style="margin-bottom:16px">📋 已选技能</div>
+<div id="agentSkillsContent"></div>
+</div>
+</div>
+<!-- 商店 -->
+<div class="overlay hidden" id="shopOverlay">
+<div class="panel shop-panel shop-panel-v2">
+<div class="shop-header"><div class="section-title" style="margin-bottom:0">🏪 秘藏商店</div><div style="display:flex;align-items:center;gap:16px"><div class="shop-gold">💰 <span id="shopGold">0</span></div><button class="shop-close-btn" onclick="closeShop()">✕</button></div></div>
+<div style="text-align:center;color:#d4a843;font-size:11px;margin:2px 0 6px;line-height:1.4;background:rgba(212,168,67,0.1);padding:4px 8px;border-radius:4px;border:1px solid rgba(212,168,67,0.3)">⚔️ 武器仅在【摸金模式】生效，普通/恐怖/特工模式无效果</div>
+<div class="shop-tabs">
+<button class="shop-tab active" onclick="setShopFilter('all')">全部</button>
+<button class="shop-tab" onclick="setShopFilter('weapon')">武器</button>
+<button class="shop-tab" onclick="setShopFilter('consumable')">消耗品</button> 
+</div>
+<div id="shopContent"></div>
+<div class="center"><button class="btn btn-secondary" onclick="closeShop()">返回</button></div>
+</div>
+</div>
+<!-- 暂停 -->
+<div class="overlay hidden" id="pauseOverlay">
+<div class="panel" style="max-width:400px">
+<div class="game-title" style="font-size:32px">暂停</div>
+<div class="center" style="margin-top:24px">
+<button class="btn" style="display:block;width:100%;margin-bottom:12px" onclick="resumeGame()">继续游戏</button>
+<button class="btn btn-secondary" style="display:block;width:100%" onclick="confirmExit()">退出游戏</button>
+</div>
+</div>
+</div>
+<!-- 退出确认 -->
+<div class="overlay hidden" id="exitConfirmOverlay">
+<div class="panel" style="max-width:380px">
+<div class="game-title" style="font-size:24px;margin-bottom:4px">确认退出</div>
+<div style="text-align:center;color:#c8b898;font-size:13px;margin:16px 0 20px;line-height:1.6">退出后将丢失本局背包内所有物品<br>是否确认退出？</div>
+<div class="center" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<button class="btn btn-danger" onclick="doExitGame()">确认退出</button>
+<button class="btn btn-secondary" onclick="cancelExit()">取消</button>
+</div>
+</div>
+</div>
+<!-- 背包 -->
+<div class="overlay hidden" id="invOverlay">
+<div class="panel" style="max-width:500px;position:relative">
+<button class="close-x" onclick="closeInventory()">✕</button>
+<div class="section-title">装备</div>
+<div class="inv-equip"><div class="equip-slot"><div class="label">武器</div><div class="item" id="eqWeapon">🗡️</div><div class="name" id="eqWeaponName">无</div></div></div>
+<div class="section-title">背包</div>
+<div class="inv-grid" id="invGrid"></div>
+<div class="center"><button class="btn btn-secondary" onclick="closeInventory()">关闭 (B)</button></div>
+</div>
+</div>
+<!-- 结算 -->
+<div class="overlay hidden" id="resultOverlay">
+<div class="panel" style="max-width:450px">
+<div class="result-title" id="resultTitle">探险结束</div>
+<div class="result-stats">
+<div class="result-stat"><div class="v" id="rFloor">1</div><div class="l">到达层数</div></div>
+<div class="result-stat"><div class="v" id="rKills">0</div><div class="l">击杀敌人</div></div>
+<div class="result-stat"><div class="v" id="rGold">0</div><div class="l">本局金币</div></div>
+<div class="result-stat"><div class="v" id="rChest">0</div><div class="l">开启宝箱</div></div>
+</div>
+<div style="text-align:center;color:#f0d870;font-size:14px;margin-bottom:20px" id="resultGoldTip"></div>
+<div class="center">
+<button class="btn" onclick="restartGame()">再来一次</button>
+<button class="btn btn-secondary" style="margin-left:12px" onclick="backToMenu()">返回主菜单</button>
+</div>
+</div>
+</div>
+<!-- 设置界面 -->
+<div class="overlay hidden" id="settingsOverlay">
+<div class="panel" style="max-width:480px;position:relative;max-height:88vh;overflow-y:auto">
+<button class="close-x" onclick="closeSettings()">✕</button>
+<div class="section-title">⚙️ 设置</div>
+<div class="setting-group">
+<div class="setting-label">🔊 音效音量 <span id="volValue">70</span>%</div>
+<input type="range" id="volSlider" min="0" max="100" value="70" class="setting-slider" oninput="changeVolume(this.value)">
+</div>
+<div class="setting-group">
+<div class="setting-label">📊 FPS 显示 <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:#e8dcc8;font-size:13px"><input type="checkbox" id="fpsToggle" onchange="toggleFps(this.checked)" style="width:16px;height:16px;accent-color:#d4a843"> 开</label></div>
+</div>
+<div class="setting-group">
+<div class="setting-label">✏️ 自定义布局</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-small" id="editLayoutBtn" onclick="toggleEditLayout()">进入编辑模式</button>
+<button class="btn btn-small btn-secondary" onclick="resetLayout()">重置布局</button>
+</div>
+<div class="setting-hint">编辑模式下拖动按钮移动位置，点击按钮可独立调节大小和透明度</div>
+</div>
+<div class="setting-group">
+<div class="setting-label">⌨️ 自定义键位</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-small" onclick="openKeybindPanel()">打开键位设置</button>
+<button class="btn btn-small btn-secondary" onclick="resetKeybinds()">重置键位</button>
+</div>
+<div class="setting-hint">仅电脑端有效，手机触屏不受影响</div>
+</div>
+<div class="center" style="margin-top:16px">
+<button class="btn btn-secondary" onclick="closeSettings()">完成</button>
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="keybindOverlay">
+<div class="panel" style="max-width:520px;position:relative">
+<button class="close-x" onclick="closeKeybindPanel()">✕</button>
+<div class="section-title">⌨️ 自定义键位</div>
+<div style="font-size:12px;color:#8a7a5a;margin-bottom:8px;line-height:1.6">点击动作右侧按钮，然后按键盘上任意键即可绑定。一个键只能绑定一个动作，绑定后原动作会失去该键。</div>
+<div id="keybindMsg" style="text-align:center;font-size:12px;color:#e89090;min-height:18px;margin-bottom:6px"></div>
+<div id="keybindList"></div>
+<div class="center" style="margin-top:12px;display:flex;gap:10px;justify-content:center">
+<button class="btn btn-secondary btn-small" onclick="resetKeybinds()">重置全部</button>
+<button class="btn btn-small" onclick="closeKeybindPanel()">完成</button>
+</div>
+</div>
+</div>
+<!-- 按钮独立调节面板 -->
+<!-- 战绩 -->
+<div class="overlay hidden" id="statsOverlay" style="z-index:150">   <div class="panel" style="max-width:min(640px,94vw);position:relative;max-height:92vh">     <button class="close-x" onclick="closeStats()">✕</button>     <div class="section-title" style="margin-bottom:8px">🏆 我的战绩</div>     <div id="statsContent"></div>     <div class="center" style="margin-top:8px"><button class="btn btn-secondary" onclick="closeStats()">关闭</button></div>   </div> </div>
+<!-- 锻造 --> <div class="overlay hidden" id="forgeOverlay" style="z-index:150"> <div class="panel" style="max-width:640px;position:relative;max-height:92vh;display:flex;flex-direction:column;overflow:hidden"> <button class="close-x" onclick="closeForge()">✕</button> <div class="section-title" style="margin-bottom:6px;flex-shrink:0">⚒️ 武器锻造与修复</div> <div style="font-size:10px;color:#8a7a5a;margin-bottom:8px;text-align:center;flex-shrink:0">每次锻造重掷属性（种类/条数/品质） · 条数只增不减 · 品质只升不降</div> <div style="display:flex;gap:10px;flex:1;min-height:0"> <div style="flex:0 0 42%;display:flex;flex-direction:column;min-height:0"> <div style="font-size:11px;color:#8a7a5a;margin-bottom:4px;font-weight:bold;flex-shrink:0">选择武器</div> <div id="forgeList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;min-height:0"></div> </div> <div style="flex:1;display:flex;flex-direction:column;min-height:0"> <div id="forgeDetail" style="flex:1;background:rgba(0,0,0,0.4);border:2px solid #8b6914;border-radius:8px;padding:10px;overflow-y:auto;min-height:0"></div> <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(212,168,67,0.2);flex-shrink:0;gap:8px"> <div style="font-size:13px;color:#f0d870;flex-shrink:0">💰 <span id="forgeGold">0</span></div> <button class="start-v3-btn" id="forgeFixBtn" style="width:auto;padding:8px 18px;font-size:13px;border-color:#60a0ff" disabled>🔧 修复</button> <button class="start-v3-btn" id="forgeBtn" style="width:auto;padding:8px 18px;font-size:13px" disabled>⚒️ 锻造</button> </div> <div id="forgeMsg" style="text-align:center;font-size:12px;color:#e89090;min-height:14px;margin-top:4px;flex-shrink:0"></div> </div> </div> </div> </div> <!-- 宝石 --> <div class="overlay hidden" id="gemOverlay" style="z-index:150;position:fixed;top:0;left:0;right:0;bottom:0;overscroll-behavior:contain;touch-action:none"> <div class="panel" style="max-width:520px;position:relative;max-height:92vh;display:flex;flex-direction:column;overflow:hidden"> <button class="close-x" onclick="closeGem()">✕</button> <div class="section-title" style="margin-bottom:6px;flex-shrink:0">💎 宝石</div> <div style="display:flex;gap:4px;margin-bottom:6px;flex-shrink:0"> <button class="shop-tab active" id="gemTabUpgrade" onclick="switchGemTab('upgrade')">宝石升级</button> <button class="shop-tab" id="gemTabResonance" onclick="switchGemTab('resonance')">宝石共鸣</button> <button class="shop-tab" id="gemTabGacha" onclick="switchGemTab('gacha')">🎰抽奖</button> </div> <div id="gemUpgradePanel" style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column"> <div id="gemList" style="flex:1 1 auto;min-height:0;overflow:hidden"></div> <div id="gemHoldBar" style="margin-top:1px;padding-top:1px;border-top:1px solid rgba(212,168,67,0.2);font-size:10px;line-height:1.4;flex-shrink:0"></div> <div id="gemMsg" style="text-align:center;font-size:12px;min-height:10px;margin-top:4px;flex-shrink:0"></div> </div> <div id="gemResonancePanel" style="flex:1;min-height:0;overflow:hidden;display:none"></div> <div id="gemGachaPanel" style="flex:1;min-height:0;overflow:hidden;display:none"></div> </div> </div> <!-- 皮肤 --> <div class="overlay hidden" id="skinOverlay" style="z-index:150"> <div class="panel" style="max-width:560px;position:relative;height:92vh;max-height:92vh;display:flex;flex-direction:column;overflow:hidden"> <button class="close-x" onclick="closeSkin()">✕</button> <div class="section-title" style="margin-bottom:6px;flex-shrink:0">🎨 皮肤</div> <div style="display:flex;gap:4px;margin-bottom:6px;flex-shrink:0"> <button class="shop-tab active" id="skinTabManage" onclick="switchSkinTab('manage')">皮肤管理</button> <button class="shop-tab" id="skinTabGacha" onclick="switchSkinTab('gacha')">🎰 抽奖</button> </div> <div id="skinContent" style="flex:1;overflow:hidden;min-height:0"></div> <div class="center" style="margin-top:6px;flex-shrink:0"><button class="btn btn-secondary" onclick="closeSkin()">关闭</button></div> </div> </div>
+<!-- 游戏说明 -->
+<div class="overlay hidden" id="helpOverlay">
+<div class="panel help-panel" style="position:relative">
+<button class="close-x" onclick="closeHelp()">✕</button>
+<div class="section-title" style="margin-bottom:8px">📖 游戏说明</div>
+<div class="help-tabs">
+<button class="help-tab active" data-tab="intro">📖 简介</button>
+<button class="help-tab" data-tab="char">🎭 角色</button>
+<button class="help-tab" data-tab="ctrl">🎮 操作</button>
+<button class="help-tab" data-tab="battle">⚔️ 战斗</button>
+<button class="help-tab" data-tab="map">🗺️ 地图</button>
+<button class="help-tab" data-tab="item">🎒 道具</button>
+<button class="help-tab" data-tab="update">🆕 更新</button>
+</div>
+<div class="help-content-wrap">
+
+<div class="help-section help-tab-content" data-tab="intro">
+<h3>一、游戏简介</h3>
+<p><span class="hl">摸金秘藏</span>是一款盗墓主题的地牢探险 Roguelike 游戏。你将扮演一名盗墓者，深入<span class="hl">5 层古墓</span>，击败怪物、收集宝藏、躲避陷阱，最终在第 5 层击败<span class="red">金甲尸王</span>并从撤离点逃出。每次探险地图随机生成，死亡后本局物品遗失。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="intro">
+<h3>二、游戏模式</h3>
+<p>游戏提供<span class="hl">五种探险模式</span>，主菜单可自由选择：</p>
+<p><span class="hl">⚔️ 普通模式</span>：标准地牢探险，视野7格，怪物数量×3，角色血量×3攻击×4，割草爽感拉满。最终Boss从金甲尸王/青铜尸尊/噬魂鬼将/万奴王中<span class="red">随机四选一</span>，Boss未探索到不放技能。<span class="red">金币全图自动吸取</span>，只掉金币和回血药水（恢复100），无装备系统。有小地图和大地图指引。</p>
+<p><span class="red">🔦 恐怖生存模式</span>：视野仅3~6格（随火把燃料变化），火把燃料持续消耗需沿途捡油补充；敌人在普通模式基础上HP再×1.3、攻击×1.2，移速×1.3；可躲进棺材隐身躲避敌人；无法查看大地图；探索75%房间后标记撤离点。金币全图吸取，只掉金币和回血药水（恢复100），Boss随机四选一。考验资源管理和潜行能力。</p>
+<p><span class="hl">🌀 特工突围模式</span>：弹壳特工队式割草玩法。50×50超大正方形房间，全亮无迷雾，怪物全图追击玩家。分<span class="hl">通关模式</span>（5波，第5波BOSS）和<span class="hl">无尽模式</span>（无限波次，每10波一个BOSS）。杀怪获得经验升级，每次升级3选1技能<span class="red">（选完后获得1秒无敌）</span>，技能可叠加升级。9主动技能：🗡️飞剑（自动锁敌扇形发射）、💣地雷（向视野内随机投掷，持续2.4秒每0.6秒爆炸）、🚀火箭筒（追踪爆炸）、⚡闪电链（跳跃多目标）、🌪️旋风斩（环绕AOE）、🔥火球术（穿透+灼烧减速）、🛡️回旋盾（贴身环绕）、📡激光束（持续锁定多目标分摊）、⚔️战意（普攻伤害提升，并每隔几秒自动释放一次普攻）。8被动技能：攻击+15%、生命+40、移速+20%、攻速+25%、暴击20%双倍、吸血6%、经验+30%、减伤15%。此模式<span class="hl">只掉金币</span>，击杀怪物回血1~2点，金币全图自动吸取。第2波起有<span class="hl">10%概率生成精英怪</span>（金色光环、体型更大、HP×2.5、攻击×1.5、掉3倍金币）。BOSS拥有阶段机制（70%狂暴、40%召唤、20%地震）和冲撞技能。小地图显示敌人动态红点（大小表示距离）。无尽模式第10波后，每次升级可选择保存金币并退出。</p>
+<p><span class="hl">🏆 摸金模式</span>：地铁逃生式搜打撤玩法。140×100超大单局地图（48个房间），全亮视野无迷雾，仅1层。核心玩法是<span class="red">搜索物资→变卖物→从撤离点逃出</span>。靠近箱子按开箱键开始<span class="hl">搜索式开箱</span>，🔍放大镜在问号格子里转圈，一个个搜索，品质越低搜得越快（白0.4s/绿0.6s/蓝0.8s/紫1.2s/红2.0s），搜出来的物品立刻就能拿走。17种<span class="hl">变卖物</span>分白绿蓝紫红五品质，价值从几十到上千不等。地图随机分布5个<span class="hl">保险箱</span>，在小地图和大地图上标记为金色圆点。4个<span class="hl">BOSS</span>（金甲尸王/青铜尸尊/噬魂鬼将/万奴王）各有独特技能，技能仅在玩家0-8格内释放并有预警指示器，BOSS死亡后变成👑金色箱子。2个<span class="hl">撤离点</span>在远处，成功撤离可带走所有变卖物兑换金币。摸金模式<span class="red">不掉金币</span>，普通敌人只掉回血药水，地上变卖物和药水自动拾取。左上角显示当前物资总价值。</p>
+<p><span class="hl">🌀 术启机关模式</span>：随机秘术+机关试炼的混合模式。<span class="red">角色不可自选</span>——进入后<span class="hl">随机抽取身板</span>（六角色任选其一），并从全部角色技能中<span class="hl">随机抽取3个秘术</span>组成你的技能组（技能1/技能2/大招，6×6×6×6=<span class="red">1296种组合</span>，同一技能可重复抽到）。开局强制弹出<span class="hl">授术面板</span>，告知你的身板与三个技能（含来源角色与效果说明），确认后才进入第1层；局内左上常驻三术槽。关卡为<span class="hl">机关房</span>：滚石/翻板/毒气/箭雨四种固定布局轮换。每层随机试炼：<span class="red">限时消灭全部怪物并到达出口（90秒）</span>或<span class="red">无伤消灭全部怪物到达出口</span>（不受伤）。<span class="red">必须消灭本层全部怪物才能从撤离点进入下一层</span>，无法跑酷跳层。通关后进入<span class="hl">术台</span>：消耗1张<span class="hl">重铸券</span>可重铸任一技能（重新随机），也可直接继续爬层。试炼成功+1券，每3层与Boss层各赠1券，每5层为<span class="hl">Boss机关房</span>（四选一Boss与机关同场）。<span class="hl">无尽爬层</span>，一层接一层直到倒下。</p>
+
+</div>
+
+<div class="help-section help-tab-content" data-tab="char">
+<h3>三、角色介绍</h3>
+<div class="help-grid">
+<div class="help-card"><div class="name">🧭 摸金校尉</div><div class="desc">HP100 攻击20 防御2 速度3.6（普攻：4格范围发射小飞镖，最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3）<br>技能1「分金定穴阵」：指定落点释放AOE阵法持续4秒，范围伤害+减速50%+持续灼烧，阵内敌人标记结束爆炸伤害×1.5（龙脉共鸣）。<br>技能2「寻龙点穴」（蓄力施法）：长按蓄力，拖动调整方向，蓄力中持续发射穿透光线（最远4格）对路径敌人持续造成低伤害，松手时给路径敌人挂寻龙标记3秒，标记结束时范围爆炸（atk×1.3），阵内结束伤害×1.5。蓄力过程中命中敌人也会挂标记，单次技能最多标记6个目标，已有标记的敌人不叠加爆炸伤害。蓄力光束半透明不遮挡视野，最多蓄力3秒。<br>大招「龙脉觉醒」（CD18秒）：7格内所有敌人挂寻龙标记3秒，结束爆炸范围1格，龙脉环绕全场特效。</div></div>
+<div class="help-card"><div class="name">💪 卸岭力士</div><div class="desc">HP140 攻击16 防御6 速度3.0（普攻：4格范围发射小飞镖，最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3）<br>技能1「蛮力冲锋」（CD5秒）：向指定方向突进且无敌，对路径敌人造成atk×2.5伤害，对眩晕敌人×1.3（地裂冲撞连招），血量低于30%时触发残血狂暴（攻击+50%），撼地后3秒内冲锋距离+50%。<br>技能2「撼地重击」（CD5秒）：朝瞄准方向跳砸（最远4格），范围伤害atk×1.8+眩晕1.5秒+击退，1格内敌人伤害+40%（atk×2.52）。<br>大招「山崩地裂」（CD18秒）：跳起蓄力，<span class="hl">落地时</span>造成7格范围伤害atk×3+眩晕2秒+减防25%/5秒，3圈地震波纹扩散。</div></div>
+<div class="help-card"><div class="name">📿 搬山道人</div><div class="desc">HP95 攻击16 防御1 速度3.8（普攻：自动瞄准4格内敌人发射符咒，伤害atk×1.25，飞行3格后爆炸）<br>技能1「五雷符阵」：扇形3连发符咒，命中后范围爆炸，命中定身敌人时触发五雷联动（正五边形5小符咒散射各30%伤害）。<br>技能2「定身符」：抛出定身符（最远3.5格），命中敌人后定身2秒。<br>大招「五雷正法」（CD18秒）：<span class="hl">雷云跟随自身移动</span>，总共5次落雷，每次间隔1.3秒，每次在<span class="hl">自身周围7格</span>内随机选择敌人轰击。同一目标被多次命中时伤害递减（100%→50%→35%→25%→20%），每次命中眩晕0.4秒，紫色天雷特效。<span class="red">未命中敌人时返还70%冷却。</span></div></div>
+<div class="help-card"><div class="name">⛏️ 土夫子</div><div class="desc">HP100 攻击22 防御1 速度3.8（普攻：4格范围发射小飞镖，最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3）<br>技能1「残影步」（CD4秒）：瞬移2.5格（无敌0.3秒），原位留残影1秒后射箭（atk×1.5，射程5格并显示范围指示器），瞬移后1秒内普攻+50%。<br>技能2「回旋铲」（CD2.5秒）：扔出洛阳铲飞5格后回旋飞回，飞去飞回各造成atk×1.5伤害（穿透），可走位让飞回路径刮更多敌人。<br>大招「千瞬斩」（CD18秒）：总共5次瞬移斩击，每次瞬移到最近敌人面前（范围6格），第1次atk×1.5，同一敌人从第2次起伤害-40%（atk×0.9），<span class="red">对Boss不递减全程全额atk×1.5</span>，斩击间隔0.3秒并显示下一个目标路径指示，结束停在最后一个敌人旁边。<span class="red">按实际斩击次数返还冷却：0次全返还（0.1秒快速检测）、1次70%、2次50%、3次20%、4次以上不返还，释放期间全程无敌。</span></div></div>
+<div class="help-card"><div class="name">🪙 发丘中郎将</div><div class="desc">HP120 攻击15 防御5 速度3.3（普攻：4格范围发射小飞镖，最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3）<br>技能1「镇岳印砸」（CD5秒）：指定落点砸印（最远3格），2格范围atk×2.0+叠2层印+眩晕0.8秒，地面留印痕3秒，站在印痕上的敌人每秒atk×0.4伤害+减速30%。<br>技能2「印光护体」（CD8秒）：展开印光护盾4秒，减伤40%，受击反弹atk×0.8+叠1层印，护盾结束时爆发2格范围，每层印额外atk×0.3伤害。<br>大招「万印封天」（CD18秒）：5格范围所有敌人立即叠3层印，1.5秒后印光降下，基础atk×2.5，每层印+12%伤害（最多+120%），被命中敌人封印2秒（无法攻击、移速-50%）。<span class="red">未命中返还70%冷却。</span><br>被动「天官印威」：受击30%概率触发印光反击（周围1格atk×0.6，内置1秒CD），印光护体状态下反击概率提升至60%。</div></div>
+<div class="help-card"><div class="name">🔱 长枪盗帅</div><div class="desc">HP95 攻击18 防御2 速度3.8（普攻：4格范围发射小飞镖，最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3；横扫强化普攻也为飞镖，伤害×1.3+减速）<br>技能1「背水一战」（CD4秒）：向当前移动方向的<span class="red">反方向</span>跳跃2.5格（无敌帧），落地后获得一次横扫强化普攻（3格范围atk×1.3+减速30%/1.5秒）。站着不动时向面朝方向的反方向跳。<br>技能2「无情冲锋」（CD5秒）：向指定方向冲锋3格，路径敌人atk×1.2+击飞0.5秒。冲锋后3秒内可再按一次触发第二段：冲锋2格atk×1.0，同一敌人第二段伤害×1.5。<br>大招「国士无双」（CD18秒）：原地挥枪1.5秒，4段伤害每段atk×0.8，最后一段atk×1.5+击飞1秒。期间霸体（免控+减伤50%），可缓慢移动。每命中1个不同敌人，结束后获得1层国士（攻击+10%，持续5秒，最多5层）。<span class="red">未命中返还70%冷却。</span></div></div>
+<div class="help-card"><div class="name">🏹 弩手</div><div class="desc">HP95 攻击22 防御2 速度3.6（普攻：4格范围发射弩箭，最多8个敌人，按距离由近到远自动锁敌，伤害atk×0.8）<br>技能1「重弩蓄力」（CD3.5秒）：长按蓄力（蹲下锁定移动，可拖动/方向键转向），蓄力中红色弹道线从6格延长到12格、镜头拉远。松手按蓄力时长分三段：0.6秒 atk×2.0 射程8格不穿透 / 1.2秒 atk×3.0 射程10格穿透1个 / 1.8秒 atk×4.0 射程12格穿透所有。滑到取消区松手可取消，被控制会强制取消并进入冷却。<br>技能2「治疗包扎」（CD8秒）：获得1.5秒包扎buff（期间移速×0.6、无法普攻和放技能），结束回复40%最大生命，被打不打断。<br>大招「箭雨」（CD18秒）：点按自动锁定5格内最近敌人，长按拖动瞄准（5格范围圆圈），1秒延迟后箭雨落下，持续1.5秒每0.15秒一发共10发，每发atk×0.8，范围内敌人减速20%。</div></div>
+<div class="help-card"><div class="name">🌑 影法</div><div class="desc">HP85 攻击22 防御1 速度4.0（普攻：4格自动锁敌飞镖，0.5秒/发，atk×0.7）<br>技能1「影袭」（CD3秒）：标记4格内最近敌人头顶红印0.5秒后，<span class="red">化身黑影快速穿刺</span>，穿过敌人到达"起始点—敌人"连线的<b>对称位置</b>（离几格就穿到敌后几格），路径atk×2.0，全程0.5秒无敌；穿刺时模型隐身只留黑影。<br>技能2「影弹」（CD3秒）：朝瞄准方向扔黑球，飞5格碰到敌人或墙都停下爆炸，2格范围atk×1.5。<br>大招「影幕降临」（CD18秒）：按<span class="red">下即进入</span>，原地无敌+金色护盾不可移动，4秒内向自身周围4格随机抛射共<span class="red">28个</span>黑球，真实抛物线（近低快/远高慢），<span class="red">落点显示指示圈</span>，落地<span class="red">2格</span>范围爆炸atk×0.2。全部技能带指示器。</div></div>
+<div class="help-card"><div class="name">🪝 影钩</div><div class="desc">HP90 攻击23 防御2 速度3.6（普攻：4格自动锁敌飞镖，0.6秒/发，atk×0.8）<br>技能1「影链」（CD3秒）：射出4格黑影锁链（不穿墙不拐弯），命中第一个敌人 + 其周围1格圆圈内所有敌人（最多5个）一起拉到身前0.3格，全程眩晕、落定晕1秒；有出去→拉回动画。<br>技能2「影域」（CD5秒）：脚下展开半径3格黑影领域持续2秒，<span class="red">释放瞬间</span>atk×0.6，随后范围内敌人移速-50%、每0.3秒atk×0.2。<br>大招「锁链鞭」（CD18秒）：向自身四面（夹角90°）伸出黑锁链，各<span class="red">逆时针旋转90°</span>后由外向内收回，扫到的所有敌人眩晕1.5秒+atk×2.0并拉到身边。全部技能带指示器。</div></div>
+<div class="help-card"><div class="name">🔥 火鸦</div><div class="desc">HP88 攻击23 防御2 速度3.6（普攻：扔出4格火球，0.7秒/发，atk×0.6，命中附带灼烧持续掉血）<br>技能1「天降火」（CD4秒）：朝瞄准位置扔一颗火球，1秒后落下，<span class="red">2格范围</span>爆炸atk×2.0（落点显示指示圈）。<br>技能2「连火球」（CD5秒）：朝瞄准方向扔一颗小球，飞0-3格后落地，落地后<span class="red">1.2秒内每0.4秒炸一次共3次</span>，每次1格范围atk×1.0。<br>大招「火鸦俯冲」（CD15秒）：原地展翼<span class="red">起飞升空</span>，沿瞄准方向高空平飞后俯冲，长6格<span class="red">宽3格</span>，飞行中每0.1秒向地面喷火atk×0.8（沿途敌人都被烧到），落地脚下2格爆炸atk×2.0；飞行全程<span class="red">地面显示长方形虚线预警框</span>，期间无敌。全部技能带指示器。</div></div>
+</div>
+<p style="margin-top:6px"><span class="hl">提示</span>：摸金校尉、卸岭力士、土夫子、发丘中郎将、长枪盗帅、弩手普攻为4格范围小飞镖攻击（最多8个敌人，自动锁敌直线飞行，伤害为原普攻1/3，弩手为atk×0.8）；搬山道人普攻为自动瞄准4格内敌人发射符咒（伤害atk×1.25，飞行3格爆炸）；影法普攻4格atk×0.7、影钩普攻4格atk×0.8（均为自动锁敌飞镖）；火鸦普攻为4格火球（0.7秒/发 atk×0.6，附带灼烧）。角色可在主菜单选择。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="ctrl">
+<h3>四、操作说明</h3>
+<p><span class="hl">【键盘操作】</span></p>
+<p><span class="hl">WASD / 方向键</span>：移动角色</p>
+<p><span class="hl">鼠标左键</span>：普通攻击</p>
+<p><span class="hl">E</span>：释放技能1（右键默认不放技能，需在键位设置里绑定）</p>
+<p><span class="hl">Q</span>：释放技能2</p>
+<p><span class="hl">数字键 3</span>：使用回血药水</p>
+<p><span class="hl">F / R</span>：释放大招（CD45秒，蓄力拖动施法）</p>
+<p><span class="hl">普通/恐怖模式</span>：宝箱和物品自动交互，站在下一层/撤离点上点击屏幕中间按钮进入</p>
+<p><span class="hl">B</span>：打开/关闭背包</p>
+<p><span class="hl">ESC</span>：暂停游戏</p>
+<p><span class="hl">自定义键位</span>：设置 → 自定义键位，13 个动作可改键，支持鼠标左右键（电脑端）</p>
+<p style="margin-top:6px"><span class="hl">【触屏操作】</span></p>
+<p><span class="hl">左下摇杆</span>：移动角色</p>
+<p><span class="hl">右下按钮</span>：⚔️普攻 / 🔮技能1 / ⚡技能2 / 🧪药水 / 🐉大招（王者荣耀风格扇形布局）</p>
+<p><span class="hl">技能蓄力</span>：按住技能/大招按钮蓄力，显示指示器和取消键，松手释放，拖到取消键取消</p>
+<p><span class="hl">顶部按钮</span>：🎒背包 / ⚙️设置 / ⛶全屏 / ⏸暂停</p>
+<p><span class="hl">技能辅助瞄准</span>：部分角色技能长按不拖动时自动锁定最近敌人（技能1：摸金校尉/搬山道人/发丘中郎将；技能2：摸金校尉/卸岭力士/搬山道人/土夫子）；按住摇杆拖动时改为朝拖动方向释放。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="battle">
+<h3>五、战斗系统</h3>
+<p><span class="hl">普通攻击</span>：伤害 = 角色攻击力 + 武器攻击力，有 0.4 秒冷却。所有角色普攻范围均为 <span class="hl">4 格</span>，<span class="hl">最多同时攻击 8 个敌人</span>（搬山道人为自动锁敌符咒，除外）。</p>
+<p><span class="hl">技能</span>：消耗能量释放，各角色技能不同。技能有冷却时间，能量上限和恢复因角色而异。技能1支持自动锁敌：摸金校尉/搬山道人/发丘中郎将；技能2支持自动锁敌：摸金校尉/卸岭力士/搬山道人/土夫子（其余为方向/自身型技能）。</p>
+<p><span class="hl">药水</span>：❤️回血药水（恢复100生命，<span class="hl">捡到直接使用</span>，不进背包）。</p>
+<p><span class="hl">受伤</span>：受到伤害后有 0.5 秒无敌帧。卸岭力士冲刺期间全程无敌。</p>
+<p><span class="hl">死亡</span>：生命归零即探险失败，本局金币和背包物品全部遗失。死亡界面可点击「再来一次」用相同角色和模式直接重开。</p>
+<p><span class="hl">🏆 摸金模式操作</span>：</p>
+<p>📦 <span class="hl">开箱搜索</span>：靠近箱子时，屏幕下方按钮显示「📦 开箱」，点击开始搜索。搜索时🔍放大镜在问号格子里转圈，一个个物品依次搜索，品质越低搜得越快。搜出来的物品立刻就能拿走，不用等全部搜完。开过的箱子可以再次打开，未拿走的物品保留。</p>
+<p>🎒 <span class="hl">背包操作</span>：开箱界面左边是箱子（10格），右边是背包（36格）。<span class="red">双击</span>物品可以在箱子和背包之间移动；<span class="red">长按300毫秒</span>后可以拖动物品，拖到箱外即为销毁。每个变卖物显示名字和💰价值。</p>
+<p>🚪 <span class="hl">撤离</span>：靠近撤离点时，按钮显示「🚪 撤离」，点击即可成功撤离并带走所有变卖物。撤离点在小地图上用绿色脉冲圆点标记。</p>
+<p>✨ <span class="hl">自动拾取</span>：地上的变卖物和回血药水走过去自动拾取。摸金模式不掉金币，普通敌人只掉回血药水。</p>
+<p><span class="hl">敌人机制</span>：</p>
+<p>🧟 <span class="hl">粽子</span>：死亡时爆炸，对周围造成范围伤害，请勿贴脸击杀。</p>
+<p>💀 <span class="hl">骷髅</span>：15%概率闪避攻击并瞬移到你身后，注意回身反击。</p>
+<p>🕷️ <span class="hl">毒虫</span>：攻击附加中毒（持续掉血3秒），恐怖模式中毒伤害翻倍。</p>
+<p>🗿 <span class="hl">守墓石像</span>：定期进入石化状态2秒（减伤70%但不能移动），等解除后再输出。</p>
+<p>👻 <span class="hl">厉鬼</span>：攻击时回复自身血量（生命汲取），需快速击杀避免回血。</p>
+<p>👹 <span class="hl">金甲尸王（Boss）</span>：拥有阶段机制——70%血量狂暴（移速提升20%）、50%血量召唤4个粽子随从；每6秒随机释放地震（范围3.5格，2秒前摇，需用无敌技能躲避）或冲撞（1.5秒预警，冲撞距离4格）。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="map"><p><span class="hl">🏛️ 经典墓室</span>：摸金模式默认地图，140×100随机生成地牢，48个房间通过走廊连接，包含陷阱、宝箱和高物资区。</p><p><span class="hl">🌲 四分古墟</span>：摸金模式可选固定地图，240×240超大单间废墟。十字残垣分割四大象限，中心Boss战场，两个撤离点位于地图对角边缘。</p><p><span class="hl">⭕ 环形玄宫</span>：摸金模式可选固定地图，170×170环形墓宫。中心圆盘由多条放射走廊连接内外多层环形房间。在摸金模式确认面板中切换地图。</p>
+<h3>六、地图与探索</h3>
+<p><span class="hl">地牢结构</span>：共 5 层，每层由多个房间和走廊组成，随机生成。第 1~4 层尽头有<span class="hl">下行楼梯</span>，第 5 层尽头有<span class="green">撤离点</span>和<span class="red">Boss</span>。</p>
+<p><span class="hl">房间数</span>：第1层10间，每层递增2间，第5层18间。</p>
+<p><span class="hl">陷阱</span>：地面上的 ⚠ 标记，踩上去受到 12+层数×2 点伤害。陷阱不会生成在出生房间。</p>
+<p><span class="hl">迷雾</span>：只能看到视野范围内的区域，探索过的区域会保留在地图上。</p>
+<p><span class="hl">探索标记</span>：探索满 <span class="hl">75% 的房间</span>后，小地图会用金色脉冲标记显示下一层入口/Boss与撤离点的位置（恐怖模式也生效）。</p>
+<p><span class="hl">小地图</span>：右上角实时显示已探索区域，点击可放大查看全图（恐怖模式无法查看大地图）。</p>
+<p><span class="hl">🏆 摸金模式地图</span>：</p>
+<p>🗺️ <span class="hl">超大地图</span>：140×100格，48个房间，全亮视野无迷雾。小地图尺寸加大适配手机屏幕，玩家标记为带白边的金色圆形+脉冲光环。</p>
+<p>💎 <span class="hl">保险箱</span>：每张地图随机分布5个保险箱，在小地图和大地图上标记为金色圆点，普通箱子不标记位置。</p>
+<p>🚪 <span class="hl">撤离点</span>：2个撤离点都在距离出生点较远的位置，小地图上用绿色脉冲圆点标记。成功撤离可带走所有变卖物。</p>
+<p>👹 <span class="hl">BOSS</span>：4个BOSS分布在远离出生点的房间，小地图上用红色圆点标记。BOSS技能仅在玩家0-8格内释放。</p>
+<p>🔍 <span class="hl">大地图</span>：支持右侧垂直缩放滑动条（1倍-3倍）和双指捏合缩放，缩放时可拖动平移查看其他位置，关闭后重置。打开大地图时游戏暂停。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="item">
+<h3>七、道具与装备</h3>
+<p><span class="hl">武器</span>：商店购买（锋利短刀 +300%攻 / 精钢战刀 +550%攻 / 摸金宝刀 +750%攻），在摸金模式生效，战斗中从宝箱也可拾取。携带武器撤离可保留，耐久耗尽后变为<span class="hl">破损</span>（攻击-70%），可在锻造面板花金币修复。</p>
+
+<p><span class="hl">药水</span>：❤️回血药水（恢复100，捡到直接使用）。</p>
+<p><span class="hl">灯油</span>（恐怖模式）：🛢️ 恢复30点火把燃料，捡到直接使用。</p>
+<p><span class="hl">棺材</span>（恐怖模式）：⚰️ 靠近按F（手机端屏幕中央会显示「⚰️ 躲进棺材」按钮）躲入，敌人无法发现你，但不能移动；再按一次离开。</p>
+<p><span class="hl">金币</span>：游戏内货币，探险成功后存入账号，可在商店消费。探险失败则本局金币遗失。</p>
+<p><span class="hl">🏆 摸金模式变卖物</span>：摸金模式专属物资系统，共17种，分为<span class="hl">白/绿/蓝/紫/红</span>五个品质，品质越高价值越高、搜索时间越长：</p>
+<p>⚪ <span class="hl">白色</span>：古钱币、陶罐、铜饰（价值较低，搜索0.4秒）</p>
+<p>🟢 <span class="hl">绿色</span>：丝绸、漆器、骨雕（搜索0.6秒）</p>
+<p>🔵 <span class="hl">蓝色</span>：银钩、玉珠、青铜灯（搜索0.8秒）</p>
+<p>🟣 <span class="hl">紫色</span>：古镜、鎏金兽、玉戒（搜索1.2秒）</p>
+<p>🔴 <span class="hl">红色</span>：金面具、饕餮纹、陨玉（价值最高，搜索2.0秒）</p>
+<p>变卖物只能从箱子和BOSS金色箱子中获取，普通敌人不掉变卖物。成功撤离后变卖物自动兑换为金币存入账号。箱子格子背景颜色根据品质显示。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="item">
+<h3>八、商店与仓库</h3>
+<p><span class="hl">商店</span>：主菜单进入，用账号金币购买武器和消耗品。购买的物品存入仓库。当前出售：回血药水(3万)、锋利短刀(90万/+300%攻)、精钢战刀(150万/+550%攻)、摸金宝刀(200万/+750%攻)。</p>
+<p><span class="hl">仓库</span>：存储购买的装备和物品。<span class="red">武器不堆叠</span>，每把武器单独占一格，独立保存剩余耐久。回血药水等消耗品可堆叠。点击装备格子装备，右上角💰按钮出售（原价30%）。</p>
+<p><span class="hl">装备仅摸金模式生效</span>：武器的百分比加成<span class="red">仅在摸金模式生效</span>，普通/恐怖/特工模式装备无任何效果。武器增加攻击百分比，并可通过锻造附加词条（吸血/暴击/攻速/移速/技能CD/减伤/最大生命）。</p>
+<p><span class="hl">装备耐久系统</span>：武器每次攻击消耗1点耐久。耐久归零后武器进入<span class="hl">破损</span>状态（攻击-70%，不消失），可在锻造面板花金币修复（T1 5万/T2 10万/T3 15万），修复后耐久回满。武器耐久：T3 750次/T2 540次/T1 360次。撤离成功后装备剩余耐久自动保存到仓库，下一局继承。</p>
+<p><span class="hl">出售系统</span>：仓库中所有物品均可出售，出售价格统一为<span class="red">原价的30%</span>。装备点击右上角💰按钮单独出售，消耗品在转移界面出售。</p>
+<p><span class="hl">带入游戏</span>：商店中的消耗品（回血药水）标注「带入游戏」，购买后存入账号背包，每局开始时自动带入。探险胜利后未用完的消耗品退回账号，探险失败则全部遗失。</p>
+</div>
+
+<div class="help-section help-tab-content" data-tab="item">
+<h3>九、账号与存档</h3>
+<p><span class="hl">账号系统</span>：首次进入需注册账号并登录。账号数据（金币、仓库、装备、背包）保存在云端服务器，换设备登录即可同步。</p>
+<p><span class="hl">单端登录</span>：同一账号同一时间只能在一台设备在线，新登录会顶掉旧设备；被顶下线的设备会提示并退回登录页。</p>
+<p><span class="hl">保存账号密码 / 自动登录</span>：登录界面可勾选「保存账号密码」，勾选后账号密码保存在本机、下次自动回填；再勾选「自动登录」则下次进网址免密直接进入游戏。</p>
+<p><span class="hl">挑战层数</span>：主菜单可选择从第1层、第3层或第5层开始挑战。层数越高敌人越强，但奖励也越丰厚。</p>
+<p><span class="hl">自定义布局</span>：设置中可进入编辑模式，拖动触屏按钮调整位置，点击按钮可单独调节大小和透明度。</p>
+</div>
+<div class="help-section help-tab-content" data-tab="update">
+<h3>十、版本更新</h3>
+<p style="font-size:12px;color:#8a7a5a;margin-bottom:10px">点击版本标题展开/收起查看详情</p>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🔥 V2.19.0 - 新角色火鸦 + 云存档 + 自动登录 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【🔥 新角色·火鸦】</span>投弹轰炸型（HP88/攻击23/防御2/速度3.6）。普攻：火球4格（0.7秒/发 atk×0.6），命中附带灼烧。技能1「天降火」（CD4）：朝瞄准位置扔火球，1秒后落下，2格范围爆炸 atk×2.0。技能2「连火球」（CD5）：朝瞄准方向扔小球，飞0-3格落地后 1.2 秒内每 0.4 秒炸一次共 3 次，每次 1 格 atk×1.0。大招「火鸦俯冲」（CD15）：原地展翼起飞升空，沿瞄准方向高空平飞后俯冲，长6格宽3格，沿途每0.1秒向地面喷火 atk×0.8，落地脚下 2 格爆炸 atk×2.0；飞行期间地面显示长方形虚线预警框。</p>
+<p><span class="hl">【☁️ 云存档】</span>账号与存档改为<span class="red">纯云端</span>：注册/登录/存档全部走服务器，本机不再存明文账号密码。换设备登录同一账号，金币/仓库/装备/皮肤等完全同步。密码服务端 scrypt 加密，token 签名校验。</p>
+<p><span class="hl">【🔒 单端登录 + 掉线保护】</span>同一账号只能一台设备在线，后登录顶掉先登录（被顶设备 5 秒内提示并退回登录页）。进游戏前自动校验登录状态，被顶后无法继续游戏，防止存档被覆盖。存档保存失败会明确提示，不再静默丢数据。</p>
+<p><span class="hl">【💾 保存账号密码 / 自动登录】</span>登录界面新增「保存账号密码」「自动登录」两个选项：勾选后下次进网址免密自动进入（可在弹窗内勾选，无需每次输入）；取消保存则自动关闭自动登录。</p>
+<p><span class="hl">【🧩 代码模块化重构】</span>新增 <span class="red">session.js（会话守卫）/ credential.js（凭据存储）/ online.js（在线人数）</span> 三个模块，消除全部 <span class="red">window 跨模块耦合</span>，各层职责单一、依赖单向，为后续新内容打好地基。</p>
+</div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🌑 V2.18.3 - 新角色影法 + 影钩 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🌑 新角色·影法】</span>瞬移爆发法师（HP85/攻击22/防御1/速度4.0）。普攻4格锁敌飞镖（0.5秒/发 atk×0.7）。技能1「影袭」（CD3）：标记最近敌人红印0.5秒后化身黑影穿刺，穿过敌人到达连线对称位置（离几格穿到敌后几格），atk×2.0，0.5秒无敌、穿刺隐身。技能2「影弹」（CD3）：黑球飞5格碰敌/墙爆炸，2格 atk×1.5。大招「影幕降临」（CD18）：按下即进入，原地无敌+金色护盾不可动，4秒内每秒5个共20个抛物线影弹（近低快/远高慢），落地1格 atk×0.15。</p><p><span class="hl">【🪝 新角色·影钩】</span>锁链拉扯型（HP90/攻击23/防御2/速度3.6）。普攻4格锁敌飞镖（0.6秒/发 atk×0.8）。技能1「影链」（CD3）：4格锁链命中首个敌人+周围1格内最多5个一起拉到身前0.3格，眩晕1秒，带出去→拉回动画。技能2「影域」（CD5）：脚下3格暗黑领域2秒，瞬间 atk×0.6，之后每0.3秒 atk×0.2 且减速50%。大招「锁链鞭」（CD18）：四面伸出锁链各逆时针转90°后收回，扫到的敌人眩晕1.5秒+atk×2.0并拉到身边。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🎯 V2.18.2 - 帧率上限 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🎯 帧率上限】</span>设置面板新增「帧率上限」选项，可选 30 / 45 / 60 / 90 / 120 FPS 或「不限制」，默认 60 FPS。开启后游戏按设定上限运行，不再一直以最高帧率（如 120/144Hz 屏幕）满速刷新，降低手机发热与耗电。切换即时生效并自动保存。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🎭 V2.18.1 - 角色选择界面重做 + 随机角色 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🎭 角色选择重做】</span>主菜单角色区由 3×2 小卡片改为一个<span class="red">大卡片</span>展示当前角色（图标/属性/技能），卡片内「🔄 更换角色」按钮打开全屏角色选择面板，面板内为小卡片列表，可上下滑动（方便以后角色变多）。</p><p><span class="hl">【❓ 随机角色】</span>新增<span class="red">随机角色</span>选项：主菜单默认显示「?」随机角色，开局从全部角色中随机抽取一个；角色选择面板末尾也有「?」随机卡片，可随时切回随机。</p><p><span class="hl">【🎨 皮肤面板固定】</span>皮肤面板改为固定高度，切换「皮肤管理 / 抽奖」标签或更换角色时高度不再跳变；面板内容压缩到一屏内、不再需要滑动。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🏹 V2.18.0 - 新角色弩手 + 普攻上限 + 概率调整 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🏹 新角色·弩手】</span>新增第 7 个角色「弩手」（远程重弩手，HP95/攻击22/防御2/速度3.6）。普攻：4格范围散射弩箭，最多8个敌人按距离锁定，伤害atk×0.8。技能1「重弩蓄力」：长按蓄力三段伤害递增（0.6秒atk×2.0射程8格 / 1.2秒atk×3.0射程10格穿透1 / 1.8秒atk×4.0射程12格穿透所有），蓄力蹲下锁定移动、可拖动转向、镜头拉远、滑到取消区取消。技能2「治疗包扎」：1.5秒buff结束后回复40%最大生命，期间移速×0.6。大招「箭雨」：点按锁最近敌人/长按拖动瞄准，持续1.5秒每0.15秒一发减速20%。</p><p><span class="hl">【⚔️ 普攻上限】</span>所有角色普攻改为<span class="red">最多同时攻击 8 个敌人</span>（搬山道人除外），近战角色由「有多少打多少」改为8个上限，弩手由单发改为8支散射。</p><p><span class="hl">【💎 宝石升级概率下调】</span>宝石 1→10 级每级成功率下调 30%（向下取整）：70% / 49% / 33% / 23% / 15% / 9% / 6% / 4% / 2% / 1%。</p><p><span class="hl">【🎰 皮肤抽奖概率调整】</span>高档皮肤 0.3%→0.1%、中档 1.5%→0.5%、低档 4.2%→0.9%、宝石 50%→40.5%、金币3万 44%→58%。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">⚔️ V2.17.0 - 特工「战意」与数值调整 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【⚔️ 新技能·战意】</span>特工模式新增第 9 个主动技能「战意」：普攻伤害 +10%~50%，并每隔 2.5~1.3 秒自动释放一次普攻（固定间隔，不吃冷却缩减），升级提高加成并缩短间隔。</p><p><span class="hl">【📡 激光束调整】</span>多目标分摊系数上调：2 目标 0.53→0.70 / 3 目标 0.41→0.50 / 4 目标 0.34→0.36 / 5 目标 0.26→0.30，群怪输出提升。</p><p><span class="hl">【🎰 皮肤抽奖调整】</span>金币档合并：5 万 24% / 20 万 18% / 100 万 2% 合并为金币 3 万 44%，期望返还大幅下调，杜绝越抽越多。</p><p><span class="hl">【📱 移动端 HUD】</span>手机端右上角小地图 120→90、楼层/计时/金币条压缩、待选技能徽章 70→50，屏幕占用明显减少。</p><p><span class="hl">【🗑️ 摸金高物资区移除】</span>删除摸金模式高物资区机制（该机制实际从未生效）：地图不再划分高物资区域，5 个保险箱改为全图随机分布，帮助文档与地图图例同步清理。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🗑️ V2.16.0 - 移除竞技场与联机模式 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🗑️ 模式精简】</span>移除联机对战、合作摸金与竞技场（含匹配、房间、观战等关联功能），主菜单入口与相关代码全部移除，游戏回归纯单机体验。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">⌨️ V2.15.0 - 电脑端自定义键位 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【⌨️ 自定义键位】</span>设置新增「自定义键位」：移动/普攻/技能1/技能2/大招/药水/交互/背包/暂停/聊天共 13 个动作可自由改键，设置自动保存、刷新保留；一键重置回默认。</p><p><span class="hl">【🖱️ 鼠标绑定】</span>普攻/技能等动作可绑鼠标左键或右键（中键不可绑），一个键只能绑一个动作、冲突自动提示；方向键为固定备用不可改。</p><p><span class="hl">【🎮 默认键位】</span>WASD 移动、鼠标左键普攻、E/Q/R 技能、F 交互、B 背包；右键默认不再放技能，需手动绑定才生效。手机端自动屏蔽此功能，不影响触屏操作。</p></div></div><div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.14.5 - 联机修复与战斗平衡 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🐛 联机修复】</span>修复联机飞镖穿过本地玩家身体；修复队友视角地上物品显示 undefined；修复道人定身符在摸金联机中不生效。</p><p><span class="hl">【⚖️ 土夫子平衡】</span>千瞬斩 CD 全局 10→18 秒；竞技场千瞬斩首击与后续伤害下调（单机保持原样）；回旋铲竞技场伤害下调。</p></div></div><div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🚨 V2.14.3 - 举报系统与管理后台 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🚩 对局举报】</span>结算/对手离开后可举报对方，附原因、备注、本局聊天记录与数值证据（最高单次伤害、血量等）。</p><p><span class="hl">【🔧 开发者面板】</span>「待处理 / 举报结果 / 黑名单」三页：可封禁 IP、忽略、单条删除记录；后台自动剥离昵称/备注里的危险字符，30 天未处理自动清理。</p><p><span class="hl">【🧩 孤儿举报】</span>对手主动退出后再举报不再丢失：自动缓存对手名/角色/真实 IP/伤害数据，5 分钟内举报仍完整。</p><p><span class="hl">【🖱️ 体验】</span>删除/导入存档确认改用游戏内自绘弹窗，手机端不再因系统弹窗退出全屏。</p></div></div><div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">📱 V2.14.0 - 宝石面板重构与联机共鸣适配 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【💎 宝石面板重构】</span>面板改三 tab：宝石升级 / 宝石共鸣 / 宝石抽奖；手机横屏一屏放下、完全不可滚动；喂/十连喂/升级/抽奖按钮全部触摸即时响应（pointerdown），连点不断。</p><p><span class="hl">【🔮 共鸣面板】</span>进度区改 3 列 2 行网格；顶部改左右布局（模型 + 升级按钮 + 累计加成）；喂食提示改面板内固定文字并上移；删除底部关闭按钮、放大共鸣模型；减伤/CD 累计加成显示封顶（超 100 显示 +100%（上限））。</p><p><span class="hl">【⚔️ 数值封顶】</span>移速加成封顶 +50%（超高等级不再飞、不穿墙）；技能 CD / 减伤封顶 100%（杜绝负伤害 bug）；联机 p2 移速按 guest 自身共鸣等级计算（不再按房主等级）。</p><p><span class="hl">【🤝 联机竞技场】</span>血条下方显示双方共鸣等级（guest 经 myRes 消息补发同步，修复对手等级显示 0）。</p></div></div><div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">💎 V2.13.0 - 宝石共鸣系统 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【💎 宝石共鸣】</span>6 种宝石全部 10 级后解锁共鸣：满级槽位可喂宝石攒进度（每颗 +0.2~0.38%，6% 概率暴击 +1~2%），喂满 100% 得 1 颗共鸣石；共鸣石 70% 概率升 1 级，每级按固定路线获得加成（血量/攻击/技能CD/暴击/减伤/吸血/移速/宝石效果），共鸣 0 级时与原版表现完全一致。</p><p><span class="hl">【⚡ 升级体验】</span>宝石升级卡新增「一键」按钮自动升 1 级；共鸣进度支持「十连喂」；共鸣升级当场生效（血条即时 +1），累计加成实时显示。</p><p><span class="hl">【🎰 抽奖优化】</span>宝石抽奖改左右布局并新增百连（单抽 4 万 / 十连 38 万 / 百连 370 万），连抽不弹窗；皮肤抽奖同样改连抽 + 最近结果实时显示 + 概率详情页。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.12.0 - 修复优化与皮肤面板适配 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🛠️ 数值还原】</span>正式价回归：摸金宝刀 200 万金币 / T3 锻造费 20 万 / 宝石十连 37 万，测试期临时价全部清除。</p><p><span class="hl">【🐛 修复】</span>特工模式敌人刷新改用波次计数；移除失效的技能冷却残留逻辑；联机 guest 结算面板击杀数不再显示房主数据。</p><p><span class="hl">【📱 皮肤面板适配】</span>手机横屏：皮肤管理页一屏放下；抽奖 tab 概率与按钮左右分栏，不再上下挤。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🎨 V2.11.0 - 皮肤系统 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🎨 皮肤系统】</span>主菜单新增「皮肤」面板：18 款皮肤（6 角色 × 默认/低/中/高 4 档），低档换色、中档造型、高档造型+专属特效，纯视觉无属性加成。低档 100 万金币、中档 500 万金币购买，高档抽奖获得。</p><p><span class="hl">【🎰 抽奖】</span>单抽 10 万 / 十连 90 万。概率：高档皮肤 0.3% / 中档 1.5% / 低档 4.2% / 宝石 ×1 50% / 金币 5 万 24% / 20 万 18% / 100 万 2%。重复皮肤自动转金币（高档 200 万 / 中档 80 万 / 低档 20 万）。</p><p><span class="hl">【✨ 高档特效】</span>龙纹·走位金色拖尾 / 崩山·走位地面裂纹 / 天师·技能释放环形符文 / 冥途·瞬移残影变骷髅 / 天官·印光护体金色光环 / 破军·冲锋枪尖流光。</p></div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.10.0 - 武器破损与修复系统 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【🔨 武器破损机制】</span>武器耐久归零不再消失，改为「破损」状态：攻击-70%，需在锻造面板修复。破损武器仍可装备/卸下/存入仓库，破损状态随存档保留（含迁移兜底）。</p><p><span class="hl">【🔧 武器修复】</span>锻造面板更名为「武器锻造与修复」，新增修复按钮：T1 5万 / T2 10万 / T3 15万，修复后耐久回满、破损解除。仓库与详情区均有破损标识。</p><p><span class="hl">【⚖️ 数值调整】</span>三武器耐久×3（T1 120→360 / T2 180→540 / T3 250→750）；锻造品质概率回调（白 72% / 金 0.8%），条数概率 1 条 92%——武器更耐用、金色更稀有。</p></div></div>
+
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.9.0 - 宝石系统 + 锻造系统 + 护甲删除重做 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none"><p><span class="hl">【💎 宝石系统】</span>新增 6 种宝石（吸血/暴击/攻速/移速/冷却/减伤），等级 0-10，同名宝石喂养升级（有成功率，失败宝石消耗等级不变）。宝石仅商店「🎰 抽奖」产出（单抽 4 万 / 十连 37 万，测试期十连 1 元）。6 槽位全角色共用，全模式生效。主菜单「💎 宝石」面板可查看槽位/持有并升级。</p><p><span class="hl">【⚒️ 锻造系统】</span>仓库 T1/T2/T3 武器可花金币锻造，每次重掷属性（种类/条数/品质）：7 种属性池（吸血/暴击/攻速/移速/技能CD/减伤/最大生命），品质 6 档只升不降、条数 1-3 只增不减。仅摸金模式 + 装备中生效。锻造面板改左右布局，仓库武器格子带品质球与属性角标。</p><p><span class="hl">【🛡️ 护甲删除 + 敌人调整】</span>护甲系统整体移除（商店/仓库/装备/存档全清理）；敌人改为血量压制：小怪 HP×7、Boss HP×5 攻击回归×1；三武器数值重做（T1 300%·90万 / T2 550%·150万 / T3 750%·200万，测试期 T3 价格与锻造费 1 元）。装备数据结构升级为 {id,curDur,attrs}，老存档自动迁移。</p><p><span class="hl">【📱 体验优化】</span>锻造/商店/仓库/宝石面板横屏手机一屏适配（800px flex 布局）；锻造按钮触摸即时响应（pointerdown + 属性精刷）；联机敌人渲染加屏幕剔除，远离房主不再卡顿；仓库武器换装修复（旧武器不消失、属性跟随）；普通模式死亡不再清空仓库装备。</p></div></div>
+
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.8.0 - 战绩系统 + 联机同步优化 + 摸金校尉调整 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【🏆 战绩系统】</span>主菜单新增「战绩」面板：总览（游玩局数/总击杀/累计金币）、各模式最高纪录（普通/恐怖最高层数、摸金撤离次数与单局最高金币、特工最高波次、术启最高层数、竞技场胜率）、各角色最高纪录。数据随账号存档，老账号自动兼容；联机 guest 端也计入战绩（含全队总击杀）。</p>
+<p><span class="hl">【🎯 寻龙光束联机同步】</span>光束改为只传方向 + 接收端固定预测目标插值：对面视角不再 PPT/抖动，快速转圈也能连续跟手。</p>
+<p><span class="hl">【⚔️ 摸金校尉调整】</span>分金定穴阵非竞技场每跳 1.0→0.8（竞技场 0.375 保持独立平衡）；寻龙点穴蓄力每跳 0.12→0.2（全模式生效）。</p>
+<p><span class="hl">【⚡ 联机快照】</span>快照发送频率 66ms→33ms，队友/敌人移动更跟手。</p>
+</div></div>
+
+<div class="version-block">
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.9 - 摸金警告/术启平衡/FPS 开关 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【摸金裸装警告】</span>未装备武器/护甲进入摸金模式时，进图后弹出红色警告提示（延迟显示避免被进图提示覆盖）。</p>
+<p><span class="hl">【术启平衡】</span>术启小怪 30 层后加速成长（HP 每层 +0.22、攻击 +0.10）；术启玩家楼层不再增加最大生命，普通/恐怖模式保持原成长。</p>
+<p><span class="hl">【竞技场提速】</span>竞技场普攻冷却 1.0 秒 → 0.6 秒，对局节奏加快。</p>
+<p><span class="hl">【FPS 开关】</span>设置面板新增 FPS 显示开关（默认关闭），开启后左上角/画布/标签页标题同步显示帧率。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.8 - Bug 修复与死代码清理 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【道人普攻修复】</span>搬山道人普攻符咒伤害倍率误用竞技场数值（0.875），单机模式被压低 30%。已改为按模式区分：竞技场 0.875，单机恢复 1.25。</p>
+<p><span class="hl">【中毒/分金阵时长修复】</span>中毒与分金阵增益被 buffs 衰减循环二次扣时，实际持续只有设计值一半。已排除重复衰减，中毒回归 3 秒、分金阵回归 4 秒。</p>
+<p><span class="hl">【粒子方向修复】</span>spawnParticles 第 5、6 参数（方向）此前被丢弃，放射状粒子退化为随机散射。已支持可选方向参数，其余调用不受影响。</p>
+<p><span class="hl">【死代码清理】</span>移除从未赋值的玩家护盾/狂暴残留分支（buffs.rage、buffs.shield、shieldAmount）及其 HUD、伤害、防御判断。特工模式回旋盾技能不受影响。</p>
+<p><span class="hl">【死功能清理】</span>移除 game.skillActive 相关的 8 处永假判断（视野+3、陷阱高亮、非可见区宝箱/物品/敌人渲染、迷雾减淡、小地图红点、摸金校尉 atk/移速加成）。该值全代码无赋值点，属重构残留，清理后玩法不变。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.7 - 双确认期间掉线清理 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【掉线状态清理】</span>再来一局双确认期间任一方掉线/断网：结算面板自动关闭、按钮文案复位、rematch 标志清零，不再残留「等待对方确认…」脏状态。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.6 - 联机再来一局双确认 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【再来一局双确认】</span>联机合作摸金/竞技场的「再来一局」改为双确认机制：双方都点击后才进入同一局（地图、位置一致），不再各开各的变成两个对局。</p>
+<p><span class="hl">【等待确认】</span>单方点击后显示「等待对方确认…」；对方点击后同时开局。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.5 - 统一死亡状态管理 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【统一死亡状态】</span>新增 setLocalDead 状态管理：阵亡后全面屏蔽键盘/鼠标/触屏/摇杆输入，技能与道具全部禁用，杜绝「死了还能放技能」。</p>
+<p><span class="hl">【覆盖层清理】</span>开局/回主菜单/重进联机/结算时自动清理「观战中」覆盖层，不再残留到下一局。</p>
+<p><span class="hl">【提示一次】</span>阵亡 toast 只弹一次，不再反复刷屏吵人。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.4 - 合作摸金双赢观战 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【双赢观战】</span>合作摸金一方阵亡不再结束对局：死者进入观战模式（相机跟随存活队友、隐藏操作），任意一方撤离成功 → 双方都算撤离成功。</p>
+<p><span class="hl">【真失败条件】</span>两人都阵亡才判定探险失败。</p>
+<p><span class="hl">【阵亡提示】</span>房主阵亡时队友收到「房主已阵亡，独自撤离也算成功」提示。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.3 - 联机guest死亡提示+特效修复 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【guest 阵亡观战】</span>HP归零显示「💀 你已阵亡，观战中…」覆盖层、隐藏摇杆技能按钮、渲染跳过死亡模型。</p>
+<p><span class="hl">【特效剔除修正】</span>beam/lightning 类型（无x/y坐标）改用两端点兜底判屏幕外，不再永不剔除白烧性能。</p>
+<p><span class="hl">【特效生命周期】</span>followPlayer/beam 特效 life 改为取较小值，不再被快照续命拖尾。</p>
+<p><span class="hl">【拾取音效修复】</span>guest 端维护已拾取坐标集合（上限50），快照重建时过滤，不再每帧重复拾取音效轰炸。</p>
+<p><span class="hl">【队友眩晕同步】</span>packPlayer/applyPData 新增 st 字段，guest 端可见队友被眩晕的✨特效。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.2 - 瓦片缓存与相机对齐 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【瓦片 sprite 缓存】</span>墙/地板/树/草地/废墟/骸骨/枯木预渲染成离屏小图（每种瓦片 × 亮暗两态 × 模式），每帧只 drawImage 一次，不再逐格画样式，静止帧率大幅提升。</p>
+<p><span class="hl">【相机整数对齐】</span>瓦片绘制坐标对齐整数像素，消除移动时边缘瓦片亚像素抖动。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.1 - 帧率诊断显示 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【FPS 显示】</span>可在设置面板开启/关闭（默认关闭）。开启后左上角显示实时帧率（DOM 覆盖层，不碰游戏画布），画布左下角与标签页标题同步显示，用于定位"不流畅"是帧率问题还是手感问题。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.7.0 - 渲染剔除补齐 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【屏幕外不画】</span>爆炸/特效/飘字/粒子渲染循环加屏幕边界检查，屏幕外直接跳过绘制，大场景帧率提升。</p>
+<p><span class="hl">【逻辑不受影响】</span>只跳过"画"，衰减、AI、伤害照常每帧运行，敌人走到屏幕边缘不会"卡半路"。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.9 - 特效全面事件式 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【爆炸/法阵/印痕增量同步】</span>三个字段从"每帧全删重建"改为"只追加新对象、本地自行衰减销毁"，多人同放大招时的 GC 峰值消除。</p>
+<p><span class="hl">【伤害逻辑不动】</span>法阵/印痕的伤害 tick 保持房主端权威，队友端只做显示衰减。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.8 - 峰值卡顿优化 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【粒子硬丢弃】</span>粒子满上限时整体丢弃，绝不新建对象，高峰期不再触发 GC。</p>
+<p><span class="hl">【快照上限】</span>爆炸同步数量封顶 10 个，多人同放大招时快照不膨胀。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.7 - 手机端性能优化 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【粒子上限】</span>移动端同屏粒子上限降至 80（电脑不变），大招不再瞬间撑爆渲染。</p>
+<p><span class="hl">【对象池】</span>粒子对象池扩容至 300，高峰期复用旧对象，减少 GC 卡顿。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.6 - 特效同步优化（事件式） <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【特效不重建】</span>联机特效改为增量同步：房主端特效挂唯一 id、只在首次出现时下发，队友端本地自行衰减销毁，不再每 66ms 全删重建 → 放技能时手机端不再卡顿掉帧。</p>
+<p><span class="hl">【跟随特效】</span>光束/雷电类跟随特效保留逐帧位置同步，不影响寻龙点穴等技能表现。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.5 - 网络优化 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【延迟显示】</span>心跳改为每 1 秒一次，netDelay 显示 5 次滑动平均，数字不再乱跳，更接近真实延迟。</p>
+<p><span class="hl">【流量优化】</span>联机快照坐标量化到 0.01 格精度（肉眼不可见），JSON 体积下降约 30%，弱网更稳。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.4 - 联机与状态残留修复 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【联机双发修复】</span>修复联机 guest 放分金定穴阵/镇岳印砸时房主端双法阵双 aoe、双印痕双爆炸。</p>
+<p><span class="hl">【光束残留修复】</span>修复房主端寻龙光束松手后队友端不消失、跨层跨局残留。</p>
+<p><span class="hl">【模式残留修复】</span>修复切换模式后术启三术槽残留、hybrid 重开走普通流程。</p>
+<p><span class="hl">【细节修复】</span>修复竞技场匹配入房药水数量 NaN、Net.onerror 重复赋值、updateGuestView 重复刷 HUD。</p>
+<p><span class="hl">【服务端】</span>修复 server.js 心跳清理空操作。</p>
+<p style="font-size:12px;color:#8a7a5a">（H10 定身符经双向链路验证无需改动）</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🛠️ V2.6.3 - 竞技场独立平衡表 + 移除操作提示 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【独立平衡表】</span>竞技场数值改为独立平衡表管理，以后每个角色都能单独调整竞技场血量，单机完全不受影响。</p>
+<p><span class="hl">【界面清理】</span>移除右下角操作提示（设置里的对应开关一并移除），不再挡视野。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">⚖️ V2.6.2 - 竞技场平衡（力士血量下调） <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【竞技场平衡】</span>卸岭力士竞技场血量下调：<span class="red">560→460</span>；普通（单机）模式血量不变（140）。竞技场中仍是全角色最肉，其他数值不变。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🔧 V2.6.1 - 联机界面重做（自动连接+匹配秒数） <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【联机重做】</span>点开「联机摸金」自动连接服务器，期间显示"正在连接服务器 🌏（1-60秒）"，连接成功后进入操作界面（竞技场匹配/创建房间/加入房间）；界面整体放大更易点按；断开连接直接返回主菜单，不再显示服务器地址输入框。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">⚔️ V2.6.0 - 竞技场随机匹配 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【竞技场匹配】</span>联机面板新增 <span class="red">⚔️ 竞技场匹配</span> 按钮：点击后自动排队寻找随机对手，匹配成功自动建房入房并<b>自动开局</b>，无需输入房间码、不用点开始。排队中可随时取消；60 秒未匹配到会自动提示超时。匹配对局与房间码对局完全一致，支持再来一局。</p>
+</div>
+</div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">⚔️ V2.5.1 - 竞技场独立模式与数值定稿 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【竞技场独立数值体系】</span>联机竞技场作为独立 PVP 模式完成数值定稿，与单机冒险完全分开：<span class="red">双方血量×4</span>（摸金400/力士460/道人380/土夫子400/发丘480/长枪380）、<span class="red">普攻CD统一1秒</span>、<span class="red">伤害无视防御</span>、<span class="red">受击无无敌帧</span>。</p>
+<p><span class="hl">【竞技场技能平衡】</span>技能倍率独立调整：摸金校尉法阵每跳atk×0.375（灼烧每跳atk×0.08）、寻龙点穴蓄力每跳atk×0.12（标记爆炸阵内atk×1.1）、大招标记爆炸atk×2.2；卸岭力士大招落地atk×3.5；搬山道人普攻符咒atk×0.875；土夫子回旋铲每段atk×0.75；发丘中郎将印砸atk×1.67、地面印痕每跳atk×0.35（3.5秒共约35）、大招基础atk×3.0（每层印+12%，最多+120%）；长枪盗帅普攻atk×1.5。</p>
+<p><span class="hl">【竞技场流程优化】</span>再来一局需双方确认后同时进入，任一方拒绝返回主菜单；对局中双方技能特效/标记/视野双向同步（寻龙光束、印记、大招标记均双方可见）。</p>
+</div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🆕 V2.5.0 - 全新「术启机关」模式 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【全新模式：术启机关】</span>新增第五种冒险模式「术启机关」：<span class="red">随机身板+随机三术组合</span>（六角色×全技能随机，6×6×6×6=1296种组合），角色不可自选；开局强制授术面板告知身板与三个技能，局内HUD常驻三术槽。</p>
+<p><span class="hl">【机关房试炼】</span>滚石/翻板/毒气/箭雨四种机关房固定布局轮换，每层随机试炼（限时90秒消灭全部怪物并到达出口 / 无伤消灭全部怪物到达出口），<span class="red">必须消灭本层全部怪物才能撤离</span>，试炼成功+1重铸券；每5层为Boss机关房（金甲尸王/青铜尸尊/噬魂鬼将/万奴王随机×机关同场）。</p>
+<p><span class="hl">【术台重铸】</span>每层通关弹出术台，消耗1张重铸券重铸任一技能（重新随机），每3层与Boss层赠1券，无尽爬层。</p>
+<p><span class="hl">【布局与交互优化】</span>主菜单模式区改为2-1-2三排布局，「开始冒险」独立成排不再被遮挡；授术面板与术台一屏放下无需滚动；PC右键/E施放技能1、Q施放技能2、R施放大招；触屏技能按钮支持瞄准与寻龙蓄力（按下蓄力、松手释放）；键盘长按不再重复触发技能。</p>
+<p><span class="hl">【技能与特效修复】</span>修复寻龙点穴蓄力金色光线残留、冷却结束自动释放、切层后蓄力状态跨层残留、非寻龙技能误触发自动释放、术台重铸后蓄力状态残留、HUD技能图标与冷却错位、大招未命中冷却返还计算错误、层数选择混入术启模式、怪物首层强度过高、机关数量与地图空旷感等多项问题。</p>
+</div></div>
+<div class="version-entry"><div class="version-title" onclick="toggleVersion(this)">🆕 V2.4.1 - 四分古墟新地图与草丛隐身 <span class="version-arrow">▼</span></div><div class="version-content" style="display:none">
+<p><span class="hl">【摸金模式新地图：四分古墟】</span>摸金模式新增可选固定地图「四分古墟」，尺寸<span class="red">240×240</span>超大单间废墟。十字巨型残垣分割四大开放象限，中心为Boss主战场，四角设置石棺群地标。经典随机墓室地图保留可用，在摸金模式确认面板中切换。</p>
+<p><span class="hl">【实体树木】</span>四分古墟地图中散布<span class="red">实体大树</span>，树木为碰撞实体，玩家、怪物、飞镖均无法穿过，怪物寻路会自动绕开树木。可利用树木做掩体拉扯怪物。</p>
+<p><span class="hl">【草丛隐身】</span>四分古墟地图中遍布<span class="red">可躲藏草丛</span>。玩家站在草丛内且未攻击/施法时进入隐身状态（复用棺材躲藏机制），怪物无法发现和追击玩家。一旦攻击、释放技能或走出草丛，立刻解除隐身。</p>
+<p><span class="hl">【多类型地图装饰】</span>新增<span class="hl">断石堆</span>、<span class="hl">骸骨</span>、<span class="hl">枯木</span>三种纯视觉装饰物，散布全图增强废墟氛围，均不影响碰撞和寻路。</p>
+<p><span class="hl">【大地图性能优化】</span>240×240超大地图保持原有视口裁剪渲染，仅绘制屏幕可见范围内的瓦片和装饰，保障手机端运行帧率。小地图和大地图均适配新瓦片类型颜色显示。</p>
+</div></div>
+<div class="version-title" onclick="toggleVersion(this)">🆕 V2.4.0 - 全角色普攻飞镖化与特工模式平衡 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【普攻系统大改：飞镖化】</span>除搬山道人外，所有角色（摸金校尉、卸岭力士、土夫子、发丘中郎将、长枪盗帅）普攻从近战范围攻击改为<span class="red">远程小飞镖攻击</span>：自动检测自身4格内所有存活敌人，有多少个敌人就发射多少个小飞镖，每个飞镖自动锁敌对应敌人方向直线飞行。去掉了原来的近战圆形攻击范围特效（slash、cast光环、粒子等）。</p>
+<p><span class="hl">【小飞镖模型与特效】</span>传统手里剑造型（四角星+角色色中心+黑色中心孔），银灰色金属质感刀刃，旋转飞行带拖尾粒子。命中时触发星形扩散粒子+冲击波（0.4格）+角色色光环特效。飞行特效经过优化，减少拖尾粒子数量和发光强度，更干净利落。</p>
+<p><span class="hl">【普攻伤害与范围调整】</span>小飞镖伤害调整为原来近战普攻的<span class="red">1/3</span>，普攻范围从2格扩大到<span class="red">4格</span>。4格内没有敌人时不发射飞镖也不显示粒子特效，避免空放。长枪横扫强化普攻也改为飞镖，伤害保持×1.3，命中后减速1.5秒。</p>
+<p><span class="hl">【普攻范围指示器常驻】</span>除道人外，角色脚下常驻显示<span class="red">4格普攻范围虚线圆圈</span>（角色颜色+半透明填充），游戏进行中一直显示，清晰指示普攻攻击范围。</p>
+<p><span class="hl">【特工模式角色平衡】</span>特工突围模式下角色属性调整：血量从×3改为<span class="red">×2</span>，攻击从×4改为<span class="red">×2</span>，避免角色过于强力导致割草体验失衡。</p>
+<p><span class="hl">【全角色普攻伤害数字】</span>所有角色普攻命中敌人时，在敌人头上显示白色伤害数字（带黑色描边、向上飘动、渐隐消失），效果与技能伤害数字一致。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🆕 V2.3.0 - 道人普攻重做与发丘大招机制优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【道人普攻重做】</span>搬山道人普攻从近战范围攻击改为<span class="red">符咒远程攻击</span>：每次普攻自动瞄准4格内最近敌人发射符咒，伤害atk×1.25（大招落雷伤害的50%），符咒飞行3格后爆炸，爆炸范围1.2格。符咒飞行时显示爆炸范围圆圈指示器。去掉了原来的近战普攻特效和每3次普攻自动发射符咒的旧逻辑。</p>
+<p><span class="hl">【道人1技能优化】</span>五雷符阵的符咒不再显示爆炸范围圆圈，避免与普攻符咒指示器混淆。</p>
+<p><span class="hl">【发丘大招机制优化】</span>万印封天改为<span class="red">标记+延迟印光</span>机制：释放瞬间给5格内敌人加上印记标记（头上显示金色"印"字模型），1.5秒后印光从天上降下造成伤害。印光不再从释放开始就一直跟随敌人，只在伤害触发时显示降下特效。未命中敌人时返还70%冷却。</p>
+<p><span class="hl">【发丘技能1锁敌优化】</span>镇岳印砸自动锁敌范围从3格扩大到<span class="red">5格</span>，5格内敌人都会被自动锁定，配合2格砸印范围覆盖更广。</p>
+<p><span class="hl">【全角色普攻伤害数字】</span>所有角色普攻命中敌人时，在敌人头上显示白色伤害数字（带黑色描边、向上飘动、渐隐消失），效果与技能伤害数字一致。</p>
+<p><span class="hl">【长枪技能2优化】</span>无情冲锋第二段砸地位移从2.5格改为<span class="red">2格</span>，指示器同步更新，添加落点圆圈指示器。每一段都可向不同方向释放，不固定方向。</p>
+<p><span class="hl">【长枪技能1优化】</span>背水一战指示器方向修正：指示器显示方向与实际位移方向相反（向后跳跃），拖动方向为主，不拖动时朝面朝反方向位移。位移不再卡墙，添加向后滑动动画。</p>
+<p><span class="hl">【长枪技能2特效优化】</span>第一段改为向前挑飞敌人（带挑飞特效），第二段改为跳起来砸下去（带砸地特效），不再使用力士冲刺特效。添加二段剩余时间倒计时显示（角色脚下）。</p>
+<p><span class="hl">【发丘大招特效增强】</span>印光降下特效粒子数量增加，添加护盾爆炸倒计时显示（角色脚下），大招释放时添加更多金色粒子和光环特效。</p>
+<p><span class="hl">【特工模式角色增强】</span>特工模式下角色血量和攻击同步提升，与普通/恐怖模式保持一致，避免怪物变强后角色几下就死。</p>
+<p><span class="hl">【Bug修复】</span>修复发丘印跨局残留问题；修复长枪技能2第一段显示冷却但第二段可用的问题；修复地图全黑问题；修复不移动时敌人暂停的bug；修复发丘大招空大后延迟释放伤害的问题。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🆕 V2.2.0 - 新增发丘中郎将与长枪盗帅双角色 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【新角色：发丘中郎将】</span>四大门派最后一块拼图，印法镇压/反伤/印记爆发型法坦。HP120/ATK15/DEF5/速度3.3，普攻2格。技能1「镇岳印砸」指定落点砸印，2格范围atk×2.0+叠2层印+眩晕0.8秒，地面留印痕3秒持续伤害减速。技能2「印光护体」展开护盾4秒减伤40%，受击反弹atk×0.8+叠1层印，结束爆发每层印额外atk×0.3。大招「万印封天」5格范围叠3层印，1.5秒后印光降下基础atk×2.5，每层印+12%伤害（最多+120%），封印2秒。被动「天官印威」受击30%概率触发印光反击周围1格atk×0.6，印光护体状态下概率提升至60%。</p>
+<p><span class="hl">【新角色：长枪盗帅】</span>韩信同款机制，位移拉扯/横扫千军型刺客。HP95/ATK18/DEF2/速度3.8，普攻2.5格。技能1「背水一战」向移动反方向跳跃2.5格（无敌帧），落地后获得一次横扫强化普攻（3格范围atk×1.3+减速30%）。技能2「无情冲锋」两段冲锋，第一段冲锋3格atk×1.2+击飞0.5秒，3秒内可再按第二段冲锋2.5格atk×1.0，同敌二段伤害×1.5。大招「国士无双」原地挥枪1.5秒，4段伤害每段atk×0.8，最后一段atk×1.5+击飞1秒，期间霸体减伤50%，每命中1个敌人获得1层国士（攻击+10%，持续5秒，最多5层）。</p>
+<p><span class="hl">【角色选择界面适配】</span>主菜单角色选择grid布局从2列改为<span class="red">3列</span>，6个角色2行展示，适配手机横屏显示。</p>
+<p><span class="hl">【新增封印状态】</span>新增「封印」（sealTime）状态效果，被封印的敌人2秒内无法攻击、移动速度-50%，与眩晕（无法移动也无法攻击）和定身（无法移动但可攻击）形成三种控制状态区分。目前仅发丘中郎将大招「万印封天」可触发封印。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔥 V2.1.0 - 普通恐怖爽感大改与Bug修复 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【普通/恐怖爽感大改】</span>普通模式和恐怖模式全面增强，提升割草爽感：<span class="red">怪物数量×3</span>，<span class="red">角色血量×3、攻击×4</span>，小怪血量×4.35（恐怖×5.655）、攻击×1.8（恐怖×2.16），Boss血量×2.9、攻击×2。摸金/特工模式保持原难度不变。</p>
+<p><span class="hl">【金币掉落大幅提高】</span>普通模式金币总量调整：选1层难度总共约<span class="red">10万金币</span>，选3层难度1+2+3层加起来总共约<span class="red">20万金币</span>，选5层难度总共约<span class="red">35万金币</span>。恐怖模式对应上涨约50%。敌人掉落金币加成普通×250、恐怖×375，地上金币普通5000-12000、恐怖8000-18000，宝箱金币普通700-4000、恐怖1000-6000。</p>
+<p><span class="hl">【取消每层保底金币】</span>移除通关时自动补足金币到目标值的保底机制，实际打到多少就是多少，鼓励主动探索和刷怪。</p>
+<p><span class="hl">【普通/恐怖金币全图吸取】</span>普通模式和恐怖模式的金币改为全图自动吸取（和特工模式一样），金币从远处自动飞过来被拾取，不用走过去捡。</p>
+<p><span class="hl">【取消普通/恐怖装备掉落】</span>普通/恐怖模式没有装备系统，取消所有装备掉落：地上物品不再生成武器/护甲，怪物死亡不再掉落装备，宝箱不再开出武器/护甲。现在普通/恐怖只有金币和回血药水。</p>
+<p><span class="hl">【回血药水回血量×2.5】</span>回血药水恢复量从40/50提升至<span class="red">100/125</span>（×2.5），配合高血量角色和大量怪物，续航更流畅。</p>
+<p><span class="hl">【修复Boss被自己AOE毒死】</span>修复青铜尸尊毒雾光环等敌方AOE会误伤Boss自己和其他敌人的bug。敌方AOE（owner含'boss'）现在只伤害玩家，不再误伤敌人。同时修复了敌方AOE原本不伤害玩家的问题。</p>
+<p><span class="hl">【四Boss未探索不放技能】</span>普通/恐怖模式下四个Boss（金甲尸王、青铜尸尊、噬魂鬼将、万奴王）所在格子未被玩家探索到时，不会释放主动技能（地震/冲撞/毒雾/石化射线/瞬移斩/分身/大地震/虫群爆发），技能冷却继续走但不触发，避免玩家还没见到Boss就被隔墙技能消耗。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚔️ V2.0.0 - 普通恐怖Boss随机四选一与平衡大改 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【普通/恐怖Boss随机四选一】</span>普通模式和恐怖模式的最终Boss不再固定为金甲尸王，改为从<span class="red">金甲尸王、青铜尸尊、噬魂鬼将、万奴王</span>四个Boss中<span class="red">随机抽取一个</span>。每局游戏Boss不同，玩法更丰富。摸金模式和特工模式保持原Boss不变。</p>
+<p><span class="hl">【普通/恐怖Boss属性平衡】</span>由于普通/恐怖模式没有装备系统，四个Boss的属性根据各自技能特点进行平衡调整：<span class="red">金甲尸王</span>HP×1.0/ATK×1.0（基准）；<span class="red">青铜尸尊</span>HP×0.88/ATK×0.9（远程+毒雾+召唤，偏强）；<span class="red">噬魂鬼将</span>HP×0.92/ATK×0.85（瞬移+隐身，灵活）；<span class="red">万奴王</span>HP×1.0/ATK×0.75（召唤虫群+大地震，场面压制）。摸金/特工模式不适用此平衡。</p>
+<p><span class="hl">【普通/恐怖Boss技能削弱】</span>普通/恐怖模式下青铜尸尊和万奴王的技能效果进一步削弱：<span class="red">青铜尸尊</span>召唤守墓石像2→1个，毒雾喷射5→3发，石化射线射程4→3格；<span class="red">万奴王</span>召唤虫群3→2个，虫群爆发召唤4→2个、毒弹5→3发，大地震范围3.5→2.5格。摸金/特工模式保持原强度。</p>
+<p><span class="hl">【普通/恐怖金币掉落调整】</span>普通模式金币总量调整：选1层难度总共约<span class="red">10万金币</span>，选3层难度1+2+3层加起来总共约<span class="red">20万金币</span>，选5层难度总共约<span class="red">35万金币</span>。恐怖模式对应上涨约50%。摸金模式保持自给自足的高回报掉落不变。普通/恐怖作为摸金破产后的回血手段，掉落适中不会过多。</p>
+<p><span class="hl">【瞬移技能削弱】</span>噬魂鬼将的瞬移斩技能削弱：普通/恐怖模式下瞬移落点偏移从±3格加大到±5格（更不容易贴脸），命中判定范围从1.2格缩小到0.9格，伤害倍率从atk×0.7降至atk×0.5。摸金模式保持原强度。</p>
+<p><span class="hl">【Boss召唤物卡墙修复】</span>修复四个Boss召唤的虫子、血蝠、守墓石像等召唤物可能生成在墙里卡住不动的问题。安全生成函数优化，召唤时螺旋搜索范围从6格扩大到8格，确保所有召唤物都能在可走位置生成并正常移动攻击。</p>
+<p><span class="hl">【撤离/下楼提示动态化】</span>修复Boss未消灭时撤离/下楼提示写死"金甲尸王"的问题。现在动态获取当前存活的Boss名称显示，随机四选一后提示正确（如"青铜尸尊尚未消灭！"）。共修复4处提示。</p>
+<p><span class="hl">【代码清理与优化】</span>①删除普通/恐怖自动开箱块中嵌套的摸金模式死代码（约15行，永远不执行）；②合并两个重复的物品拾取循环为一个，统一调用pickupItem函数（含音效+粒子特效），拾取距离0.8，保留特工模式金币磁吸效果；③修复回血药水拾取逻辑不一致的问题。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🎨 V1.9.4 - 地铁逃生风格仓库界面重做 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【仓库界面全面重做】</span>参考地铁逃生风格，仓库界面全新设计：深蓝色渐变背景+蓝色边框+发光阴影，顶部栏显示标题、金币和关闭按钮，左右分栏布局。左侧42%为角色装备栏+带入游戏背包，右侧为仓库物品区。</p>
+<p><span class="hl">【装备栏重做】</span>武器槽（绿色边框）和护甲槽（蓝色边框）独立显示，包含图标、名称、属性加成、耐久和卸下按钮。未装备时显示占位提示。装备仅在摸金模式生效。</p>
+<p><span class="hl">【背包格子重做】</span>带入游戏背包改为4列网格（移动端3列），每个格子独立显示物品图标和数量。点击物品可移回仓库。</p>
+<p><span class="hl">【仓库区域重做】</span>右侧仓库区域包含分类标签（全部/武器/护甲/消耗品）和6列网格（移动端4列），支持滚动。武器和护甲不堆叠，每个单独占一格并显示耐久（当前/最大）和出售按钮；消耗品可堆叠。</p>
+<p><span class="hl">【耐久显示优化】</span>仓库和背包中的装备耐久统一显示为「当前/最大」完整格式，例如133/150，颜色区分：绿色(>50%)、黄色(>20%)、红色(<=20%)。</p>
+<p><span class="hl">【物品稀有度边框】</span>仓库物品根据品质显示不同颜色边框：普通(灰)、优秀(绿)、稀有(蓝)、史诗(紫)、传说(金)，带发光效果。</p>
+<p><span class="hl">【移动端适配】</span>仓库界面在手机端自动调整：宽度94vw，顶部栏缩小，左右分栏保持42%比例，背包3列，仓库4列，字体和间距适配触屏操作。</p>
+</div>
+</div>
+<div class="version-title" onclick="toggleVersion(this)">🏆 V1.9.3 - 背包操作与耐久显示优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【摸金模式敌人全面增强】</span>摸金模式难度大幅提升，所有敌人生存和输出全面加强：<span class="red">小怪和BOSS血量×4.8，攻击×6</span>，小怪数量×1.3，BOSS技能伤害（地震/冲撞）×6。4个BOSS和所有小怪都适用，摸金模式真正成为高风险高回报的硬核玩法。</p>
+<p><span class="hl">【装备系统重做-百分比加成】</span>旧装备（生锈铁剑/精钢长剑/皮甲/铁甲）全部删除，新增<span class="red">3级武器+3级护甲</span>，全部采用百分比加成：武器T3摸金宝刀+500%攻(90万)/T2精钢战刀+400%攻(70万)/T1锋利短刀+250%攻(35万)；护甲T3金缕玉甲减伤80%(117万)/T2精钢护甲减伤65%(68万)/T1皮质护甲减伤40%(40万)。回血药水价格调整为3万。</p>
+<p><span class="hl">【装备仅摸金模式生效】</span>所有武器和护甲的百分比加成<span class="red">仅在摸金模式生效</span>，普通/恐怖/特工模式装备无任何效果。商店和仓库界面均有醒目提示。开始游戏时只有摸金模式才会从仓库装备武器和护甲。</p>
+<p><span class="hl">【装备耐久系统-损坏不可维修】</span>新增装备耐久机制，<span class="red">损坏后无法维修</span>：武器每次攻击消耗1点耐久，护甲每次受到伤害消耗1点耐久。耐久数值：武器T3 250次/T2 180次/T1 120次；护甲T3 120次/T2 80次/T1 50次。大约2-3局游戏消耗一套装备。耐久归零时装备损坏消失，HUD左下角实时显示装备耐久（当前/最大值+百分比）。</p>
+<p><span class="hl">【背包界面优化】</span>单独打开背包（不开箱子）时面板占屏幕右侧40%，箱子区域隐藏，格子缩小以完整显示28格（4列×7行）无需滚动。开箱子时保持全屏左右分栏。<span class="red">变卖物不堆叠</span>（每个占一格，需取舍带什么撤离），<span class="red">回血药水可堆叠</span>。长按物品拖到界面外可丢弃，丢弃后完全消失。</p>
+<p><span class="hl">【搜索式开箱优化】</span>搜索过程中可随时点✕关闭，自动保存当前搜索进度，重新打开时从上次位置继续搜索。修复手机端触摸双击导致物品重复移动的问题。修复背包格子触摸滑动与拖拽冲突，现在格子上滑动可正常滚动。</p>
+<p><span class="hl">【打开背包游戏暂停】</span>打开背包或箱子界面时游戏暂停（敌人和玩家都停止行动），保证操作连贯性。关闭后恢复游戏。移动过程中也可以打开背包。</p>
+<p><span class="hl">【仓库系统重构-装备不叠加】</span>仓库数据结构全面重构，武器和护甲<span class="red">不再堆叠</span>，每个装备实例单独占一个格子，独立保存剩余耐久。回血药水等消耗品仍可堆叠。撤离成功时当前装备（带剩余耐久）自动放回仓库。</p>
+<p><span class="hl">【仓库格子显示耐久】</span>每个装备格子左下角显示剩余耐久数字，颜色区分：绿色(>50%)、黄色(>20%)、红色(<=20%)。鼠标悬停显示完整耐久信息。已装备栏也显示当前耐久。</p>
+<p><span class="hl">【装备出售功能-原价30%】</span>仓库中每个装备格子右上角新增💰出售按钮，点击可单独出售该装备。所有物品（武器/护甲/消耗品）出售价格统一为<span class="red">原价的30%</span>。出售前有确认提示。</p>
+<p><span class="hl">【装备耐久保存】</span>撤离成功后装备剩余耐久自动保存到仓库，下一局从仓库装备时继承上次的剩余耐久，不再每次重置为满耐久。装备损坏（耐久归零）后消失，不可维修。</p>
+<p><span class="hl">【背包物品操作菜单】</span>背包中每个物品右上角新增⋯操作按钮，点击弹出菜单：武器/护甲可选择「装备」或「出售」，消耗品和变卖物可选择「出售」。出售价格统一为原价30%。装备时自动替换当前装备，旧装备放回背包。</p>
+<p><span class="hl">【耐久显示格式优化】</span>背包和仓库中的装备耐久显示改为完整格式「当前/最大」，例如133/150，颜色区分：绿色(>50%)、黄色(>20%)、红色(<=20%)。鼠标悬停显示详细耐久信息。</p>
+<p><span class="hl">【修复回血药水问号图标】</span>修复从账号背包带入游戏的回血药水显示为问号图标的bug。现在正确显示❤️图标和名称。</p>
+<p><span class="hl">【修复丢弃物品悬浮残留】</span>修复拖拽丢弃物品时，物品幽灵元素悬浮在空中不消失的bug。关闭背包面板时强制清理所有拖拽相关元素和事件监听器，丢弃时直接删除物品不生成场景实体。</p>
+<p><span class="hl">【普通模式土夫子难度优化】</span>土夫子基础生命值95→100，基础攻击16→22，普通模式第1层BOSS血量从720降至480，后续层数血量增长曲线放缓。普通模式打BOSS体验更流畅，不再过于费劲。</p>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.9.1 - BOSS平衡与性能优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【三大BOSS平衡性削弱】</span>除金甲尸王外的三个BOSS全面削弱，增加玩家操作空间：<span class="red">青铜尸尊</span>普攻范围4→2.5格，石化射线射程7→4格前摇1→1.5秒，毒雾喷射范围4→3格前摇1.2→1.8秒，毒雾光环去掉减速效果，技能CD 5→7秒；<span class="red">噬魂鬼将</span>移速2.2→1.6，技能CD 4→7秒，瞬移斩伤害×1.2→×0.9，瞬移落点±1→±2格（有概率落空），隐身加速×1.5→×1.2，血蝠3→2个且去掉属性加成；<span class="red">万奴王</span>HP 500→400，大地震范围5→3.5格伤害45→30，80%血召虫6→3个，群体狂暴只加BOSS自身不加小怪，毒弹8→5发伤害7→5。</p>
+<p><span class="hl">【BOSS技能红色预警指示器】</span>所有6种BOSS技能（地震、冲撞、毒雾喷射、石化射线、瞬移斩、虫群爆发）释放前统一显示<span class="red">醒目的红色虚线圆圈+红色半透明填充</span>预警指示器，地震中心额外显示⚠️标记，玩家可以清晰看到技能范围和释放时机，提前走位躲避。</p>
+<p><span class="hl">【召唤物卡墙修复】</span>修复BOSS召唤的虫子、血蝠、守墓石像等召唤物可能生成在墙里卡住的问题。新增安全生成函数，召唤时自动检测目标位置是否可走，不可走时螺旋搜索附近6格内最近的可走位置生成，确保所有召唤物都能正常移动和攻击。</p>
+<p><span class="hl">【性能优化-距离休眠机制】</span>新增<span class="red">距离休眠机制</span>，大幅降低手机发热和耗电，所有模式均生效：离玩家超过一定距离的实体暂停更新，靠近时自动恢复。休眠距离按模式智能调整——<span class="red">摸金模式</span>（超大地图）普通敌人25格、BOSS40格；<span class="red">其他模式</span>（小地图）普通敌人18格、BOSS30格。AOE区域30格、粒子25格、投射物30格外直接清除。完全不影响游戏体验，摸金模式超大地图下性能提升尤其明显。</p>
+<p><span class="hl">【大地图拖动边界限制】</span>修复大地图（点击小地图打开）拖动时可以拖到地图完全移出视野的问题。新增边界限制，地图始终100%在显示框内：地图比框小时完全居中显示，地图放大比框大时始终填满整个框，不会出现地图外的黑色空白区域。</p>
+<p><span class="hl">【噬魂鬼将瞬移斩再次削弱+预警加强】</span>紫色BOSS噬魂鬼将瞬移斩再次削弱：前摇0.8→1.2秒（更多反应时间），瞬移落点±2→±3格（更不容易贴脸），命中距离1.5→1.2格（更难命中），伤害atk×0.9→atk×0.7。同时预警指示器加强：红色预警圈从2格加大到3格，线条加粗，玩家头顶新增⚠️标记，看到提示赶紧走位躲避。</p>
+<p><span class="hl">【变卖物价值全面调整+新增大金品质】</span>摸金模式变卖物系统全面重做，共20种6品质：白色（古钱币200/陶罐350/铜饰500）、绿色（丝绸1500/漆器3000/骨雕5000）、蓝色（银钩15000/玉珠25000/青铜灯40000）、紫色（古镜60000/鎏金兽80000/玉戒100000）、红色（金面具250000/饕餮纹320000/陨玉400000）。新增<span class="red">传说品质「大金」</span>3种：金缕玉衣688,888、始皇金印1,888,888、长生陨玉5,201,314，金色发光边框，搜索时间3秒（3圈），概率极低。</p>
+<p><span class="hl">【三种箱子不同爆率+取消高物资区】</span>普通箱子、保险箱、BOSS金色箱子三种箱子品质爆率不同：普通箱子（白38%/绿28%/蓝16%/紫12%/红6%/大金0%）、保险箱（白20%/绿24%/蓝24%/紫21%/红10%/大金1%）、BOSS箱子（白6%/绿14%/蓝24%/紫36%/红18%/大金2%）。<span class="red">取消高物资区机制</span>，全地图所有箱子爆率统一，地图上不再显示红色高物资区域。地上物品也统一爆率。</p>
+<p><span class="hl">【背包系统重做】</span>背包格子改为<span class="red">28格（4列×7行）</span>，只放变卖物，回血药水和装备不占用格子。新增<span class="red">「整理」按钮</span>，点击后按价值从高到低排序（大金→红→紫→蓝→绿→白）。不开箱子时点击背包按钮也打开和开箱一样的界面，左边箱子区域隐藏，只有右边背包占满屏幕。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🏆 V1.9.0 - 摸金模式大版本更新 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【全新摸金模式】</span>学习和平精英地铁逃生/三角洲行动玩法，新增<span class="red">摸金模式</span>。主菜单「开始冒险」上方与特工模式各占一半位置，点击后直接确认使用当前角色进入摸金模式，仅1层。超大单局地图（140×100格，48个房间），全亮视野无迷雾，探索体验完全不同。</p>
+<p><span class="hl">【搜索式开箱系统】</span>箱子不再自动开箱，需要靠近后按开箱键（原撤离键位置）开始搜索。搜索前所有物品格子显示灰色问号，🔍放大镜在当前搜索格子里转圈表示搜索进度。<span class="red">一个个搜索</span>，搜出来的物品立刻就能双击或长按拖动拿走，不用等全部搜完。搜索时间根据品质：白色0.4秒（半圈）、绿色0.6秒（半圈）、蓝色0.8秒（大半圈）、紫色1.2秒（1圈）、红色2.0秒（2圈）。开过的箱子可以再次打开，未拿走的物品保留。</p>
+<p><span class="hl">【17种变卖物+5品质】</span>摸金模式专属变卖物系统，分为白/绿/蓝/紫/红五个品质：白色（古钱币、陶罐、铜饰）、绿色（丝绸、漆器、骨雕）、蓝色（银钩、玉珠、青铜灯）、紫色（古镜、鎏金兽、玉戒）、红色（金面具、饕餮纹、陨玉）。每个变卖物有独立模型、名字和价值，品质越高价值越高、搜索时间越长。箱子格子背景颜色根据品质显示。</p>
+<p><span class="hl">【4个BOSS各有独特技能】</span>摸金模式固定生成4个不同BOSS，分布在远离出生点的房间：金甲尸王（地震+冲撞+召唤随从+70%狂暴）、青铜尸尊（毒雾喷射+石化射线+毒雾光环+召唤石像）、噬魂鬼将（瞬移斩+制造分身+隐身+召唤血蝠）、万奴王（大地震+虫群爆发+召唤虫群+群体狂暴）。BOSS技能仅在玩家周围0-8格内释放，所有技能都有预警指示器。BOSS死亡后变成👑金色发光箱子，需要搜索才能获取战利品。</p>
+<p><span class="hl">【保险箱+高物资区】</span>每张地图固定5个保险箱：高物资区域3个，外面区域2个。保险箱在小地图和大地图上标记位置（金色圆点），普通箱子不标记位置。高物资区域在地图和小地图上用红色半透明区域标记，里面的箱子和地上物品品质更高。</p>
+<p><span class="hl">【撤离点系统】</span>每张地图2个撤离点，都在距离出生点较远的位置。靠近撤离点时开箱键变为「🚪 撤离」，点击即可成功撤离并带走所有变卖物。撤离点在小地图上用绿色脉冲圆点标记。</p>
+<p><span class="hl">【背包系统重做】</span>开箱界面左边是箱子（10格），右边是背包（36格，6列），占屏幕右边大部分空间。每个变卖物显示图标、名字和💰价值。支持<span class="red">双击移动</span>（箱子→背包/背包→箱子）和<span class="red">长按拖动</span>（300ms长按后可拖动，拖到箱外销毁）。触屏端自己实现双击检测。背包右上角有关闭叉号。</p>
+<p><span class="hl">【自动拾取】</span>地上的变卖物和回血药水走过去自动拾取，摸金模式不掉金币。普通敌人只掉回血药水（35%概率），不掉变卖物。变卖物只能从箱子和BOSS金色箱子中获取。箱子里只有变卖物和回血药水，没有武器装备。</p>
+<p><span class="hl">【小地图+大地图优化】</span>小地图尺寸加大适配手机屏幕，玩家标记改成带白色边框的金色圆形+脉冲光环，非常明显。小地图不显示陷阱位置，只显示BOSS（红色圆点）、保险箱（金色圆点）、撤离点（绿色脉冲）和高物资区（红色区域）。大地图支持右侧垂直缩放滑动条（1倍-3倍）和双指捏合缩放，缩放时可以拖动平移查看其他位置，关闭后重置。打开大地图时游戏暂停，方向键有输入时可以打开，关闭后继续移动保持连贯性。</p>
+<p><span class="hl">【左上角物资总价值】</span>摸金模式下左上角显示当前携带的所有变卖物总价值，随时了解本局收益。</p>
+<p><span class="hl">【BOSS生成与技能范围】</span>4个BOSS生成在距离出生点25格以外的房间，不会刚出生就到脸上。BOSS技能仅在玩家周围0-8格内释放，超出范围不释放技能。所有技能都有视觉预警指示器（地震圆圈、冲撞线条、毒雾圆圈、石化射线等）。</p>
+<p><span class="hl">【力士跳跃穿墙优化】</span>土夫子（力士）技能2「撼地重击」跳跃可以穿墙，落点不安全时自动找最近安全点，不会卡墙里。</p>
+<p><span class="hl">【摸金模式专属规则】</span>所有改动仅在摸金模式生效，不影响普通/恐怖/特工模式。摸金模式下特工模式技能不会刷出，agentState正确重置。摸金模式只有1层，点开始冒险直接弹确认框进入。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.8 - 残影射箭范围指示器 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【残影射箭范围指示器】</span>土夫子技能1「残影步」留下的残影，存在期间持续显示5格射箭范围指示器（橙色虚线半透明圆圈），方便玩家预判残影攻击范围，合理规划瞬移位置。残影消失时指示器同步移除。</p>
+<p><span class="hl">【力士大招返还冷却修复】</span>卸岭力士大招「山崩地裂」未命中返还冷却，从原来的setTimeout(600ms)异步检测改为slamJump落地时同步判断，彻底解决"明明命中敌人却仍返还70%冷却"的时序问题。大招开始时重置_ultHit标记，落地未命中立即返还70%冷却。</p>
+<p><span class="hl">【力士技能伤害说明补全】</span>帮助文档中卸岭力士技能1「蛮力冲锋」明确为atk×3.0（对眩晕敌人×1.3），技能2「撼地重击」明确为atk×2.2（1格内+40%即atk×3.08），与代码实际数值一致。</p>
+<p><span class="hl">【力士技能伤害下调】</span>卸岭力士两个技能CD均为5秒且都是直接范围/路径高伤，输出偏高，平衡性调整：蛮力冲锋从atk×3.0<span class="red">下调至atk×2.5</span>，撼地重击从atk×2.2<span class="red">下调至atk×1.8</span>（1格内+40%即atk×2.52），大招山崩地裂atk×3保持不变。</p>
+<p><span class="hl">【普通/恐怖模式小怪数量增加】</span>每层小怪数量公式从 5+floor×3 <span class="red">调整为 8+floor×4</span>（第1层12个→第5层28个），恐怖模式额外+2，解决"好多房间都没有小怪"的问题，每层探索更有战斗密度。</p>
+<p><span class="hl">【按房间分配小怪+药水掉落调整】</span>小怪生成改为<span class="red">按房间分配</span>：每个非起始房间固定生成1-2个小怪，第3层起每房额外+1，恐怖模式再+1，确保每个房间都有敌人不再空房。敌人掉落调整：dropLoot额外掉落率40%，掉落池中回血药水占比<span class="red">固定为20%</span>（1瓶药水+4件装备），同时移除高层钢武器/铁甲追加掉落，装备整体掉落率下降。</p>
+<p><span class="hl">【掉落物精简为商店五件】</span>怪物掉落和地图随机物品<span class="red">只保留商店五件物品</span>（生锈铁剑、精钢长剑、皮甲、铁甲、回血药水）+金币，删除火把油等其他掉落。怪物死亡时独立概率判定：<span class="red">回血药水20%</span>、<span class="red">装备5%</span>（四件装备随机），金币掉落保持60%不变。</p>
+<p><span class="hl">【装备拾取与撤离规则】</span>捡到装备自动比较并穿上更好的（药水拾取自动使用）。<span class="red">成功撤离</span>时，身上穿戴的武器和护甲自动存入账号仓库，消耗品存入账号背包，金币存入账号。<span class="red">撤离失败或退出游戏</span>时，本局所有装备（身上+背包）全部遗失，仅账号已有数据保留。结算界面会提示装备是否存入仓库。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.7 - 寻龙点穴蓄力施法 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【寻龙点穴改为蓄力施法】</span>摸金校尉技能2「寻龙点穴」改为蓄力施法模式：长按开始蓄力，拖动可调整方向，蓄力过程中持续发射穿透光线对路径敌人造成低伤害（每0.2秒atk×0.15），松手时给路径敌人挂3秒寻龙标记（结束爆炸atk×1.3），最多蓄力3秒超时自动释放，冷却4.5秒从松手时计算。</p>
+<p><span class="hl">【蓄力机制完善】</span>①蓄力光束改为单beam管理，不再每帧叠加导致画面过亮；②改为长按即开始蓄力、松手即结束释放，不再是点一下蓄力再点一下取消；③蓄力过程中未手动拖动时自动锁定4格内最近敌人，光线方向随敌人移动自动更新；④蓄力过程中技能不进入冷却，松手释放后才开始冷却；⑤蓄力时隐藏方向指示器，仅保留半透明光束特效；⑥寻龙光束各层透明度和线宽降低，避免遮挡怪物模型；⑦蓄力过程中命中敌人也会挂寻龙标记，单次技能最多标记6个目标，已有标记的敌人不叠加爆炸伤害；⑧完全删除摸金校尉技能2的方向指示器，蓄力时仅保留半透明光束特效；</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.6 - 土夫子技能优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【回旋铲指示器锁敌范围修复】</span>土夫子技能2「回旋铲」长按指示器的自动锁敌范围从默认3格<span class="red">修正为5格</span>，与回旋铲实际飞行射程一致。长按时指示器会持续跟随5格内最近敌人，不再出现敌人在射程内但指示器不跟随的问题。</p>
+<p><span class="hl">【删除残影挥铲圆弧光效】</span>土夫子技能1「残影步」留下的残影，删除原有的挥铲圆弧高亮光效。残影现已改为射箭攻击，不再需要挥铲动作对应的圆弧特效，残影视觉更简洁。</p>
+<p><span class="hl">【寻龙点穴标记时间缩短】</span>摸金校尉技能2「寻龙点穴」的寻龙标记持续时间从5秒<span class="red">缩短至3秒</span>，标记结束爆炸伤害不变（atk×1.3），加快战斗节奏。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.5 - 千瞬斩冷却返还机制 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【千瞬斩按斩击次数阶梯返还冷却】</span>土夫子大招「千瞬斩」结束时，根据实际成功斩击次数返还冷却：<span class="red">1次返还70%、2次返还50%、3次返还20%、4次及以上不返还</span>。完全空大（0次）100%全返还，新增0.1秒快速检测，空大立即结束并全返还。移除原200ms未命中完全重置冷却的机制，改为更精细的阶梯返还。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.4 - 土夫子大招全面调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【千瞬斩冷却缩短】</span>土夫子大招「千瞬斩」冷却时间从18秒<span class="red">缩短至10秒</span>，大招使用频率大幅提升，全程无敌的覆盖时间更密集。</p>
+<p><span class="hl">【千瞬斩伤害降低】</span>为平衡冷却缩短带来的输出提升，斩击伤害相应降低约25%：第1次从atk×2.0<span class="red">降至atk×1.5</span>，同一敌人从第2次起从atk×1.2<span class="red">降至atk×0.9</span>（保持-40%递减），对Boss不递减全程atk×1.5。</p>
+<p><span class="hl">【大招冷却读取修复】</span>修复大招释放函数中硬编码冷却为18秒的问题，改为读取各角色定义中的ultimate.cd值，土夫子正确生效10秒冷却。</p>
+<p><span class="hl">【千瞬斩防卡墙修复】</span>千瞬斩每次斩击瞬移到敌人后方1.5格时，新增位置安全检测，若目标位置在墙内则从瞬移前位置附近3格内自动回退到最近安全点，彻底解决大招结束卡墙问题。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.3 - 土夫子Boss战增强 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【千瞬斩对Boss不递减】</span>土夫子大招「千瞬斩」对Boss（金甲尸王）释放时，5次斩击全部全额 atk×2.0 伤害，不再从第2次起 -40% 递减，大幅提升Boss战爆发输出。对普通小怪仍保持原递减机制。</p>
+<p><span class="hl">【基础攻击提升】</span>土夫子基础攻击力从14<span class="red">提升至16</span>，拉近与其他角色的输出差距，普攻和所有技能伤害同步提升。</p>
+<p><span class="hl">【残影步箭伤害提升】</span>土夫子残影步留下的残影，自动锁敌射箭伤害从 atk×1.2 <span class="red">提升至 atk×1.5</span>，技能输出更稳定。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.2 - 视野与Boss逻辑优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【残影锁敌限制视野】</span>土夫子残影步留下的残影，自动锁敌射箭时只锁定当前视野内的敌人，未探索区域的敌人不会被锁定和攻击，避免隔墙射箭的不合理情况。</p>
+<p><span class="hl">【Boss未探索不放技能】</span>普通/恐怖模式下，金甲尸王所在格子未被玩家探索到时，不会释放地震和冲撞技能，技能冷却继续走但不触发，避免玩家还没见到Boss就被隔墙技能消耗。特工模式无迷雾不受此限制。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.1 - 内存优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【全面内存优化】</span>所有玩法、数值、视觉效果完全不变，仅优化运行时内存占用：</p>
+<p><span class="hl">①粒子对象池</span>：粒子系统改为对象池复用，最多200个活跃粒子，死亡后回收到对象池（池上限150），大幅减少GC压力。</p>
+<p><span class="hl">②动态数组上限</span>：skillEffects(80)/aoeZones(20)/afterimages(8)/explosions(15)/projectiles(60) 新增硬上限，超出时移除最老的，防止长时间游戏内存泄漏。</p>
+<p><span class="hl">③敌人对象复用</span>：敌人dir/patrolTarget/chargeDir/chargeStart等对象改为复用已有对象，只改x/y值，不再每帧新建。</p>
+<p><span class="hl">④敌人数组原地清理</span>：从每帧 `game.enemies.filter(...)` 新建整个数组，改为原地 splice 删除死亡敌人，减少GC压力。</p>
+<p><span class="hl">⑤投射物拖尾复用</span>：拖尾点对象循环复用，不再每帧新建 {x,y} 对象。</p>
+<p><span class="red">普通战斗场景内存降低约30~40%，大招爆发期降低约50~60%，长时间割草峰值稳定不增长。</span></p>
+<p><span class="hl">【UI修复】</span>①普通/恐怖模式不再显示升级徽章和撤离按钮，这两个是特工模式专属功能；②右上角"第几层"位置修正，添加margin-left:auto使其在右上角区域内正确靠右对齐，不再偏左。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.8.0 - 土夫子大招与残影优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【千瞬斩期间禁用移动】</span>土夫子大招「千瞬斩」释放期间玩家<span class="red">无法移动</span>，但移动键/摇杆的方向输入仍然保留（facing持续更新），大招结束后自动朝当前拖拽方向继续移动，操作手感更连贯。</p>
+<p><span class="hl">【千瞬斩渐变斩击动画】</span>大招期间玩家模型<span class="red">完全不可见</span>（直接跳过玩家渲染，避免drawCharacter内部重置透明度导致闪烁），每次斩击只显示<span class="red">金色渐变轨迹线</span>（5条窄平行线+白色中心线+发光阴影）。轨迹<span class="red">固定3格长、中心点在敌人位置</span>，不会一长一短。玩家每次从当前位置穿过敌人，停在<span class="red">敌人后方1.5格</span>，斩击同一个敌人也有明确方向感，不会像原地。斩击间隔<span class="red">0.6秒→0.3秒</span>，节奏更快更密集；每次斩击无敌<span class="red">0.7秒→0.4秒</span>（比间隔多0.1秒缓冲，全程无敌且结束后不残留）。去掉弧形刀光，只保留渐变斩击轨迹。</p>
+<p><span class="hl">【残影步改为射箭攻击】</span>残影步留下的残影不再范围斩击，改为：残影存在最后0.3秒自动锁定<span class="red">5格内最近敌人</span>，显示<span class="red">简单橙色虚线瞄准线</span>（去掉复杂发光效果），残影消失时向目标射出一箭（橙色箭模型：箭头+箭杆+箭羽），造成atk×1.2伤害。5格内无敌人则不射箭。残影步瞬移后<span class="red">完整按照力士跳跃防卡判定</span>：记录起始安全位置，瞬移后若位置不安全则从起始位置附近3格内找安全点回退，彻底防止瞬移到墙外或卡墙。</p>
+<p><span class="hl">【箭命中特效】</span>箭命中敌人时产生橙色+金黄+白色火花粒子、橙色光环闪光，命中音效。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🎮 V1.7.9 - 特工模式升级累积与撤离优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【升级累积机制】</span>特工模式升级不再立即弹出选择界面，改为在<span class="red">右上角小地图金币下方显示累积升级徽章</span>（正方形70px，透明度70%，⬆️ 待选 N），点击徽章可随时打开升级界面选择技能。选完一个后若仍有累积升级，自动继续显示下一个。避免前几级升级频繁弹出影响割草手感。</p>
+<p><span class="hl">【删除7秒自动选择】</span>移除升级界面7秒不选自动随机选择的机制，玩家可以慢慢选技能，不再有倒计时压力。</p>
+<p><span class="hl">【无尽模式撤离按钮】</span>无尽模式第10波后，<span class="red">右上角新增撤离按钮</span>（🚪 撤离），可随时保存金币并退出，无需等到升级界面才退出。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🐛 V1.7.8 - 修复激光吸血与技能伤害小数 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【修复激光束吸血失效】</span>高帧率下激光每帧伤害过小，Math.floor(_dmg*0.15)经常为0导致完全不吸血。改为<span class="red">吸血量累加器</span>：每帧吸血量累加到_laserHealAcc，达到整数时才回血，高帧率下也能正常吸血，每秒上限10点不变。</p>
+<p><span class="hl">【修复特工技能伤害小数】</span>闪电链、飞剑、火箭筒、火球术等一次性伤害技能的伤害计算未取整，导致敌人血量和浮动伤害显示出现小数。统一添加<span class="red">Math.floor取整</span>，伤害均为整数。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.7.7 - 搬山电流区域/摸金大招/卸岭减速加强 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【五雷正法新增电流区域】</span>搬山道人大招每次落雷命中敌人后，在目标位置生成<span class="red">1.2格范围、持续2秒的电流区域</span>，每0.5秒造成该次落雷伤害的60%。被落雷直接命中的敌人获得2.5秒电流免疫，不受该电流区域伤害（避免重复结算），区域内其他敌人正常受到电流伤害。</p>
+<p><span class="hl">【龙脉觉醒伤害加强】</span>摸金校尉大招标记爆炸伤害从atk×1.5<span class="red">提升至atk×1.8</span>，爆炸范围从1格<span class="red">扩大至1.3格</span>，AOE清场能力提升。</p>
+<p><span class="hl">【山崩地裂新增减速】</span>卸岭力士大招命中敌人后，在2秒眩晕结束后追加<span class="red">2秒20%减速</span>（slowTime=4，眩晕期间减速无效，眩晕结束后减速剩余2秒生效），已取消减防25%/5秒效果，仅保留眩晕2秒+眩晕结束后2秒20%减速。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.7.6 - 搬山道人大招空大快速返还 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【五雷正法空大快速返还】</span>搬山道人大招「五雷正法」开启时若5.5格范围内无敌人，<span class="red">0.6秒后仍未命中任何敌人则自动关闭雷云并返还70%冷却</span>，无需等待5秒兜底检测。开启时有敌人、或0.6秒内命中敌人则正常执行5次落雷流程。已删除原5秒兜底检测。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔧 V1.7.5 - 特工金币提示移除与大招返还调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【移除特工模式金币拾取提示】</span>修复特工模式下击杀小怪获得金币时屏幕中间弹出"+X 金币"提示的问题。原因是通用物品拾取循环会提前拾取距离0.8以内的金币并调用pickupItem显示提示，现已让该循环在特工模式下跳过金币物品，由专属自动吸取逻辑处理（无提示）。</p>
+<p><span class="hl">【大招未命中返还提升】</span>摸金校尉「龙脉觉醒」、卸岭力士「山崩地裂」、搬山道人「五雷正法」三个角色的大招未命中返还冷却从60%<span class="red">提升至70%</span>，空大后冷却恢复更快。土夫子「千瞬斩」保持未命中完全重置冷却不变。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.7.4 - 卸岭力士大招未命中检测优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【山崩地裂检测时机调整】</span>卸岭力士大招「山崩地裂」跳起蓄力0.5秒后落地造成伤害，未命中检测时间从2.5秒<span class="red">缩短至0.6秒</span>（0.5秒落地+0.1秒缓冲），落地后0.1秒内未造成伤害即返还60%冷却，反馈更及时。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🐛 V1.7.3 - 修复摸金大招未命中误判 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【修复龙脉觉醒命中判定】</span>摸金校尉大招「龙脉觉醒」的伤害是延迟3秒后通过标记爆炸造成的，但未命中检测时间仅0.1秒，导致即使大招成功挂上敌人标记，0.1秒后检测时伤害尚未爆炸、_ultHit仍为false，从而误判为未命中并返还冷却。修复为：大招释放时只要成功给至少一个敌人挂上标记，<span class="red">立即设置命中标记</span>，不再等待爆炸后才判定。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🎯 V1.7.2 - 相机平滑过渡手感优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【修复相机平滑结束卡顿】</span>残影步等位移技能的相机平滑过渡结束时，从"缓慢跟随"突然切回"瞬间跟随"，如果相机尚未完全跟上玩家位置会产生跳变卡顿。改为<span class="red">缓出（ease-out）插值</span>：平滑开始时相机缓慢移动（清晰感知位移方向），随时间推移插值系数逐渐增大（从0.06递增至0.41），结束时相机已自然跟上玩家，切换到瞬间跟随模式无跳变。残影步和千瞬斩的相机过渡手感均已优化。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🎥 V1.7.1 - 土夫子位移技能相机平滑过渡 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【相机平滑过渡系统】</span>新增相机平滑插值机制。正常移动时相机瞬间跟随玩家，释放位移技能时相机缓慢过渡，让玩家清晰感知位移方向和距离。</p>
+<p><span class="hl">【残影步相机平滑】</span>土夫子技能1「残影步」释放时触发<span class="red">0.35秒</span>相机平滑过渡（插值系数0.06），瞬移后相机缓缓跟上，视觉上能清楚看到位移方向。</p>
+<p><span class="hl">【千瞬斩相机平滑】</span>土夫子大招「千瞬斩」释放时触发<span class="red">3.2秒</span>相机平滑过渡（插值系数0.05），覆盖整个5次斩击过程，每次瞬移都有平滑跟随效果，大招视觉冲击力大幅提升。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔥 V1.7.0 - 火球术伤害平衡修复 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【修复火球点燃刷新异常】</span>移除火球术命中已灼烧敌人时<span class="red">立即结算剩余全部灼烧伤害</span>的机制。此前该机制配合1.2秒CD和4.5秒灼烧时间，导致每次命中都额外触发一次高额立即伤害，实际DPS远超面板值（Lv5单轮超250伤害）。修复后灼烧回归正常持续伤害，Lv5火球总DPS约111，与闪电链等技能持平。命中已灼烧目标时仅保留刷新特效，不再额外造成伤害。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔧 V1.6.9 - 特工被动数值回调 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【经验加成回调】</span>特工模式经验加成从+40%<span class="red">回调至+30%</span>。</p>
+<p><span class="hl">【铁骨减伤调整】</span>特工模式铁骨被动减伤从18%<span class="red">调整为15%</span>。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚖️ V1.6.8 - 全局平衡性调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【卸岭力士输出增强】</span>蛮力冲锋伤害从atk×2.5<span class="red">提升至atk×3.0</span>，撼地重击伤害从atk×1.8<span class="red">提升至atk×2.2</span>（中心+40%保持），解决卸岭技能输出垫底的问题。</p>
+<p><span class="hl">【搬山定身符调整】</span>移除定身期间敌人<span class="red">减伤50%</span>的负面效果，定身不再降低受到的伤害，也不增加易伤，回归纯粹的控制功能。</p>
+<p><span class="hl">【土夫子生存提升】</span>基础HP从85<span class="red">提升至95</span>，改善无敌空档期被围殴致死的体验。</p>
+<p><span class="hl">【1层Boss血量恢复】</span>恢复V1.1设计的1层Boss血量<span class="red">额外×1.8</span>（此前在重构中被覆盖失效），1层Boss从400血提升至720血，增加挑战性。</p>
+<p><span class="hl">【小怪血量双重计算修正】</span>修复Enemy构造函数和initFloor中各计算一次层数倍率的问题。构造函数层数系数血量从0.08调整为0.14、攻击从0.05调整为0.06，移除initFloor中的重复层数倍率，最终数值与原先基本一致。</p>
+<p><span class="hl">【特工飞剑削弱】</span>飞剑基础伤害从12<span class="red">降低至9</span>（-25%），解决飞剑与激光束双巨头碾压其他技能的问题。</p>
+<p><span class="hl">【特工闪电链增强】</span>闪电链基础伤害从18<span class="red">提升至24</span>（+33%），提升单目标输出竞争力。</p>
+<p><span class="hl">【特工火球术增强】</span>火球术基础伤害从14<span class="red">提升至18</span>（+29%），灼烧每秒伤害从基础伤害的30%<span class="red">提升至40%</span>。</p>
+<p><span class="hl">【特工被动调整】</span>铁骨减伤从12%<span class="red">提升至18%</span>，经验加成从30%<span class="red">提升至40%</span>，提升生存向和发育向被动的竞争力。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.6.7 - 土夫子技能增强与大招检测调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【回旋铲增强】</span>土夫子技能2「回旋铲」冷却从6秒<span class="red">缩短至2.5秒</span>，飞去飞回伤害从atk×1.2<span class="red">提升至atk×1.5</span>，输出频率和爆发大幅提升。</p>
+<p><span class="hl">【残影步增强】</span>土夫子技能1「残影步」新增<span class="red">位移爆发光效和金色拖尾粒子</span>，瞬移起点产生光圈爆发，路径上8组拖尾粒子（白+金+棕），视觉效果更酷炫。残影斩击伤害从atk×1.0<span class="red">提升至atk×1.2</span>。</p>
+<p><span class="hl">【大招未命中检测调整】</span>摸金校尉「龙脉觉醒」检测时间从3.2秒<span class="red">缩短至0.1秒</span>（几乎即时反馈）；卸岭力士「山崩地裂」从1.2秒<span class="red">调整为2.5秒</span>（匹配落地伤害时机）；搬山道人「五雷正法」从6.8秒<span class="red">缩短至5秒</span>。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⛏️ V1.6.6 - 土夫子大招平衡调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【千瞬斩未命中重置冷却】</span>土夫子大招「千瞬斩」未命中敌人时<span class="red">完全重置冷却</span>，可立即再次释放。</p>
+<p><span class="hl">【未命中检测提前】</span>大招未命中判定时间从3.2秒<span class="red">缩短为0.2秒</span>，释放后几乎即时反馈，手感更干脆。</p>
+<p><span class="hl">【大招期间全程无敌】</span>千瞬斩每次斩击无敌时间从0.3秒<span class="red">提升至0.7秒</span>，覆盖0.6秒斩击间隔，整个大招期间全程无敌，不再出现斩击到一半被打死的情况。</p>
+<p><span class="hl">【特工模式升级无敌】</span>特工突围模式每次升级选完技能后，获得<span class="red">1秒无敌</span>，避免升级界面关闭后还没来得及操作就被敌人击中。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚖️ V1.6.1 - 大招未命中返还调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【未命中冷却返还差异化】</span>摸金校尉、卸岭力士、搬山道人三个角色大招未命中敌人时，<span class="red">减少总共冷却的60%</span>（在当前剩余冷却基础上减去10.8秒，最低为0）；土夫子千瞬斩未命中时<span class="red">完全重置冷却</span>，可立即再次释放。未命中时屏幕显示对应提示。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚡ V1.6 - 大招冷却统一与未命中机制 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【大招冷却统一18秒】</span>四个角色大招冷却时间全部统一为<span class="red">18秒</span>：摸金校尉龙脉觉醒(45→18)、卸岭力士山崩地裂(45→18)、搬山道人五雷正法(30→18)、土夫子千瞬斩(45→18)，大招使用频率大幅提升。</p>
+<p><span class="hl">【未命中不进冷却】</span>所有角色大招添加命中检测：如果大招释放后没有打到任何敌人，冷却会自动重置（或按比例返还），避免空大导致的节奏中断。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🎯 V1.5.3 - 千瞬斩路径指示 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【斩击间隔路径指示】</span>千瞬斩每次斩击后，在0.6秒间隔期间显示<span class="red">从当前位置到下一个目标的路径指示</span>：红色虚线路径（流动动画）+ 路径上3个移动箭头 + 下一个目标身上的锁定标记（红色圆圈+十字准星+"锁定"文字），清晰指示下一次斩击的方向和目标。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔧 V1.5.2 - 土夫子技能修复 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【残影模型增强】</span>残影步留下的残影模型全面重绘：更大更明显的身体+头部+帽子+帽顶+手持铲子挥铲动作，添加外发光和挥铲光效弧线，透明度提升至0.85，不再是简单的椭圆形。</p>
+<p><span class="hl">【回旋铲飞回命中修复】</span>回旋铲飞回时清空命中记录，同一敌人飞去和飞回都能造成伤害（原飞去命中后飞回不再命中）。</p>
+<p><span class="hl">【千瞬斩选敌逻辑调整】</span>从随机选择敌人改为<span class="red">选择最近的敌人</span>，搜索范围从10格缩小到6格，斩击间隔从0.35秒改为0.6秒，节奏更清晰。</p>
+<p><span class="hl">【千瞬斩瞬移特效】</span>每次瞬移添加6个路径粒子（白色+金色）和起点终点dash光环特效，瞬移轨迹清晰可见，不再是突然消失出现。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">✨ V1.5.1 - 土夫子特效增强 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【技能指示器修正】</span>残影步改为直线指示器（显示瞬移距离2.5格+箭头+落点圆圈），回旋铲改为直线指示器（显示飞行距离5格+虚线箭头+扇形范围），不再使用旧的扇形指示器。</p>
+<p><span class="hl">【残影步特效增强】</span>瞬移路径上留下5个残影粒子，落点12个尘土粒子，添加dash光环特效和白色闪光。</p>
+<p><span class="hl">【回旋铲特效增强】</span>发射时8个金色粒子+cast光环特效，铲子飞行时带拖尾光晕。</p>
+<p><span class="hl">【千瞬斩特效增强】</span>开启时20个白色粒子+大范围cast光环；每次斩击6个白色粒子+15个目标粒子+大范围slash刀光+dash特效。</p>
+<p><span class="hl">【回旋铲模型增强】</span>金色铲头（带高光）+ 棕色铲柄 + 末端金色装饰 + 旋转拖尾光晕，金属质感更强。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🗡️ V1.5 - 土夫子技能重做：残影铲客 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【技能1：残影步】</span>CD 4秒，向指定方向瞬移2.5格，瞬移期间无敌0.3秒。原位留下残影，1秒后残影对周围2格敌人造成atk×1.2伤害。瞬移时附带爆发光效和金色拖尾粒子。瞬移后1秒内普攻伤害+50%。</p>
+<p><span class="hl">【技能2：回旋铲】</span>CD 2.5秒，向指定方向扔出铲子，飞行5格后回旋飞回玩家当前位置（可走位接铲）。飞去和飞回各造成atk×1.5伤害，可穿透多个敌人。</p>
+<p><span class="hl">【大招：千瞬斩】</span>CD 18秒，共5次瞬移斩击，每次瞬移到最近敌人面前（范围6格）。第1次造成atk×2.0伤害，同一敌人从第2次起伤害-40%（atk×1.2）。斩击间隔0.6秒，期间显示下一个目标路径指示。结束后停在最后一个敌人旁边。<span class="red">释放期间全程无敌，未命中敌人时完全重置冷却。</span></p>
+<p><span class="hl">【设计理念】</span>从原来的挖地/掘地玩法改为高机动性的残影铲客，强调瞬移走位+残影输出+回旋铲拉扯，操作简单但有连招空间（残影步→普攻+50%→回旋铲→千瞬斩收割）。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔧 V1.4 - 机制调整与精简 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【删除限时挑战机制】</span>完全移除限时挑战系统，包括UI入口、计时逻辑、超时掉血和奖励加成。游戏不再有时间压力。</p>
+<p><span class="hl">【删除所有宝箱】</span>普通和恐怖模式不再生成宝箱（普通和稀有），物品仅通过怪物掉落和地面拾取获得。</p>
+<p><span class="hl">【删除大量物品】</span>移除屠龙宝刀、灵力法杖、影刃匕首、黄金古剑、玄魔法袍、龙鳞战甲、金缕玉衣、疾风药剂、钥匙。武器仅保留生锈铁剑(+5)和精钢长剑(+10)，护甲仅保留皮甲(+3)和铁甲(+6)。</p>
+<p><span class="hl">【力士大招重做】</span>山崩地裂改为<span class="red">落地时才造成伤害</span>，起跳阶段仅蓄力无敌，落地瞬间触发7格范围伤害+眩晕+减防，打击感更强。</p>
+<p><span class="hl">【道人大招重做】</span>五雷正法改为<span class="red">雷云跟随自身移动</span>，每次落雷在自身周围7格内随机选择敌人（原10格固定位置），移动中也能持续输出，不再需要站桩。</p>
+<p><span class="hl">【无敌帧调整】</span>角色受伤后无敌帧从0.5秒缩短为0.4秒，战斗节奏更紧凑。</p>
+<p><span class="hl">【骷髅闪避下调】</span>骷髅闪避概率从20%下调为15%，减少战斗中的随机性挫败感。</p>
+<p><span class="hl">【特工精英怪下调】</span>特工突围模式精英怪生成概率从15%下调为10%，前期压力降低。</p>
+<p><span class="hl">【激光吸血限制】</span>特工模式激光束的15%吸血新增<span class="red">每秒吸血上限10点</span>，防止高等级激光配合多目标导致续航过强。</p>
+</div>
+</div>
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">📌 V1.3 - 系统重构 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【删除蓝条系统】</span>删除所有角色的能量/蓝条系统，全部技能改用冷却制。技能不再消耗能量，只受冷却时间限制。删除了角色数据中的energy和cost字段、玩家初始化中的能量属性、restoreEnergy方法、装备能量加成、HUD蓝条显示、回蓝物品效果等所有相关代码，无残留。</p>
+<p><span class="hl">【道人大招重做】</span>搬山道人「五雷正法」重做：CD从45秒改为30秒，取消易伤效果。改为总共5次落雷，每次间隔1.3秒，随机轰击10格内敌人。同一目标被多次命中时伤害递减（100%→50%→35%→25%→20%），每次命中眩晕0.4秒。落雷动画放慢（闪电0.8秒、命中光环1.0秒），乌云持续6秒，更清晰可见。</p>
+<p><span class="hl">【小怪死亡爆炸区分】</span>小怪死亡爆炸的指示器从橙色改为红色（#ff3333），并添加红色粒子效果，与玩家的橙色技能爆炸明确区分，避免混淆。</p>
+<p><span class="hl">【说明文档排版优化】</span>帮助文档整体排版优化：正文字体14px、标题17px、行间距2.0、段落间距10px，标题添加渐变背景，卡片内边距加大，文字颜色调亮，阅读体验大幅提升。版本更新改为分版本可折叠查看，点击版本标题展开/收起。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">🔧 V1.2 - Bug修复与体验优化 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【撼地重击卡墙彻底修复】</span>根本原因是跳跃过程中绕过了moveEntity的4角碰撞检测。新增isEntityPosSafe和findSafePos全局函数，跳跃全程（开始前、落点计算、跳跃过程中、结束后）使用和正常移动完全一致的4角碰撞检测，卡墙时自动推到最近安全位置，不会再卡墙或跳出地图。</p>
+<p><span class="hl">【骷髅闪避卡墙修复】</span>骷髅闪避到玩家身后前检查目标位置是否可行走，不可行走时搜索周围0.5~2格8方向最近可行走位置，不会再闪进墙里。</p>
+<p><span class="hl">【Boss冲撞预警增强】</span>冲撞预警从1秒改为1.5秒，添加红色路径指示器（脉冲闪烁+末端圆点），玩家有更充足的反应时间躲避。</p>
+<p><span class="hl">【摸金大招标记独立化】</span>寻龙点穴用xunlongMark（5秒，爆炸atk×1.3），大招龙脉觉醒用独立ultMark（3秒，爆炸atk×1.5）。两个标记同时存在时头顶图标左右平行排列（🐉左🐲右），单个时自动居中，标记结束各自独立触发爆炸。</p>
+<p><span class="hl">【撤离按键位置调整】</span>下一层/撤离按钮从屏幕中间偏左移到靠右（left:65%），透明度45%，不遮挡战斗视野。</p>
+<p><span class="hl">【取消跳跃返还】</span>跳跃被取消时返还能量和冷却（注：V1.3删除蓝条后仅返还冷却）。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">⚖️ V1.1 - 平衡性调整 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【一层Boss难度提升】</span>普通/恐怖模式第一层Boss血量额外提升80%（在基础加成后×1.8），解决一层Boss太过简单的问题。二层及以上保持不变。</p>
+<p><span class="hl">【土夫子地刺叠加修复】</span>土遁路径地刺同一位置（距离<0.6格）已有地刺时刷新持续时间不新增，解决原地不动叠加大量地刺秒Boss的问题。地刺伤害从atk×1.5降到atk×1.0，持续时间从4秒降到2.5秒，生成间隔从0.3秒增到0.35秒。</p>
+<p><span class="hl">【无尽模式Boss血量曲线】</span>Boss血量采用平方根曲线增长，10波9000/100波57000，前期增长快后期增长慢，避免100波Boss血量过高。</p>
+<p><span class="hl">【无尽模式敌人数量】</span>每波敌人数量上限改为200，10波后血量、攻击、速度增幅递增，总金币池按比例调整。</p>
+<p><span class="hl">【特工模式】</span>特工模式下不穿任何装备，纯靠角色技能通关。</p>
+</div>
+</div>
+
+<div class="version-block">
+<div class="version-title" onclick="toggleVersion(this)">✨ V1.0 - 大型内容更新 <span class="version-arrow">▼</span></div>
+<div class="version-content" style="display:none">
+<p><span class="hl">【大招系统】</span>4个角色各新增1个大招（CD45秒），放在原交互键位置。按住蓄力拖动施法，松手释放，拖到取消键取消。摸金「龙脉觉醒」7格挂标记+结束爆炸；卸岭「山崩地裂」7格范围伤害+眩晕+减防；搬山「五雷正法」轰击最近5敌+眩晕+易伤；土夫子「盗洞逃生」钻地无敌+破土击飞。每个大招都有专属模型、特效和音效。</p>
+<p><span class="hl">【新技能】</span>4个角色各新增第2个技能：摸金「寻龙点穴」4格穿透光线+标记爆炸；卸岭「撼地重击」跳跃砸地+眩晕；搬山「定身符」投射物+定身减伤；土夫子「洛阳铲击」扇形挥砍+回血。所有新技能都有指示器、自动锁敌和专属特效。</p>
+<p><span class="hl">【连招系统】</span>4个角色各有1个连招：摸金「龙脉共鸣」（标记在阵内结束爆炸×1.5）；卸岭「地裂冲撞」（撼地后3秒内冲锋距离+50%，对眩晕敌人伤害×1.3）；搬山「五雷联动」（五雷命中定身敌人触发正五边形5小符咒散射）；土夫子「铲痕破土」（洛阳铲留铲痕3秒，土遁从铲痕处出土触发二次爆炸）。</p>
+<p><span class="hl">【技能效果替换】</span>原易伤效果改为灼烧（持续掉血），原护盾改为回血，原背刺改为暴击（2倍伤害+黄色粒子），效果更直观可见。</p>
+<p><span class="hl">【UI布局重做】</span>采用王者荣耀风格布局：普攻键居中，技能1和大招键在上排扇形排列，药剂和技能2在下排扇形排列。取消键固定在技能1上方120px，两技能共用。支持自定义布局。</p>
+<p><span class="hl">【交互系统改造】</span>删除交互键，普通/恐怖模式宝箱和物品自动交互。站在下一层/撤离点上时，屏幕中间出现半透明（45%）按钮，点击进入。</p>
+<p><span class="hl">【浮动伤害数字】</span>采用王者荣耀风格浮动数字：敌人受伤时在旁边生成数字向上飘动淡出，技能伤害白色、灼烧橙红色、回血绿色。普攻不显示数字避免刷屏，灼烧每0.4秒累计显示总伤害。最多同时显示12个数字。</p>
+<p><span class="hl">【Boss技能重做】</span>金甲尸王：地震范围3.5格（2秒前摇），冲撞提前1秒预警，血量低于70%狂暴（常驻），低于50%召唤4个随从（特工模式随从血量600），每6秒随机释放地震或冲撞（无距离限制）。</p>
+<p><span class="hl">【全模式数值平衡】</span>普通/恐怖模式Boss血量和攻击上涨；无尽模式每波敌人上限200，Boss血量平方根曲线（10波9000/100波57000），10波后血量攻击速度增幅递增，特工模式不穿任何装备。</p>
+<p><span class="hl">【其他优化】</span>技能耗能全部减半，护盾改为血量30%，所有技能添加指示器和自动锁敌逻辑，寻龙点穴标记显示龙头图标，小怪死亡爆炸只伤害玩家，修复自定义布局bug，修复技能只释放一次的状态变量bug。</p>
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+<div id="btnAdjustPanel" class="btn-adjust-panel" style="display:none">
+<div class="bap-title">🎛️ 按钮调节</div>
+<div class="bap-row"><span>📐 大小</span><input type="range" id="bapSize" min="50" max="180" value="100" oninput="adjustBtnSize(this.value)"><span id="bapSizeVal">100%</span></div>
+<div class="bap-row"><span>👁️ 透明</span><input type="range" id="bapAlpha" min="20" max="100" value="100" oninput="adjustBtnAlpha(this.value)"><span id="bapAlphaVal">100%</span></div>
+<button class="btn btn-small" style="width:100%;margin-top:8px" onclick="closeBtnAdjust()">✓ 完成</button>
+</div>
+<!-- 完成编辑浮动按钮 -->
+<button id="doneEditBtn" onclick="toggleEditLayout()" style="display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:999;padding:8px 20px;background:#8a2020;color:#fff;border:2px solid #d4a843;border-radius:6px;font-size:14px;cursor:pointer">✓ 完成布局编辑</button>
+<!-- 小地图放大界面 -->
+<div class="overlay hidden" id="mapOverlay" style="z-index:90">
+<div class="panel" style="max-width:95vw;max-height:95vh;padding:10px;position:relative">
+<button class="close-x" onclick="closeMap()">✕</button>
+<div class="section-title" style="margin-bottom:8px;font-size:16px">🗺️ 地牢地图</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px">
+<canvas id="bigMap" width="500" height="375" style="width:min(92vw,78vh);height:auto;aspect-ratio:4/3;background:#0a0a0f;border:2px solid #5a4a2a;border-radius:6px;display:block"></canvas>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+<span style="font-size:13px;color:#d4a843;font-weight:bold">放大</span>
+<input type="range" id="mapZoomSlider" min="1" max="3" step="0.1" value="1" style="writing-mode:vertical-lr;direction:rtl;width:32px;height:220px;accent-color:#d4a843" oninput="updateMapZoom(this.value)">
+<span style="font-size:13px;color:#7a6a4a;font-weight:bold">缩小</span>
+<span id="mapZoomVal" style="font-size:13px;color:#d4a843;font-weight:bold">100%</span>
+</div>
+</div>
+<div style="text-align:center;margin-top:8px;font-size:12px;color:#8a7a5a;line-height:1.6">蓝=楼梯 | 绿=撤离 | 金=你 | 红=BOSS | 金点=保险箱</div>
+</div>
+</div>
+<style>
+.loot-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:95;display:flex;align-items:center;justify-content:center}
+.loot-overlay.hidden{display:none}
+.loot-overlay.bag-only{justify-content:flex-end;padding-right:8px}
+.loot-overlay.bag-only .loot-panel{width:40vw;max-width:480px;min-width:280px}
+.loot-overlay.bag-only .loot-side.box-side{display:none}
+.loot-overlay.bag-only .loot-side.bag-side{flex:1}
+.loot-overlay.bag-only .loot-grid{gap:3px;padding:2px}
+.loot-overlay.bag-only .loot-slot{font-size:16px;padding:1px;border-width:1px}
+.loot-overlay.bag-only .loot-slot .item-icon{font-size:16px}
+.loot-overlay.bag-only .loot-slot .item-label{font-size:6px;line-height:1;margin-top:1px}
+.loot-overlay.bag-only .loot-slot .item-value{font-size:6px}
+.loot-overlay.bag-only .loot-slot .loot-count{font-size:8px}
+.loot-overlay.bag-only .loot-side-title{font-size:11px;margin-bottom:4px}
+.loot-panel{background:linear-gradient(160deg,#1a1520,#0d0a12);border:2px solid #8b6914;border-radius:12px;padding:16px;width:96vw;max-width:900px;max-height:94vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(139,105,20,0.3)}
+.loot-title{font-size:18px;color:#d4a843;text-align:center;margin-bottom:10px;font-weight:bold;letter-spacing:2px}
+.loot-body{display:flex;gap:12px;flex:1;min-height:0}
+.loot-side{display:flex;flex-direction:column;min-width:0;min-height:0}
+.loot-side.bag-side{flex:1}
+.loot-side.box-side{flex:0 0 38%}
+.loot-side-title{font-size:13px;color:#8a7a5a;margin-bottom:6px;text-align:center;font-weight:bold}
+.loot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;flex:1;align-content:start;overflow-y:auto;overflow-x:hidden;padding:4px;scrollbar-width:thin;scrollbar-color:#8b6914 rgba(0,0,0,0.3);-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.loot-side.bag-side .loot-grid{grid-template-columns:repeat(4,1fr)}
+.loot-slot{aspect-ratio:1;background:rgba(0,0,0,0.5);border:1.5px solid #3a3020;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;position:relative;cursor:pointer;transition:all .15s;padding:2px;touch-action:pan-y}
+.loot-slot:hover{border-color:#d4a843;transform:scale(1.05)}
+.loot-slot .item-icon{font-size:22px;line-height:1}
+.loot-slot .item-label{font-size:8px;color:#ccc;text-align:center;line-height:1.1;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.loot-slot .item-value{font-size:8px;color:#ffd700;text-align:center;line-height:1;font-weight:bold}
+.loot-slot.rarity-white{background:rgba(200,200,200,0.15);border-color:#aaa}
+.loot-slot.rarity-green{background:rgba(74,222,128,0.15);border-color:#4ade80}
+.loot-slot.rarity-blue{background:rgba(96,160,255,0.15);border-color:#60a0ff}
+.loot-slot.rarity-purple{background:rgba(192,96,255,0.15);border-color:#c060ff}
+.loot-slot.rarity-red{background:rgba(255,80,80,0.15);border-color:#ff5050}
+.loot-slot.rarity-legend{background:rgba(255,215,0,0.25);border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,0.6)}
+.loot-slot.unsearched{background:rgba(60,60,60,0.4);border-color:#444;cursor:default}
+.loot-slot.unsearched::after{content:'?';color:#666;font-size:18px;font-weight:bold}
+.loot-slot .loot-count{position:absolute;bottom:1px;right:3px;font-size:10px;font-weight:bold;color:#fff;text-shadow:1px 1px 2px #000}
+.loot-slot .loot-name{position:absolute;top:-2px;left:50%;transform:translateX(-50%);font-size:8px;color:#ccc;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.loot-search-bar{width:100%;height:20px;background:rgba(0,0,0,0.6);border:1px solid #5a4a2a;border-radius:4px;margin-top:8px;overflow:hidden;position:relative}
+.loot-search-fill{height:100%;background:linear-gradient(90deg,#8a6a20,#d4a843);transition:width .1s linear;width:0%}
+.loot-search-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;color:#fff;text-shadow:1px 1px 2px #000;white-space:nowrap}
+.loot-close-btn{position:absolute;top:8px;right:130px;width:32px;height:32px;border-radius:50%;background:rgba(139,26,26,0.7);border:2px solid #c43030;color:#f0a0a0;font-size:18px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+.loot-close-btn:hover{background:rgba(196,48,48,0.8)}
+.loot-hint{font-size:10px;color:#7a6a4a;text-align:center;margin-top:6px}
+.loot-drag-ghost{position:fixed;pointer-events:none;z-index:1000;font-size:24px;opacity:0.8;transform:translate(-50%,-50%)}
+@keyframes lootSpin{from{transform:rotate(0deg) translateX(8px) rotate(0deg)}to{transform:rotate(360deg) translateX(8px) rotate(-360deg)}}
+.loot-search-icon{position:absolute;top:50%;left:50%;width:24px;height:24px;margin:-12px 0 0 -12px;line-height:24px;text-align:center;font-size:22px;animation:lootSpin 1s linear infinite;z-index:2;pointer-events:none}
+/* ===== 地铁逃生风格仓库 ===== */
+.warehouse-panel{max-width:900px !important;width:92vw !important;padding:0 !important;overflow:hidden !important;background:linear-gradient(160deg,#1a1e2a 0%,#0d1018 100%) !important;border:2px solid #3a4a5a !important;border-radius:10px !important;box-shadow:0 0 40px rgba(60,120,200,0.2),inset 0 0 30px rgba(0,0,0,0.6) !important}
+.wh-top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:linear-gradient(90deg,rgba(40,60,90,0.6),rgba(20,30,50,0.4));border-bottom:1px solid #2a3a4a}
+.warehouse-panel .wh-top-bar{padding-right:110px !important}
+.wh-top-title{font-size:18px;font-weight:bold;color:#e8e8f0;letter-spacing:3px;text-shadow:0 0 10px rgba(100,160,255,0.4)}
+.wh-top-title::before{content:'📦 ';margin-right:4px}
+.wh-top-gold{font-size:14px;color:#ffd700;font-weight:bold;background:rgba(0,0,0,0.4);padding:4px 12px;border-radius:14px;border:1px solid #5a4a20}
+.wh-close-btn{width:30px;height:30px;border-radius:50%;background:rgba(180,40,40,0.5);border:1px solid #c04040;color:#ff8080;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.wh-close-btn:hover{background:rgba(200,50,50,0.8);color:#fff;transform:scale(1.1)}
+.wh-body{display:flex;gap:0;height:calc(92vh - 100px);min-height:420px;max-height:620px}
+.wh-left{width:42%;display:flex;flex-direction:column;border-right:1px solid #2a3a4a;padding:10px;gap:8px;overflow-y:auto}
+.wh-right{flex:1;display:flex;flex-direction:column;padding:10px;gap:8px;overflow:hidden}
+.wh-section-label{font-size:11px;color:#7a8a9a;font-weight:bold;letter-spacing:2px;margin-bottom:2px;padding-left:4px;border-left:3px solid #4a7ab0;padding-top:2px;padding-bottom:2px}
+.wh-equip-area{display:flex;gap:8px;justify-content:center;margin-bottom:4px}
+.wh-eq-slot{flex:1;max-width:120px;background:linear-gradient(145deg,#1a2030,#0f1420);border:2px solid #3a4a5a;border-radius:8px;padding:8px 6px;text-align:center;position:relative;transition:all .2s;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wh-eq-slot.weapon-slot{border-color:#5a7a4a}
+
+.wh-eq-icon{font-size:28px;margin-bottom:2px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))}
+.wh-eq-name{font-size:10px;color:#c0d0e0;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.wh-eq-cat{font-size:9px;color:#6a7a8a;letter-spacing:1px}
+.wh-eq-stats{font-size:9px;color:#ffd700;margin-top:2px}
+.wh-eq-dur{font-size:8px;color:#a0c8ff;margin-top:1px}
+.wh-eq-unequip{margin-top:4px;padding:2px 8px;font-size:9px;background:rgba(180,60,60,0.3);border:1px solid #a04040;border-radius:3px;color:#ff9090;cursor:pointer;transition:all .15s}
+.wh-eq-unequip:hover{background:rgba(200,70,70,0.5);color:#fff}
+.wh-bag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.wh-bag-slot{aspect-ratio:1;background:linear-gradient(145deg,#161c28,#0c1018);border:1.5px solid #2a3545;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;cursor:pointer;transition:all .15s}
+.wh-bag-slot:hover{border-color:#5a7ab0}
+.wh-bag-slot .wh-item-count{position:absolute;bottom:1px;right:3px;font-size:10px;font-weight:bold;color:#fff;text-shadow:1px 1px 2px #000}
+.wh-bag-slot .wh-dur-text{position:absolute;bottom:1px;left:2px;font-size:8px;font-weight:bold;text-shadow:1px 1px 2px #000}
+.wh-bag-slot .wh-opt-btn{position:absolute;top:0px;right:1px;font-size:10px;color:#d4a843;cursor:pointer;background:rgba(0,0,0,0.6);border-radius:3px;padding:0 3px;line-height:1.2;z-index:5}
+.wh-warehouse-tabs{display:flex;gap:4px;margin-bottom:4px}
+.wh-wh-tab{flex:1;padding:5px 4px;font-size:11px;background:rgba(0,0,0,0.3);border:1px solid #2a3545;border-radius:4px;color:#7a8a9a;cursor:pointer;transition:all .15s;text-align:center;font-weight:bold}
+.wh-wh-tab:hover{border-color:#4a6a8a;color:#a0b0c0}
+.wh-wh-tab.active{background:linear-gradient(180deg,rgba(70,110,170,0.4),rgba(40,70,120,0.3));border-color:#5a8ac0;color:#e0f0ff;box-shadow:0 0 8px rgba(80,140,220,0.3)}
+.wh-warehouse-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;flex:1;overflow-y:auto;align-content:start;padding:2px}
+.wh-wh-slot{aspect-ratio:1;background:linear-gradient(145deg,#161c28,#0c1018);border:1.5px solid #2a3545;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;cursor:pointer;transition:all .15s}
+.wh-wh-slot:hover{border-color:#5a7ab0;transform:scale(1.05)}
+.wh-wh-slot.equipped{border-color:#ffd700;box-shadow:0 0 8px rgba(255,215,0,0.4)}
+.wh-wh-slot .wh-item-count{position:absolute;bottom:1px;right:3px;font-size:10px;font-weight:bold;color:#fff;text-shadow:1px 1px 2px #000}
+.wh-wh-slot .wh-dur-text{position:absolute;bottom:1px;left:2px;font-size:8px;font-weight:bold;text-shadow:1px 1px 2px #000}
+.wh-wh-slot .wh-sell-btn{position:absolute;top:0px;right:1px;font-size:9px;color:#ffaa80;cursor:pointer;background:rgba(180,60,30,0.7);border-radius:0 3px 0 4px;padding:0 3px;line-height:1.2;z-index:5;font-weight:bold}
+.wh-item-rarity-common{border-color:#8a8a8a !important}
+.wh-item-rarity-uncommon{border-color:#4ade80 !important;box-shadow:0 0 6px rgba(74,222,128,0.25)}
+.wh-item-rarity-rare{border-color:#60a5fa !important;box-shadow:0 0 6px rgba(96,165,250,0.3)}
+.wh-item-rarity-epic{border-color:#c084fc !important;box-shadow:0 0 8px rgba(192,132,252,0.35)}
+.wh-item-rarity-legendary{border-color:#fbbf24 !important;box-shadow:0 0 10px rgba(251,191,36,0.4)}
+.wh-bottom-hint{text-align:center;font-size:10px;color:#5a6a7a;padding:6px;border-top:1px solid #1e2a3a;letter-spacing:1px}
+.wh-bottom-hint span{color:#7a9aba}
+.wh-sell-confirm{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:100;border-radius:10px}
+.wh-sell-confirm.hidden{display:none}
+.wh-sell-box{background:linear-gradient(160deg,#1a2030,#0f1420);border:2px solid #c08040;border-radius:10px;padding:16px 20px;min-width:240px;max-width:90%;text-align:center;box-shadow:0 0 30px rgba(200,120,40,0.3)}
+.wh-sell-title{font-size:16px;color:#f0d870;font-weight:bold;margin-bottom:10px;letter-spacing:2px}
+.wh-sell-item{font-size:14px;color:#e0e8f0;margin-bottom:6px}
+.wh-sell-price{font-size:18px;color:#ffd700;font-weight:bold;margin-bottom:14px;text-shadow:0 0 10px rgba(255,215,0,0.4)}
+.wh-sell-btns{display:flex;gap:10px;justify-content:center}
+.wh-sell-btn{padding:8px 20px;font-size:13px;border-radius:5px;cursor:pointer;transition:all .15s;font-weight:bold}
+.wh-sell-btn.cancel{background:rgba(60,60,60,0.5);border:1px solid #5a5a5a;color:#a0a0a0}
+.wh-sell-btn.cancel:hover{background:rgba(80,80,80,0.6);color:#c0c0c0}
+.wh-sell-btn.confirm{background:linear-gradient(135deg,#c06020,#e08040);border:1px solid #f0a060;color:#fff}
+.wh-sell-btn.confirm:hover{background:linear-gradient(135deg,#d07030,#f09050);transform:scale(1.05)}
+.wh-transfer{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:99;border-radius:10px}
+.wh-transfer.hidden{display:none}
+.wh-transfer-box{background:linear-gradient(160deg,#1a2030,#0f1420);border:2px solid #4a6a8a;border-radius:10px;padding:16px 20px;min-width:240px;max-width:90%;text-align:center;box-shadow:0 0 30px rgba(60,120,200,0.3)}
+.wh-transfer-title{font-size:15px;color:#e0e8f0;font-weight:bold;margin-bottom:8px}
+.wh-transfer-avail{font-size:12px;color:#7a8a9a;margin-bottom:12px}
+.wh-transfer-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.wh-transfer-btns button{padding:6px 12px;font-size:12px;background:rgba(60,90,140,0.3);border:1px solid #4a6a8a;border-radius:4px;color:#a0c0e0;cursor:pointer;transition:all .15s}
+.wh-transfer-btns button:hover{background:rgba(80,120,180,0.4);color:#e0f0ff}
+.wh-transfer-btns button:last-child{background:rgba(60,60,60,0.4);border-color:#5a5a5a;color:#a0a0a0}
+@media (max-width:900px),(pointer:coarse){
+ .warehouse-panel{width:94vw !important;max-height:90vh !important}
+ .wh-top-bar{padding:6px 10px}
+ .wh-top-title{font-size:13px;letter-spacing:2px}
+ .wh-top-gold{font-size:11px;padding:3px 8px}
+ .wh-close-btn{width:24px;height:24px;font-size:13px}
+ .wh-body{height:calc(90vh - 60px);min-height:280px;max-height:none}
+ .wh-left{width:42%;padding:4px;gap:4px}
+ .wh-right{padding:4px;gap:4px}
+ .wh-section-label{font-size:9px;margin-bottom:2px;padding:1px 0 1px 4px}
+ .wh-equip-area{gap:4px}
+ .wh-eq-slot{min-height:48px;padding:3px 2px;border-radius:5px}
+ .wh-eq-icon{font-size:18px;margin-bottom:1px}
+ .wh-eq-name{font-size:8px;margin-bottom:1px}
+ .wh-eq-stats{font-size:8px}
+ .wh-eq-cat{font-size:8px}
+ .wh-eq-unequip{margin-top:2px;padding:1px 5px;font-size:8px}
+ .wh-bag-grid{grid-template-columns:repeat(3,1fr);gap:3px}
+ .wh-bag-slot{font-size:14px;border-radius:3px}
+ .wh-bag-slot .wh-item-count{font-size:8px;bottom:0;right:2px}
+ .wh-warehouse-tabs{gap:2px;margin-bottom:2px}
+ .wh-wh-tab{font-size:9px;padding:3px 1px;border-radius:3px}
+ .wh-warehouse-grid{grid-template-columns:repeat(4,1fr);gap:3px}
+ .wh-wh-slot{font-size:14px;border-radius:3px}
+ .wh-wh-slot .wh-item-count{font-size:8px;bottom:0;right:2px}
+ .wh-bottom-hint{font-size:8px;padding:4px;letter-spacing:0}
+}
+
+
+/* ===== 横屏手机：面板一屏放下 ===== */
+@media (orientation:landscape) and (max-height:800px){
+   .overlay .panel{
+     max-height: calc(100vh - 8px) !important;
+     max-width: calc(100vw - 8px) !important;
+     padding: 6px 10px !important;
+     display: flex !important;
+     flex-direction: column !important;
+     overflow: hidden !important;
+   }
+   .overlay .panel > .section-title,
+   .overlay .panel > .shop-header,
+   .overlay .panel > .game-title,
+   .overlay .panel > .center,
+   .overlay .panel > .shop-tabs{margin: 2px 0 !important;padding: 2px 0 !important;flex-shrink: 0 !important}
+   .shop-panel-v2 > #shopContent{
+     flex: 1 1 auto !important;
+     min-height: 0 !important;
+     overflow: hidden !important;
+   }
+   .shop-panel-v2 .shop-grid{
+     grid-template-columns: repeat(4, 1fr) !important;
+     gap: 4px !important;
+     margin-bottom: 0 !important;
+   }
+   .shop-panel-v2 .shop-item{
+     padding: 4px 3px !important;
+     display: flex !important;
+     flex-direction: column !important;
+     align-items: center !important;
+     justify-content: center !important;
+   }
+   .shop-panel-v2 .shop-item-icon{font-size: 22px !important;margin: 0 0 2px !important;line-height: 1 !important}
+   .shop-panel-v2 .shop-item-name{font-size: 11px !important;margin: 0 !important;line-height: 1.2 !important}
+   .shop-panel-v2 .shop-item-desc{font-size: 8px !important;line-height: 1.1 !important;margin: 1px 0 !important;max-height: 20px !important;overflow: hidden !important}
+   .shop-panel-v2 .shop-item-price{font-size: 10px !important;margin: 1px 0 !important}
+   .shop-panel-v2 .shop-item-btns{gap: 3px !important;margin-top: 2px !important}
+   .shop-panel-v2 .btn-small{padding: 2px 6px !important;font-size: 9px !important;line-height: 1.2 !important}
+   .shop-panel-v2 .shop-tabs .shop-tab{padding: 8px 4px !important;font-size: 11px !important}
+   .shop-panel-v2 > .center .btn{padding: 3px 14px !important;font-size: 11px !important}
+   .warehouse-panel > .wh-body{
+     flex: 1 1 auto !important;
+     height: auto !important;
+     min-height: 0 !important;
+     overflow: hidden !important;
+   }
+   .warehouse-panel .wh-left,
+   .warehouse-panel .wh-right{overflow: hidden !important}
+   .warehouse-panel .wh-warehouse-grid{
+     grid-template-columns: repeat(6, 1fr) !important;
+     gap: 3px !important;
+     overflow: hidden !important;
+   }
+   .warehouse-panel .wh-bag-grid{grid-template-columns: repeat(4, 1fr) !important; gap: 3px !important}
+   .warehouse-panel .wh-wh-slot,
+   .warehouse-panel .wh-bag-slot{font-size: 14px !important}
+   .warehouse-panel .wh-eq-slot{min-height: 40px !important;padding: 2px !important}
+   .warehouse-panel .wh-eq-icon{font-size: 16px !important}
+   #forgeOverlay .panel > #forgeList{
+     flex: 0 0 auto !important;
+     max-height: 16vh !important;
+     overflow-y: auto !important;
+     gap: 3px !important;
+   }
+   #forgeOverlay .panel > #forgeDetail{
+     flex: 1 1 auto !important;
+     min-height: 0 !important;
+     overflow: hidden !important;
+     padding: 6px !important;
+   }
+   #forgeOverlay .panel > div[style*="justify-content:space-between"]{
+     margin-top: 4px !important;
+     padding-top: 4px !important;
+     flex-shrink: 0 !important;
+   }
+   #forgeOverlay #forgeBtn{padding: 4px 14px !important;font-size: 12px !important}
+
+  /* 宝石面板超压缩 */
+  #gemOverlay .panel{padding:4px 8px !important}
+  #gemOverlay .section-title{font-size:12px !important;margin:0 0 4px !important;padding-left:6px !important}
+  #gemList{flex:1 1 auto !important;min-height:0 !important;overflow:hidden !important}
+  #gemList > div{gap:1px !important}
+  #gemList > div > div{padding:1px 3px !important;gap:1px !important}
+  #gemList > div > div > div:first-child{font-size:18px !important}
+  #gemList > div > div > div:nth-child(2) > div:first-child{font-size:12px !important}
+  #gemList > div > div > div:nth-child(2) > div:nth-child(2){font-size:10px !important;margin-top:0 !important}
+  #gemList > div > div > div:nth-child(2) > div:nth-child(3){font-size:9px !important;margin-top:0 !important}
+  #gemList button{padding:0 !important;height:16px !important;line-height:16px !important;font-size:9px !important}
+  #gemHoldBar{font-size:10px !important;margin-top:1px !important;padding-top:1px !important;line-height:1.4 !important}
+  #gemMsg{min-height:10px !important;font-size:11px !important;margin-top:2px !important}
+  #gemOverlay .center{margin-top:2px !important}
+  #gemOverlay .center .btn{padding:4px 14px !important;font-size:11px !important}
+}
+button, .btn, .start-v3-btn, .shop-tab, .shop-item button, #forgeBtn, .tbtn, .tbtn-small, .a3-btn, .u3-btn, .ss-btn {   touch-action: manipulation; }
+#settingsOverlay .panel, #keybindOverlay .panel{overflow-y:auto !important;touch-action:pan-y !important;-webkit-overflow-scrolling:touch}
+</style>
+<div class="loot-overlay hidden" id="lootOverlay">
+<div class="loot-panel" style="position:relative">
+<button class="loot-close-btn" onclick="closeLootPanel()">✕</button>
+<div class="loot-title" id="lootTitle">搜索物资</div>
+<div class="loot-body">
+<div class="loot-side box-side" id="lootBoxSide">
+<div class="loot-side-title" id="lootBoxTitle">📦 箱子</div>
+<div class="loot-grid" id="lootBoxGrid"></div>
+</div>
+<div class="loot-side bag-side">
+<div class="loot-side-title" style="display:flex;align-items:center;justify-content:center;gap:8px">🎒 背包 <button onclick="sortLootBag()" style="padding:2px 8px;font-size:11px;background:rgba(212,168,67,0.2);border:1px solid #d4a843;border-radius:4px;color:#f0d870;cursor:pointer">整理</button></div>
+<div class="loot-grid" id="lootBagGrid"></div>
+</div>
+</div>
+<div class="loot-search-bar" id="lootSearchBar" style="display:none">
+<div class="loot-search-fill" id="lootSearchFill"></div>
+<div class="loot-search-text" id="lootSearchText">搜索中...</div>
+</div>
+<div class="loot-hint">双击拾取/放回 · 拖拽移动 · 背包物品拖到箱外丢弃</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 技能释放指示器 -->
+<canvas id="skillIndicatorCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:70"></canvas>
+<!-- 移动端触控UI -->
+<div id="touchControls">
+<div id="joystickZone"><div id="joystickBase"><div id="joystickKnob"></div></div></div>
+<button class="floor-btn" id="floorBtn" onclick="_pcFloorBtn()" style="display:none;opacity:0.45">⬇ 下一层</button>
+<div id="actionButtons">
+<div class="skill-top-row">
+<button class="tbtn tbtn-skill" id="btnSkill"><span class="tbtn-icon">🔮</span><div class="tbtn-cd" id="cdSkill"></div><span class="tbtn-cd-text" id="cdTextSkill"></span></button>
+<button class="tbtn tbtn-ultimate" id="btnUltimate"><span class="tbtn-icon" id="ultimateIcon">⚡</span><span class="ult-cd" id="ultCd"></span></button>
+</div>
+<div class="skill-bottom-row">
+<button class="tbtn tbtn-potion" id="btnPotion"><span class="tbtn-icon">🧪</span><div class="tbtn-cd" id="cdPotion"></div><span class="tbtn-cd-text" id="cdTextPotion"></span><span class="tbtn-count" id="countPotion">0</span></button>
+<button class="tbtn tbtn-skill2" id="btnSkill2"><span class="tbtn-icon">⚡</span><div class="tbtn-cd" id="cdSkill2"></div><span class="tbtn-cd-text" id="cdTextSkill2"></span></button>
+<button class="tbtn tbtn-attack" id="btnAttack"><span class="tbtn-icon">⚔️</span><div class="tbtn-cd" id="cdAttack"></div></button>
+</div>
+</div>
+<div id="sideButtons">
+
+<button class="tbtn-small" id="btnBag" onclick="_pcBag()">🎒</button>
+<button class="tbtn-small" id="btnSettings" onclick="openSettings()">⚙️</button>
+<button class="tbtn-small" id="btnFs" onclick="toggleFullscreen()">⛶</button>
+<button class="tbtn-small" id="btnPause" onclick="_pcPause()">⏸</button>
+</div>
+<div id="skillCancelZone" class="skill-cancel-zone"><div class="sc-icon">✕</div><div class="sc-text">取消</div></div>
+</div>
+</div>
+<!-- 横屏提示 -->
+<div id="rotateOverlay"><div class="rotate-icon">📱</div><div class="rotate-text">请横屏游玩</div><div class="rotate-sub">旋转手机获得最佳体验</div></div>
+<!-- 模块化入口：逻辑已拆分到 src/ 目录，原 摸金秘藏.html 保留作为对照/备份 -->
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
