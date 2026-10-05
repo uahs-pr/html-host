@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发发🇨🇦最终哈希算法</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+:root{
+--bg-primary:rgba(255,255,255,0.9);--bg-secondary:rgba(248,249,250,0.8);--text-primary:#1a1a2e;--text-secondary:#4a4a6a;
+--border-color:rgba(0,0,0,0.06);--success:#00c851;--danger:#ff4444;--kill:#ff4444;--card:rgba(255,255,255,0.92);
+--shadow:0 8px 32px rgba(0,0,0,0.06);--blur:blur(20px);--gradient:linear-gradient(135deg,#fff 0%,#f8f9ff 100%);
+--btn-active:#1a1a2e;--btn-inactive:#f0f0f5;--particle:#1a1a2e;--neon:rgba(26,26,46,0.2);
+}
+[theme="铂银"]{
+--bg-primary:rgba(245,247,250,0.9);--bg-secondary:rgba(235,238,242,0.8);--text-primary:#2a2a2a;--text-secondary:#5a5a5a;
+--border-color:rgba(0,0,0,0.08);--card:rgba(255,255,255,0.9);--shadow:0 8px 32px rgba(0,0,0,0.08);
+--gradient:linear-gradient(135deg,#f5f7fa 0%,#e4eaf5 100%);--particle:#2a2a2a;--neon:rgba(42,42,42,0.2);
+}
+[theme="白银"]{
+--bg-primary:rgba(250,250,252,0.95);--bg-secondary:rgba(240,240,245,0.85);--text-primary:#1a1a2e;--text-secondary:#4a4a6a;
+--border-color:rgba(0,0,0,0.06);--card:rgba(255,255,255,0.92);--gradient:linear-gradient(135deg,#fff 0%,#f8f9ff 100%);
+--particle:#1a1a2e;--neon:rgba(26,26,46,0.2);
+}
+[theme="黑钢"]{
+--bg-primary:rgba(30,30,40,0.9);--bg-secondary:rgba(40,40,55,0.8);--text-primary:#fff;--text-secondary:#b0b0c0;
+--border-color:rgba(255,255,255,0.1);--kill:#ff6b6b;--card:rgba(50,50,65,0.85);--shadow:0 8px 32px rgba(0,0,0,0.3);
+--gradient:linear-gradient(135deg,#2c3e50 0%,#1a1a2e 100%);--btn-active:#fff;--btn-inactive:#404055;--particle:#fff;--neon:rgba(255,255,255,0.2);
+}
+[theme="黑洞"]{
+--bg-primary:rgba(10,10,18,0.95);--bg-secondary:rgba(20,20,30,0.85);--text-primary:#e0e0ff;--text-secondary:#8080a0;
+--border-color:rgba(255,255,255,0.08);--kill:#ff5252;--card:rgba(30,30,45,0.9);--shadow:0 8px 32px rgba(0,0,0,0.4);
+--gradient:linear-gradient(135deg,#0f0f1e 0%,#1a1a2e 100%);--particle:#ff5252;--neon:rgba(255,82,82,0.3);
+}
+[theme="混沌"]{
+--bg-primary:rgba(20,15,35,0.92);--bg-secondary:rgba(35,25,50,0.82);--text-primary:#f0e6ff;--text-secondary:#b8a0d8;
+--border-color:rgba(255,255,255,0.1);--kill:#ff79b0;--card:rgba(45,35,65,0.88);--shadow:0 8px 32px rgba(0,0,0,0.35);
+--gradient:linear-gradient(135deg,#1a1033 0%,#2d1b69 100%);--particle:#ff79b0;--neon:rgba(255,121,176,0.3);
+}
+[theme="昼光"]{
+--bg-primary:rgba(255,252,245,0.95);--bg-secondary:rgba(250,245,235,0.85);--text-primary:#2d2a24;--text-secondary:#7d6a58;
+--border-color:rgba(0,0,0,0.06);--kill:#ff4b4b;--card:rgba(255,255,255,0.9);--shadow:0 8px 32px rgba(0,0,0,0.08);
+--gradient:linear-gradient(135deg,#fff9e6 0%,#fff5e6 100%);--particle:#3d2b1e;--neon:rgba(61,43,30,0.15);
+}
+body{background:var(--gradient);color:var(--text-primary);min-height:100vh;padding:12px;transition:all 0.3s ease;overflow-x:hidden}
+/* --------------- 终极动态背景 --------------- */
+#background{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-3;pointer-events:none}
+.particle{position:absolute;border-radius:50%;background:var(--particle);box-shadow:0 0 12px var(--particle);opacity:0.25;animation:float 7s infinite ease-in-out}
+@keyframes float{0%{transform:translate(0,0) scale(1);opacity:0.2}50%{transform:translate(30px,-40px) scale(1.3);opacity:0.4}100%{transform:translate(0,0) scale(1);opacity:0.2}}
+.ray{position:absolute;width:2px;height:200px;background:linear-gradient(transparent,var(--particle),transparent);opacity:0.12;animation:ray 9s linear infinite}
+@keyframes ray{0%{transform:translateY(-200px)}100%{transform:translateY(100vh)}}
+.halo{position:absolute;width:100vmax;height:100vmax;border-radius:50%;background:radial-gradient(circle,var(--neon),transparent 70%);animation:pulse-glow 12s infinite ease-in-out}
+@keyframes pulse-glow{0%{transform:scale(1);opacity:0.3}50%{transform:scale(1.1);opacity:0.5}100%{transform:scale(1);opacity:0.3}}
+/* --------------- 玻璃卡片 --------------- */
+.glass{background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;border:1px solid var(--border-color);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.container{max-width:900px;margin:0 auto;position:relative}
+.theme-btn{position:absolute;right:10px;top:10px;width:44px;height:44px;border-radius:50%;background:var(--text-primary);color:var(--bg-primary);border:none;font-size:18px;cursor:pointer;z-index:999;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:all .2s}
+.countdown-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0;}
+.countdown{font-size:18px;font-weight:700;color:var(--danger);animation:blink 1s infinite alternate;padding:6px 12px;border-radius:12px;background:var(--bg-secondary);}
+.countdown.highlight{background:var(--danger)!important;color:white!important;animation:blink .5s infinite alternate;}
+.header{padding:20px;text-align:center}
+.title{font-size:22px;font-weight:700;margin-bottom:8px}
+.author{font-size:14px;color:var(--text-secondary)}
+.lottery-info{padding:20px}
+.info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.number-display{font-size:28px;font-weight:700;text-align:center;margin:15px 0;letter-spacing:2px}
+.combination{display:inline-block;padding:6px 15px;background:var(--bg-secondary);border-radius:15px;font-size:16px;}
+.three-box{padding:15px;background:var(--bg-secondary);border-radius:16px;margin-bottom:12px}
+.three-item{display:flex;justify-content:space-between;padding:6px 0}
+.main-result{padding:30px 20px;text-align:center;background:rgba(255,68,68,0.12);border:2px solid var(--kill);position:relative}
+.main-text{font-size:30px;font-weight:700;color:var(--kill);animation:pulse 1.5s infinite}
+.stats{padding:15px 20px;display:flex;justify-content:space-around;text-align:center;flex-wrap:wrap;gap:15px}
+.stat-item{flex:1;min-width:80px;}
+.stat-value{font-size:20px;font-weight:700;margin-bottom:5px}
+.stat-label{font-size:12px;color:var(--text-secondary)}
+.refresh-btn{width:100%;padding:12px;border-radius:15px;border:none;background:var(--text-primary);color:var(--bg-primary);font-size:16px;font-weight:700;cursor:pointer;margin-bottom:12px}
+.refresh-btn:active{transform:scale(.98)}
+.table-container{padding:15px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:600px;}
+th,td{padding:10px 8px;text-align:center;border-bottom:1px solid var(--border-color)}
+th{background:var(--bg-secondary);font-weight:70;position:sticky;top:0}
+.correct{color:var(--success);font-weight:700}
+.wrong{color:var(--danger);font-weight:700}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes blink{to{opacity:.6}}
+@media(max-width:600px){
+.title{font-size:18px}.number-display{font-size:24px}.main-text{font-size:26px}
+table{font-size:10px;min-width:400px;}th,td{padding:8px 4px}
+}
+</style>
+</head>
+<body theme="白银">
+<!-- 全屏超炫背景 -->
+<div id="background">
+  <div class="halo"></div>
+</div>
+<div class="container">
+<button class="theme-btn" id="themeBtn">🎨</button>
+<div class="glass header">
+  <div class="title">发发🇨🇦最终哈希算法</div>
+  <div class="author">旺旺848108099</div>
+</div>
+<div class="glass lottery-info">
+  <div class="info-row">
+    <div id="latest-period">最新期数：--</div>
+    <div class="countdown-wrap">
+      <div class="countdown" id="countdown">--:--</div>
+    </div>
+  </div>
+  <div class="number-display" id="latest-number">--+--+--</div>
+  <div style="text-align:center"><div class="combination" id="latest-combination">--</div></div>
+</div>
+<div class="glass three-box" id="three-data">
+  <div class="three-item">第1期：<span>--+--+--</span></div>
+  <div class="three-item">第2期：<span>--+--+--</span></div>
+  <div class="three-item">第3期：<span>--+--+--</span></div>
+</div>
+<div class="glass main-result">
+  <div class="main-text" id="result-text">计算中...</div>
+</div>
+<div class="glass stats">
+  <div class="stat-item"><div class="stat-value" id="total">0</div><div class="stat-label">总期数</div></div>
+  <div class="stat-item"><div class="stat-value" id="correct">0</div><div class="stat-label">正确</div></div>
+  <div class="stat-item"><div class="stat-value" id="wrong">0</div><div class="stat-label">错误</div></div>
+  <div class="stat-item"><div class="stat-value" id="rate">0%</div><div class="stat-label">准确率</div></div>
+</div>
+<button class="refresh-btn" id="refresh">刷新最新数据</button>
+<div class="glass table-container">
+  <table>
+    <thead>
+      <tr><th>期数</th><th>开奖</th><th>组合</th><th>预测三组</th><th>结果</th></tr>
+    </thead>
+    <tbody id="table-body">
+      <tr><td colspan="5">加载数据中...</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+<script>
+const API = "https://super.pc28998.com/history/JND28";
+const themes = ["铂银","白银","黑钢","黑洞","混沌","昼光"];
+let themeIdx = 1;
+let dataList = [];
+let nextOpenTime = 0;
+let countdownTimer = null;
+let dataRefreshTimer = null;
+const rule = ["小单","大双","小双","大单"];
+const allGroup = ["小单","大双","小双","大单"];
+
+// ==============================================
+// 固定哈希算法 · 0~27 · 永远不变
+// ==============================================
+function compute(p1,p2,p3){
+  let [a,b,c] = p1;
+  let [d,e,f] = p2;
+  let [g,h,i] = p3;
+
+  let key = a*100000000 + b*10000000 + c*1000000 + d*100000 + e*10000 + f*1000 + g*100 + h*10 + i;
+
+  let hash = 0x12345678;
+  hash ^= (key >>> 0) + 0x9E3779B9;
+  hash ^= (hash << 13) >>> 0;
+  hash ^= (hash >> 17) >>> 0;
+  hash ^= (hash << 5) >>> 0;
+  hash *= 0x85EBCA77;
+  hash ^= (hash >> 13) >>> 0;
+  hash *= 0xC2B2AE3D;
+  hash ^= (hash >> 17) >>> 0;
+
+  let val = Math.abs(hash) % 28;
+  let kill = rule[val % 4];
+  let three = allGroup.filter(x => x !== kill);
+
+  return { kill, three };
+}
+
+function getComb(sum){
+  return sum>=14 ? (sum%2===0?"大双":"大单") : (sum%2===0?"小双":"小单");
+}
+async function loadData(force = false){
+  try{
+    let res = await fetch(API, {cache:"no-store"});
+    let json = await res.json();
+    if(json.code===1 && json.data?.length){
+      dataList = json.data.slice(0,70).map(it=>{
+        let num = it.opencode.split(",").map(Number);
+        let sum = num.reduce((a,b)=>a+b,0);
+        return {
+          expect:it.expect,
+          num:num,
+          str:num.join("+"),
+          sum:sum,
+          comb:getComb(sum),
+          time:it.opentime
+        }
+      });
+      updateUI();
+      makeTable();
+      restartCountdown();
+    }
+  }catch(e){}
+}
+function updateUI(){
+  if(!dataList.length) return;
+  let now = dataList[0];
+  $("#latest-period").textContent = `最新期数：${now.expect}`;
+  $("#latest-number").textContent = now.str;
+  $("#latest-combination").textContent = now.comb;
+  if(dataList.length>=3){
+    $("#three-data .three-item:nth-child(1) span").textContent = dataList[0].str;
+    $("#three-data .three-item:nth-child(2) span").textContent = dataList[1].str;
+    $("#three-data .three-item:nth-child(3) span").textContent = dataList[2].str;
+    let {three} = compute(dataList[0].num, dataList[1].num, dataList[2].num);
+    $("#result-text").textContent = three.join(" ｜ ");
+  }
+}
+function makeTable(){
+  if(dataList.length<4) return;
+  let tb = $("#table-body");
+  tb.innerHTML = "";
+  let total=0,correct=0,wrong=0;
+  for(let i=3;i<dataList.length;i++){
+    try{
+      let target = dataList[i-3];
+      let p1=dataList[i-2].num,p2=dataList[i-1].num,p3=dataList[i].num;
+      let {three} = compute(p1,p2,p3);
+      let ok=three.includes(target.comb);
+      total++;ok?correct++:wrong++;
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${target.expect}</td><td>${target.str}</td><td>${target.comb}</td><td>${three.join(" ")}</td><td class="${ok?'correct':'wrong'}">${ok?"🀄️":"🍉"}</td>`;
+      tb.appendChild(tr);
+    }catch(e){}
+  }
+  $("#total").textContent=total;$("#correct").textContent=correct;$("#wrong").textContent=wrong;
+  $("#rate").textContent=total>0?((correct/total)*100).toFixed(1)+"%":"0%";
+}
+function restartCountdown(){
+  if(!dataList.length) return;
+  let lastOpenTime = dataList[0].time;
+  nextOpenTime = (lastOpenTime + 210) * 1000;
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(renderCountdown, 100);
+}
+function renderCountdown(){
+  let now = Date.now();
+  let diff = nextOpenTime - now;
+  let cd = $("#countdown");
+  if(diff <= 0){
+    cd.textContent = "✅ 即将开奖";
+    cd.classList.add("highlight");
+    loadData();
+    return;
+  }
+  let sec = Math.floor(diff / 1000);
+  let m = String(Math.floor(sec / 60)).padStart(2,"0");
+  let s = String(sec % 60).padStart(2,"0");
+  cd.textContent = `${m}:${s}`;
+  cd.classList.toggle("highlight", sec <= 10);
+}
+function createUltimateBackground(){
+  const bg = $("#background");
+  for(let i=0;i<70;i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = Math.random()*100+"%";
+    p.style.top = Math.random()*100+"%";
+    p.style.width = Math.random()*5+2+"px";
+    p.style.height = p.style.width;
+    p.style.animationDelay = Math.random()*7+"s";
+    bg.appendChild(p);
+  }
+  for(let i=0;i<20;i++){
+    const l = document.createElement("div");
+    l.className = "ray";
+    l.style.left = Math.random()*100+"%";
+    l.style.animationDelay = Math.random()*9+"s";
+    bg.appendChild(l);
+  }
+}
+$("#themeBtn").onclick = ()=>{
+  themeIdx=(themeIdx+1)%themes.length;
+  document.body.setAttribute("theme",themes[themeIdx]);
+}
+$("#refresh").onclick = ()=>{
+  loadData(true);
+}
+function $(s){return document.querySelector(s)}
+window.onload = ()=>{
+  createUltimateBackground();
+  loadData();
+  if(dataRefreshTimer) clearInterval(dataRefreshTimer);
+  dataRefreshTimer = setInterval(loadData, 3000);
+}
+</script>
+</body>
+</html>
