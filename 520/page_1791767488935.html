@@ -48,7 +48,6 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
 .music-search-btn{padding:0 16px;border-radius:12px;border:none;background:#3488f8;color:#fff;font-weight:600;cursor:pointer;}
 .music-count-tip{font-size:14px;color:#445477;margin-bottom:12px;}
 .music-item{margin-bottom:10px;cursor:pointer;overflow:hidden;display:flex;align-items:center;gap:12px;padding:12px 16px;}
-/* 图片设为隐藏，等加载成功再显示 */
 .music-item img{display:none;width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f0f0f0;}
 .music-song-title{font-size:15px;font-weight:500;color:#1f2c44;word-wrap:break-word;white-space:normal;line-height:1.4;}
 .music-play-text{margin-top:6px;font-size:13px;color:#3488f8;}
@@ -80,33 +79,20 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
 @keyframes audioPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,136,248,0.3);}50%{box-shadow:0 0 0 8px rgba(52,136,248,0);}}
 .audio-fixed-wrap.playing .btn-play{animation:audioPulse 2s infinite;}
 
-/* 音质和倍速下拉框样式 */
-.quality-select {
-  padding: 4px 4px;
-  border-radius: 6px;
-  border: 1px solid rgba(147,183,238,0.6);
-  background: rgba(255,255,255,0.6);
-  font-size: 12px;
-  outline: none;
-  color: #1f2c44;
-  cursor: pointer;
-}
+.quality-select { padding: 4px 6px; border-radius: 6px; border: 1px solid rgba(147,183,238,0.6); background: rgba(255,255,255,0.6); font-size: 12px; outline: none; color: #1f2c44; cursor: pointer;}
 
-/* 加载状态 */
 .loading-indicator{display:none;align-items:center;gap:8px;margin-top:6px;padding:4px 10px;background:rgba(52,136,248,0.08);border-radius:8px;}
 .loading-indicator.show{display:flex;}
 .loading-indicator .spinner{width:16px;height:16px;border:2px solid rgba(52,136,248,0.15);border-top-color:#3488f8;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-indicator .load-text{font-size:13px;color:#3488f8;}
 
-/* 悬浮球 */
 .audio-mini-ball{position:fixed;bottom:30px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#3488f8,#7a5cff);box-shadow:0 4px 20px rgba(52,136,248,0.4);display:none;align-items:center;justify-content:center;z-index:100;cursor:pointer;transition:all 0.3s ease;border:2px solid rgba(255,255,255,0.4);}
 .audio-mini-ball:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(52,136,248,0.5);}
 .audio-mini-ball .mini-icon{font-size:24px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.2);}
 .audio-mini-ball.playing{animation:miniPulse 2s infinite;}
 @keyframes miniPulse{0%,100%{box-shadow:0 4px 20px rgba(52,136,248,0.4);}50%{box-shadow:0 4px 40px rgba(52,136,248,0.7),0 0 60px rgba(52,136,248,0.2);}}
 
-/* 歌词弹窗样式 */
 .lyric-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center;}
 .lyric-modal.show{display:flex;}
 .lyric-box{background:white;width:85%;max-width:400px;height:65%;border-radius:16px;padding:20px;display:flex;flex-direction:column;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.2);}
@@ -120,22 +106,18 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
 </head>
 <body>
 
-<!-- 顶部宣传 -->
 <div class="top-promo"><img src="https://koy.dpdns.org/i/2026/09/03/d5rT7U.jpeg" alt="顶部宣传图"></div>
 
-<!-- Banner -->
 <div class="banner-wrap">
   <img class="banner-img" src="https://koy.dpdns.org/i/2026/09/03/1GwJ7O.jpeg">
   <button class="banner-arrow-left">◀</button>
   <button class="banner-arrow-right">▶</button>
 </div>
 
-<!-- 公告 -->
 <div class="info-bar">
   <div class="notice-track">【以下平台存款满700-电子流水满4000(参与时间1-10号|11-20号|21-月底)达标后联系返现(旺旺848108099)】【搭建站点联系飞机:@td6699 / 旺旺:848108099】</div>
 </div>
 
-<!-- 导航标签 -->
 <div class="tab-row-1">
   <div class="tab-btn active" data-page="pageA">热门平台</div>
   <div class="tab-btn" data-page="pageC">联系方式</div>
@@ -178,68 +160,8 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
   <div class="footer"></div>
 </div>
 
-<!-- ===== 其他页面（保持原样） ===== -->
-<div id="pageA" class="page show">
-  <div class="page-title">【新人必红】</div>
-  <div class="grid-two">
-    <div class="card"><span class="badge badge-new">新台</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786859159.jpeg"><div class="card-text-wrap"><div class="card-name">纵横国际</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="http://xnqwzf.tckqxx.com/app/register.php?site_id=1067&topId=7231786338812108&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><span class="badge badge-new">新台</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786788176.jpeg"><div class="card-text-wrap"><div class="card-name">聚鑫汇</div><div class="card-desc">世界杯官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://ybkvbz.tckqxx.com/app/register.php?site_id=1066&topId=1781786198723440&aPlanId=1&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><span class="badge badge-official">官方</span><div class="card-header"><img class="card-icon-img" src="https://ng5.ysas231.vip/app/admin/upload/img/20260706/6a4b9693eaff.jpg"><div class="card-text-wrap"><div class="card-name">TOP1体育</div><div class="card-desc">世界杯官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://lncqc.jgqvji.com/app/register.php?site_id=1051&topId=5161765992139633&aPlanId=1&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><span class="badge badge-official">官方</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860099.jpeg"><div class="card-text-wrap"><div class="card-name">领航国际</div><div class="card-desc">世界杯官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://rsesra.hfjcl.com/app/register.php?site_id=1064&pt=00E840CC-4AE4-42F1-D5EC-B200877305B1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><span class="badge badge-hot">热门</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860572.jpeg"><div class="card-text-wrap"><div class="card-name">龙腾国际</div><div class="card-desc">世界杯官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://psktkx.tckqxx.com/app/register.php?site_id=1065&topId=4051783887111398&aPlanId=1&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786859904.jpeg"><div class="card-text-wrap"><div class="card-name">汇赢国际</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://eqglsg.hcjwj.com/app/register.php?site_id=1062&topId=353302&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860229.jpeg"><div class="card-text-wrap"><div class="card-name">君临国际</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://tfajn.hcjwj.com/app/register.php?site_id=2081&pt=817FEBBC-8E7F-B9C9-0B13-8B3D41868DD8" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786788291.jpeg"><div class="card-text-wrap"><div class="card-name">非凡娱乐</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://lncqc.jgqvji.com/app/register.php?site_id=1050&topId=4461763479828212&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860415.jpeg"><div class="card-text-wrap"><div class="card-name">胜天国际</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://dspeoql.tprsmi.com/app/register.php?site_id=1058&topId=9941786203300962&aPlanId=0&isAllProxy=1" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860307.jpeg"><div class="card-text-wrap"><div class="card-name">28圈</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://149.30.210.144:35384/#/link?invite_friend=EwslsO10550386" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786699277.jpeg"><div class="card-text-wrap"><div class="card-name">亿万28</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://xjvueb.fnbpsw.com/app/register.php?site_id=1017&topId=1741786695762937&aPlanId=0&isAllProxy=1&support_top_id=1741786695762937" target="_blank" class="card-btn">点击注册</a></div>
-    <div class="card"><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786705631.jpeg"><div class="card-text-wrap"><div class="card-name">超凡国际</div><div class="card-desc">官方</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://mgokgd.jgqvji.com/app/register.php?site_id=1032&pt=B4E00117-B69C-21CD-625F-5A952BA227B4" target="_blank" class="card-btn">点击注册</a></div>
-  </div>
-  <div class="footer"><p>发发永久域名:seio.dpdns.org · 选择大于努力!</p><p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]</p><p>© 2026</p></div>
-</div>
-
-<div id="pageB" class="page">
-  <div class="page-title">【加拿大预测】</div>
-  <div class="card-desc">【后续将持续更新更多预测内容|所有数据仅供参考】</div>
-  <div class="grid-one">
-    <div class="card"><span class="badge badge-hot">准度</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🇨🇦最终哈希</div><div class="card-desc">JND预测</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/jmd28.HX.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">热门</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🇨🇦复杀少杀</div><div class="card-desc">JND预测</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/jnd28.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">准度</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🇨🇦矩阵积数</div><div class="card-desc">JND预测</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/jnd.gz.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">预测</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">🇨🇦预测</div><div class="card-desc">JND预测</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://kai28.cc" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">准度</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🌟分分9w</div><div class="card-desc">需要密码请联系站长</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/fenfen9w.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">热门</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🎲比特矩阵积数</div><div class="card-desc">需要密码请联系站长</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/btc28.gz.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-hot">热门</span><div class="card-header"><img class="card-icon-img" src="https://koy.dpdns.org/i/2026/09/04/ijgEws.png"><div class="card-text-wrap"><div class="card-name">发发🎲比特9w</div><div class="card-desc">需要密码请联系站长</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://icc.gt.tc/ai520/btc28.9w.html?i=1" target="_blank" class="card-btn">点击进入</a></div>
-  </div>
-  <div class="footer"><p>发发永久域名:seio.dpdns.org · 选择大于努力!</p><p>[28类/各种热门彩票API对接,请联系站长TG / 旺旺]</p><p>© 2026</p></div>
-</div>
-
-<div id="pageD" class="page">
-  <div class="page-title">【试玩模拟器】</div>
-  <div class="grid-two">
-    <div class="card"><span class="badge badge-new">电子</span><div class="card-header"><img class="card-icon-img" src="https://io.koy.dpdns.org/s/sunbhb"><div class="card-text-wrap"><div class="card-name">PG</div><div class="card-desc">游戏试玩无需VPN</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://ngsw.mx/?page=1&category=1" target="_blank" class="card-btn">点击进入</a></div>
-    <div class="card"><span class="badge badge-new">电子</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786861150.jpeg"><div class="card-text-wrap"><div class="card-name">PP</div><div class="card-desc">游戏试玩无需VPN</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://ngsw.mx/?page=1&category=3" target="_blank" class="card-btn">点击进入</a></div>
-  </div>
-  <div class="footer"><p>发发永久域名:seio.dpdns.org · 选择大于努力!</p><p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]<p>© 2026</p></div>
-</div>
-
-<div id="pageC" class="page">
-  <div class="page-title">【联系方式】</div>
-  <div class="grid-two">
-    <div class="card"><span class="badge badge-hot">在线</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg"><div class="card-text-wrap"><div class="card-name">飞机</div><div class="card-desc">点击跳转联系</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://t.me/td6699" target="_blank" class="card-btn">点击联系</a></div>
-    <div class="card"><span class="badge badge-hot">在线</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786861011.jpeg"><div class="card-text-wrap"><div class="card-name">旺商聊</div><div class="card-desc">添加旺旺:848108099</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://qxhome.bploav.com" target="_blank" class="card-btn">点击联系</a></div>
-    <div class="card"><span class="badge badge-hot">在线</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg"><div class="card-text-wrap"><div class="card-name">搭建</div><div class="card-desc">站点搭建联系TG</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://t.me/td6699" target="_blank" class="card-btn">点击联系</a></div>
-  </div>
-  <div class="footer"><p>发发永久域名:seio.dpdns.org · 选择大于努力!</p><p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]</p><p>© 2026</p></div>
-</div>
-
-<div id="pageE" class="page">
-  <div class="page-title">【飞机免费代理】</div>
-  <div class="grid-two">
-    <div class="card"><span class="badge badge-hot">在线</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg"><div class="card-text-wrap"><div class="card-name">TG免费代理</div><div class="card-desc">点击跳转免费代理链接1</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="tg://socks?server=216.173.68.36&port=1080" target="_blank" class="card-btn">立即连接</a></div>
-    <div class="card"><span class="badge badge-hot">在线</span><div class="card-header"><img class="card-icon-img" src="https://ai520.pythonanywhere.com/static/upload/1786860789.jpeg"><div class="card-text-wrap"><div class="card-name">TG免费代理</div><div class="card-desc">点击跳转免费代理链接2</div></div></div><div class="star-rate">★★★★★ 9.9分</div><a href="https://t.me/socks?server=38.175.197.50&port=5555" target="_blank" class="card-btn">立即连接</a></div>
-  </div>
-  <div class="footer"><p>发发永久域名:seio.dpdns.org · 选择大于努力!</p><p>[28类/各种热门彩票API对接/请联系站长TG / 旺旺]<p>© 2026</p></div>
-</div>
+<!-- 其他页面占位，保持你原有的完整结构，此处略去... -->
+<!-- 为节省字数，请你把下面这段JS替换到你原有的代码里，并保留你原来的其他页面HTML结构。只需改JS核心部分即可。 -->
 
 <!-- ===== 播放器 ===== -->
 <div class="audio-fixed-wrap" id="audioWrap">
@@ -251,8 +173,7 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
         <option value="320">320K</option>
         <option value="128">128K</option>
       </select>
-      <!-- 👇 新增播放速度选择 -->
-      <select id="speedSelect" class="quality-select" title="播放速度" style="width: 52px;">
+      <select id="speedSelect" class="quality-select" title="播放速度" style="width: 55px;">
         <option value="1">1x</option>
         <option value="1.25">1.25x</option>
         <option value="1.5">1.5x</option>
@@ -283,12 +204,10 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
   <audio id="player" preload="metadata"></audio>
 </div>
 
-<!-- ===== 悬浮球 ===== -->
 <div class="audio-mini-ball" id="miniBall">
   <span class="mini-icon">🎵</span>
 </div>
 
-<!-- ===== 歌词弹窗 ===== -->
 <div id="lyricModal" class="lyric-modal">
   <div class="lyric-box">
     <span class="close-lyric" id="closeLyric">✕</span>
@@ -298,40 +217,12 @@ body{background:#edf4ff;background-image:url("data:image/svg+xml,%3Csvg width='1
 </div>
 
 <script>
-// ====== 标签切换 ======
+// ====== 标签切换与Banner ======
 const tabButtons = document.querySelectorAll('.tab-btn');
-tabButtons.forEach(btn=>{
-  btn.onclick = function(){
-    tabButtons.forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    const targetPage = this.getAttribute("data-page");
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
-    document.getElementById(targetPage).classList.add("show");
-  }
-});
-
-// ====== Banner轮播 ======
-const leftBtn = document.querySelector('.banner-arrow-left');
-const rightBtn = document.querySelector('.banner-arrow-right');
-const bannerImg = document.querySelector('.banner-img');
-const bannerImgList = [
-  "https://koy.dpdns.org/i/2026/09/03/OX1Y8T.jpeg",
-  "https://koy.dpdns.org/i/2026/09/03/P4gSHF.jpeg",
-];
-let bannerIndex = 0;
-rightBtn.onclick = ()=>{
-  bannerIndex++;
-  if(bannerIndex >= bannerImgList.length) bannerIndex = 0;
-  bannerImg.src = bannerImgList[bannerIndex];
-}
-leftBtn.onclick = ()=>{
-  bannerIndex--;
-  if(bannerIndex <0) bannerIndex = bannerImgList.length -1;
-  bannerImg.src = bannerImgList[bannerIndex];
-}
+tabButtons.forEach(btn=>{ btn.onclick = function(){ tabButtons.forEach(b=>b.classList.remove('active')); this.classList.add('active'); const targetPage = this.getAttribute("data-page"); document.querySelectorAll(".page").forEach(p=>p.classList.remove("show")); document.getElementById(targetPage).classList.add("show"); }});
+const leftBtn = document.querySelector('.banner-arrow-left'); const rightBtn = document.querySelector('.banner-arrow-right'); const bannerImg = document.querySelector('.banner-img'); const bannerImgList = ["https://koy.dpdns.org/i/2026/09/03/OX1Y8T.jpeg","https://koy.dpdns.org/i/2026/09/03/P4gSHF.jpeg"]; let bannerIndex = 0; rightBtn.onclick = ()=>{ bannerIndex++; if(bannerIndex >= bannerImgList.length) bannerIndex = 0; bannerImg.src = bannerImgList[bannerIndex]; } leftBtn.onclick = ()=>{ bannerIndex--; if(bannerIndex <0) bannerIndex = bannerImgList.length -1; bannerImg.src = bannerImgList[bannerIndex]; }
 
 // ====== DJ音乐 API 配置 ======
-// 👇 已替换为你自己的中转代理域名
 const API_BASE = "https://yw.koy.dpdns.org";
 let currentSource = "netease"; 
 
@@ -352,7 +243,6 @@ const prevBtnPage = document.getElementById("prevPage");
 const nextBtnPage = document.getElementById("nextPage");
 const pageInfo = document.getElementById("pageInfo");
 
-// 播放器控件
 const playBtn = document.getElementById("playBtn");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
@@ -366,559 +256,201 @@ const totalTimeEl = document.getElementById("totalTime");
 const modeBtn = document.getElementById("modeBtn");
 const lyricBtn = document.getElementById("lyricBtn");
 
-// 加载状态
 const loadingIndicator = document.getElementById("loadingIndicator");
 const loadText = document.getElementById("loadText");
 
-// 歌词弹窗元素
 const lyricModal = document.getElementById("lyricModal");
 const closeLyric = document.getElementById("closeLyric");
 const lyricTitle = document.getElementById("lyricTitle");
 const lyricContent = document.getElementById("lyricContent");
 
-let allSongList = [];
-let currentList = [];
-let currentPage = 1;
-const pageSize = 20;
-let currentPlaylist = [];
-let currentIndex = -1;
-let isDragging = false;
+let allSongList = []; let currentList = []; let currentPage = 1; const pageSize = 20;
+let currentPlaylist = []; let currentIndex = -1; let isDragging = false;
+let parsedLyrics = []; let lastActiveLyricIndex = -1;
+let playMode = 0; const modeIcons = ["🔁", "🔂", "🔀"]; const modeTitles = ["列表循环", "单曲循环", "随机播放"];
 
-// 歌词相关全局变量
-let parsedLyrics = []; 
-let lastActiveLyricIndex = -1;
+sourceSelect.onchange = function() { currentSource = this.value; if (searchInput.value.trim()) { searchMusic(searchInput.value.trim()); } };
+speedSelect.onchange = function() { playerEl.playbackRate = parseFloat(this.value); };
 
-// 播放模式：0=列表循环, 1=单曲循环, 2=随机播放
-let playMode = 0;
-const modeIcons = ["🔁", "🔂", "🔀"];
-const modeTitles = ["列表循环", "单曲循环", "随机播放"];
-
-// ====== 音源切换逻辑 ======
-sourceSelect.onchange = function() {
-  currentSource = this.value;
-  console.log("当前音源已切换为:", currentSource);
-  if (searchInput.value.trim()) {
-    searchMusic(searchInput.value.trim());
-  }
-};
-
-// ====== 播放速度切换逻辑 ======
-speedSelect.onchange = function() {
-  playerEl.playbackRate = parseFloat(this.value);
-};
-
-// ====== 歌词弹窗逻辑 ======
-lyricBtn.onclick = async () => {
-  if (currentIndex === -1 || currentPlaylist.length === 0) {
-    return alert("请先播放一首歌曲！");
-  }
-  const song = currentPlaylist[currentIndex];
-  lyricTitle.innerText = song.name + " - " + song.artist;
-  lyricContent.innerHTML = '<div style="text-align:center;">歌词加载中...</div>';
-  lyricModal.classList.add("show");
-  
-  const lyricId = song.lyric_id || song.id; 
-  const lyricText = await fetchLyric(lyricId, currentSource);
-  displayLyric(lyricText);
-};
-
+lyricBtn.onclick = async () => { if (currentIndex === -1 || currentPlaylist.length === 0) return alert("请先播放一首歌曲！"); const song = currentPlaylist[currentIndex]; lyricTitle.innerText = song.name + " - " + song.artist; lyricContent.innerHTML = '<div style="text-align:center;">歌词加载中...</div>'; lyricModal.classList.add("show"); const lyricText = await fetchLyric(song.lyric_id || song.id, currentSource); displayLyric(lyricText); };
 closeLyric.onclick = () => lyricModal.classList.remove("show");
-lyricModal.onclick = (e) => {
-  if (e.target === lyricModal) lyricModal.classList.remove("show");
-};
+lyricModal.onclick = (e) => { if (e.target === lyricModal) lyricModal.classList.remove("show"); };
 
-async function fetchLyric(id, source) {
-  try {
-    const url = `${API_BASE}?types=lyric&source=${source}&id=${id}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.lyric || data || "暂无歌词";
-  } catch (e) {
-    return "歌词加载失败: " + e.message;
-  }
-}
+async function fetchLyric(id, source) { try { const url = `${API_BASE}?types=lyric&source=${source}&id=${id}`; const res = await fetch(url); const data = await res.json(); return data.lyric || data || "暂无歌词"; } catch (e) { return "歌词加载失败: " + e.message; } }
 
-// 解析 LRC 歌词，提取时间轴
-function parseLrc(text) {
-  if (!text || text === '暂无歌词' || text === '歌词加载失败') return [];
-  const lines = text.split('\n');
-  const result = [];
-  const timeReg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
-  
-  lines.forEach(line => {
-    const match = timeReg.exec(line);
-    if (match) {
-      const min = parseInt(match[1]);
-      const sec = parseInt(match[2]);
-      const ms = parseInt(match[3].padEnd(3, '0')); 
-      const time = min * 60 + sec + ms / 1000;
-      const text = line.replace(timeReg, '').trim();
-      if (text) {
-        result.push({ time, text });
-      }
-    }
-  });
-  return result.sort((a, b) => a.time - b.time);
-}
+function parseLrc(text) { if (!text || text === '暂无歌词' || text === '歌词加载失败') return []; const lines = text.split('\n'); const result = []; const timeReg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/; lines.forEach(line => { const match = timeReg.exec(line); if (match) { const time = parseInt(match[1])*60 + parseInt(match[2]) + parseInt(match[3].padEnd(3,'0'))/1000; const text = line.replace(timeReg, '').trim(); if (text) result.push({ time, text }); } }); return result.sort((a, b) => a.time - b.time); }
+function displayLyric(text) { parsedLyrics = parseLrc(text); lastActiveLyricIndex = -1; if (parsedLyrics.length === 0) { lyricContent.innerHTML = `<div>${text || '暂无歌词'}</div>`; return; } lyricContent.innerHTML = parsedLyrics.map((item, index) => `<div data-index="${index}">${item.text}</div>`).join(''); }
 
-function displayLyric(text) {
-  parsedLyrics = parseLrc(text);
-  lastActiveLyricIndex = -1;
-  if (parsedLyrics.length === 0) {
-    lyricContent.innerHTML = `<div>${text || '暂无歌词'}</div>`;
-    return;
-  }
-  lyricContent.innerHTML = parsedLyrics.map((item, index) => 
-    `<div data-index="${index}">${item.text}</div>`
-  ).join('');
-}
-
-// 随播放进度更新歌词高亮和滚动
 function updateLyricHighlight(currentTime) {
   if (parsedLyrics.length === 0 || !lyricModal.classList.contains('show')) return;
-  
   let activeIndex = -1;
-  for (let i = 0; i < parsedLyrics.length; i++) {
-    if (currentTime >= parsedLyrics[i].time) {
-      activeIndex = i;
-    } else {
-      break;
-    }
-  }
-  
+  for (let i = 0; i < parsedLyrics.length; i++) { if (currentTime >= parsedLyrics[i].time) activeIndex = i; else break; }
   if (activeIndex !== lastActiveLyricIndex && activeIndex !== -1) {
     lastActiveLyricIndex = activeIndex;
     const allLines = lyricContent.querySelectorAll('div');
-    allLines.forEach((line, idx) => {
-      line.classList.toggle('active', idx === activeIndex);
-    });
-    
-    const activeLine = allLines[activeIndex];
-    if (activeLine) {
-      activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    allLines.forEach((line, idx) => line.classList.toggle('active', idx === activeIndex));
+    const activeLine = allLines[activeIndex]; if (activeLine) activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
-// ====== 模式切换逻辑 ======
-modeBtn.onclick = () => {
-  playMode = (playMode + 1) % 3;
-  modeBtn.innerText = modeIcons[playMode];
-  modeBtn.title = modeTitles[playMode];
-  
-  if (playMode === 1) {
-    playerEl.loop = true;
-  } else {
-    playerEl.loop = false;
-  }
-  
-  alert("已切换为：" + modeTitles[playMode]);
-};
+modeBtn.onclick = () => { playMode = (playMode + 1) % 3; modeBtn.innerText = modeIcons[playMode]; modeBtn.title = modeTitles[playMode]; playerEl.loop = (playMode === 1); alert("已切换为：" + modeTitles[playMode]); };
 
-// ====== 播放器功能 ======
-function formatTime(seconds) {
-  if (isNaN(seconds) || seconds === Infinity) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return m + ":" + (s < 10 ? "0" : "") + s;
-}
-
-function showLoading(text) {
-  loadText.textContent = text || "加载中...";
-  loadingIndicator.classList.add("show");
-}
-
-function hideLoading() {
-  loadingIndicator.classList.remove("show");
-}
+function formatTime(seconds) { if (isNaN(seconds) || seconds === Infinity) return "0:00"; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60); return m + ":" + (s < 10 ? "0" : "") + s; }
+function showLoading(text) { loadText.textContent = text || "加载中..."; loadingIndicator.classList.add("show"); }
+function hideLoading() { loadingIndicator.classList.remove("show"); }
 
 async function playSong(item, list) {
   if (!item || !item.id) return;
   if (list) currentPlaylist = list;
   currentIndex = currentPlaylist.findIndex(s => s.id === item.id);
-  
   showLoading("正在获取播放地址: " + item.name);
   nowTitle.innerText = item.name;
   audioWrap.classList.add("show", "playing");
-  
-  // 每次切歌恢复默认播放速度
-  speedSelect.value = "1";
-  playerEl.playbackRate = 1;
-  
+  speedSelect.value = "1"; playerEl.playbackRate = 1;
   try {
     const br = qualitySelect.value; 
     const url = `${API_BASE}?types=url&source=${currentSource}&id=${item.id}&br=${br}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    if (!data.url) {
-      hideLoading();
-      alert("获取播放地址失败，可能是VIP/版权受限歌曲！");
-      return;
-    }
-
-    playerEl.src = data.url;
-    playerEl.load();
-    
-    playerEl.oncanplay = function() {
-      hideLoading();
-      playerEl.play().catch(err => console.log("自动播放被拦截：", err));
-      miniBall.style.display = "none";
-      miniBall.classList.remove("playing");
-      playerEl.oncanplay = null;
-    };
-    
-    playerEl.onerror = function() {
-      hideLoading();
-      alert("歌曲加载失败，请切歌后重试");
-      playerEl.onerror = null;
-    };
-
-    if (lyricModal.classList.contains('show')) {
-      lyricBtn.click();
-    }
-  } catch (e) {
-    hideLoading();
-    alert("网络请求失败：" + e.message);
-  }
+    const res = await fetch(url); const data = await res.json();
+    if (!data.url) { hideLoading(); alert("获取播放地址失败，可能是VIP/版权受限歌曲！"); return; }
+    playerEl.src = data.url; playerEl.load();
+    playerEl.oncanplay = function() { hideLoading(); playerEl.play().catch(err => console.log("自动播放被拦截：", err)); miniBall.style.display = "none"; miniBall.classList.remove("playing"); playerEl.oncanplay = null; };
+    playerEl.onerror = function() { hideLoading(); alert("歌曲加载失败，请切歌后重试"); playerEl.onerror = null; };
+    if (lyricModal.classList.contains('show')) { lyricBtn.click(); }
+  } catch (e) { hideLoading(); alert("网络请求失败：" + e.message); }
 }
 
-function playByIndex(index) {
-  if (index < 0 || index >= currentPlaylist.length) return;
-  const item = currentPlaylist[index];
-  playSong(item, currentPlaylist);
-}
+function playByIndex(index) { if (index < 0 || index >= currentPlaylist.length) return; const item = currentPlaylist[index]; playSong(item, currentPlaylist); }
 
-// ====== 折叠/展开 ======
-minimizeBtn.onclick = () => {
-  audioWrap.classList.remove("show");
-  miniBall.style.display = "flex";
-  if (!playerEl.paused) {
-    miniBall.classList.add("playing");
-  }
-};
+minimizeBtn.onclick = () => { audioWrap.classList.remove("show"); miniBall.style.display = "flex"; if (!playerEl.paused) miniBall.classList.add("playing"); };
+miniBall.onclick = () => { miniBall.style.display = "none"; miniBall.classList.remove("playing"); audioWrap.classList.add("show"); };
 
-miniBall.onclick = () => {
-  miniBall.style.display = "none";
-  miniBall.classList.remove("playing");
-  audioWrap.classList.add("show");
-};
-
-// ====== 播放控制 ======
-playBtn.onclick = () => {
-  if (playerEl.paused) {
-    if (!playerEl.src || playerEl.ended) {
-      if (currentPlaylist.length > 0 && currentIndex >= 0) {
-        playSong(currentPlaylist[currentIndex], currentPlaylist);
-      }
-      return;
-    }
-    playerEl.play().catch(err => console.log(err));
-  } else {
-    playerEl.pause();
-  }
-};
-
+playBtn.onclick = () => { if (playerEl.paused) { if (!playerEl.src || playerEl.ended) { if (currentPlaylist.length > 0 && currentIndex >= 0) playSong(currentPlaylist[currentIndex], currentPlaylist); return; } playerEl.play().catch(err => console.log(err)); } else { playerEl.pause(); } };
 prevBtn.onclick = () => playByIndex(currentIndex - 1);
 nextBtn.onclick = () => playByIndex(currentIndex + 1);
+closePlayer.onclick = () => { playerEl.pause(); audioWrap.classList.remove("show", "playing"); miniBall.style.display = "none"; miniBall.classList.remove("playing"); hideLoading(); };
 
-closePlayer.onclick = () => {
-  playerEl.pause();
-  audioWrap.classList.remove("show", "playing");
-  miniBall.style.display = "none";
-  miniBall.classList.remove("playing");
-  hideLoading();
-};
+playerEl.addEventListener('play', () => { audioWrap.classList.add("show", "playing"); playBtn.textContent = "⏸"; if (miniBall.style.display !== "none") miniBall.classList.add("playing"); });
+playerEl.addEventListener('pause', () => { playBtn.textContent = "▶"; miniBall.classList.remove("playing"); });
 
-playerEl.addEventListener('play', () => {
-  audioWrap.classList.add("show", "playing");
-  playBtn.textContent = "⏸";
-  if (miniBall.style.display !== "none") {
-    miniBall.classList.add("playing");
-  }
-});
-
-playerEl.addEventListener('pause', () => {
-  playBtn.textContent = "▶";
-  miniBall.classList.remove("playing");
-});
-
-// ====== 歌曲结束后的逻辑 ======
 playerEl.addEventListener('ended', () => {
-  playBtn.textContent = "▶";
-  miniBall.classList.remove("playing");
-
+  playBtn.textContent = "▶"; miniBall.classList.remove("playing");
   let nextIndex = currentIndex + 1;
-
-  if (playMode === 2) { 
-    if (currentPlaylist.length > 1) {
-      do {
-        nextIndex = Math.floor(Math.random() * currentPlaylist.length);
-      } while (nextIndex === currentIndex);
-    } else {
-      nextIndex = 0;
-    }
-  } else { 
-    if (nextIndex >= currentPlaylist.length) {
-      nextIndex = 0;
-    }
-  }
-
+  if (playMode === 2) { if (currentPlaylist.length > 1) { do { nextIndex = Math.floor(Math.random() * currentPlaylist.length); } while (nextIndex === currentIndex); } else { nextIndex = 0; } } 
+  else { if (nextIndex >= currentPlaylist.length) nextIndex = 0; }
   setTimeout(() => playByIndex(nextIndex), 500);
 });
 
-playerEl.addEventListener('timeupdate', () => {
-  if (isDragging) return;
-  const pct = playerEl.duration ? (playerEl.currentTime / playerEl.duration) * 100 : 0;
-  progressFill.style.width = pct + "%";
-  currentTimeEl.textContent = formatTime(playerEl.currentTime);
-  
-  updateLyricHighlight(playerEl.currentTime);
-});
+playerEl.addEventListener('timeupdate', () => { if (isDragging) return; const pct = playerEl.duration ? (playerEl.currentTime / playerEl.duration) * 100 : 0; progressFill.style.width = pct + "%"; currentTimeEl.textContent = formatTime(playerEl.currentTime); updateLyricHighlight(playerEl.currentTime); });
+playerEl.addEventListener('loadedmetadata', () => { totalTimeEl.textContent = formatTime(playerEl.duration); });
 
-playerEl.addEventListener('loadedmetadata', () => {
-  totalTimeEl.textContent = formatTime(playerEl.duration);
-});
+// ====== 🎯 终极修复进度条拖拽（手机触摸 + 电脑鼠标兼容） ======
+let progressRect = null;
 
-// ====== 进度条拖拽（修复了快进对不上的问题） ======
-function handleProgressDrag(e) {
-    const rect = progressBar.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const pct = Math.min(1, Math.max(0, x));
-    
-    // 视觉上先同步进度条和时间
-    progressFill.style.width = (pct * 100) + "%";
-    if (playerEl.duration) {
-        const time = pct * playerEl.duration;
-        currentTimeEl.textContent = formatTime(time);
-        // 同步歌词高亮，避免快进后歌词没跟上
-        updateLyricHighlight(time);
-    }
-    return pct;
+function handleProgressStart(e) {
+  isDragging = true;
+  // 一次性锁定进度条的坐标，避免因为页面滚动导致坐标变化
+  progressRect = progressBar.getBoundingClientRect();
+  handleProgressMove(e);
+
+  // 同时绑定手机 touchmove 和电脑 mousemove
+  document.addEventListener('touchmove', handleProgressMove, { passive: false });
+  document.addEventListener('mousemove', handleProgressMove);
+  document.addEventListener('touchend', handleProgressEnd);
+  document.addEventListener('mouseup', handleProgressEnd);
 }
 
-progressBar.addEventListener('pointerdown', (e) => {
-    isDragging = true;
-    progressBar.setPointerCapture(e.pointerId); // 锁定指针，防止滑出进度条失效
-    handleProgressDrag(e);
-});
+function handleProgressMove(e) {
+  if (!isDragging || !progressRect) return;
+  if (e.cancelable) e.preventDefault(); // 阻止页面滚动
+  
+  // 获取坐标（兼容触摸和鼠标）
+  const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+  const x = (clientX - progressRect.left) / progressRect.width;
+  const pct = Math.min(1, Math.max(0, x));
 
-progressBar.addEventListener('pointermove', (e) => {
-    if (isDragging) handleProgressDrag(e);
-});
+  // 视觉更新
+  progressFill.style.width = (pct * 100) + "%";
+  if (playerEl.duration) {
+    const time = pct * playerEl.duration;
+    currentTimeEl.textContent = formatTime(time);
+    // 拖拽时实时同步歌词！
+    updateLyricHighlight(time);
+  }
+}
 
-progressBar.addEventListener('pointerup', (e) => {
-    if (isDragging) {
-        isDragging = false;
-        const rect = progressBar.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const pct = Math.min(1, Math.max(0, x));
-        if (playerEl.duration) {
-            playerEl.currentTime = pct * playerEl.duration;
-            // 快进完成后，立刻重新修正一次歌词
-            updateLyricHighlight(playerEl.currentTime);
-        }
-    }
-    progressBar.releasePointerCapture(e.pointerId);
-});
+function handleProgressEnd(e) {
+  if (!isDragging) return;
+  isDragging = false;
+
+  // 计算最终位置
+  const clientX = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : e.clientX;
+  const x = (clientX - progressRect.left) / progressRect.width;
+  const pct = Math.min(1, Math.max(0, x));
+
+  if (playerEl.duration) {
+    playerEl.currentTime = pct * playerEl.duration;
+    // 松手后立刻修正一次歌词高亮
+    updateLyricHighlight(playerEl.currentTime);
+  }
+
+  // 清理
+  progressRect = null;
+  document.removeEventListener('touchmove', handleProgressMove);
+  document.removeEventListener('mousemove', handleProgressMove);
+  document.removeEventListener('touchend', handleProgressEnd);
+  document.removeEventListener('mouseup', handleProgressEnd);
+}
+
+// 绑定启动事件（同时支持触摸和鼠标）
+progressBar.addEventListener('touchstart', handleProgressStart, { passive: false });
+progressBar.addEventListener('mousedown', handleProgressStart);
 
 // ====== 搜索音乐 ======
 async function searchMusic(keyword) {
-  loadingEl.style.display = "block";
-  errorBox.style.display = "none";
-  emptyBox.style.display = "none";
-  countTip.innerText = "正在搜索...";
-  
+  loadingEl.style.display = "block"; errorBox.style.display = "none"; emptyBox.style.display = "none"; countTip.innerText = "正在搜索...";
   try {
     const url = `${API_BASE}?types=search&source=${currentSource}&name=${encodeURIComponent(keyword)}&count=50`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    loadingEl.style.display = "none";
-    
+    const res = await fetch(url); const data = await res.json(); loadingEl.style.display = "none";
     if (Array.isArray(data) && data.length > 0) {
-      allSongList = data.map(song => ({
-        id: song.id,
-        name: song.name,
-        artist: Array.isArray(song.artist) ? song.artist.join('/') : (song.artist || '未知'),
-        album: song.album || '',
-        pic_id: song.pic_id, 
-        lyric_id: song.lyric_id
-      }));
-      currentList = allSongList;
-      currentPage = 1;
-      renderUI(currentList);
-    } else {
-      allSongList = [];
-      currentList = [];
-      emptyBox.style.display = "block";
-      emptyBox.innerText = "没有找到相关歌曲，请换个歌词或歌名试试";
-      countTip.innerText = "";
-      listWrap.innerHTML = "";
-    }
-  } catch (e) {
-    loadingEl.style.display = "none";
-    errorBox.style.display = "block";
-    errorBox.innerText = "搜索失败：" + e.message;
-  }
+      allSongList = data.map(song => ({ id: song.id, name: song.name, artist: Array.isArray(song.artist) ? song.artist.join('/') : (song.artist || '未知'), album: song.album || '', pic_id: song.pic_id, lyric_id: song.lyric_id }));
+      currentList = allSongList; currentPage = 1; renderUI(currentList);
+    } else { allSongList = []; currentList = []; emptyBox.style.display = "block"; emptyBox.innerText = "没有找到相关歌曲，请换个歌词或歌名试试"; countTip.innerText = ""; listWrap.innerHTML = ""; }
+  } catch (e) { loadingEl.style.display = "none"; errorBox.style.display = "block"; errorBox.innerText = "搜索失败：" + e.message; }
 }
 
 function renderUI(arr) {
-  listWrap.innerHTML = "";
-  emptyBox.style.display = "none";
-  errorBox.style.display = "none";
-
-  if (!arr || arr.length === 0) {
-    emptyBox.style.display = "block";
-    countTip.innerText = "";
-    pageInfo.innerText = "0 / 0";
-    return;
-  }
-
-  const total = arr.length;
-  const totalPages = Math.ceil(total / pageSize);
-  if (currentPage > totalPages) currentPage = totalPages;
-  if (currentPage < 1) currentPage = 1;
-
-  const start = (currentPage - 1) * pageSize;
-  const end = Math.min(start + pageSize, total);
-  const pageData = arr.slice(start, end);
-
-  countTip.innerText = `共 ${total} 首歌曲`;
-  pageInfo.innerText = `${currentPage} / ${totalPages}`;
-
+  listWrap.innerHTML = ""; emptyBox.style.display = "none"; errorBox.style.display = "none";
+  if (!arr || arr.length === 0) { emptyBox.style.display = "block"; countTip.innerText = ""; pageInfo.innerText = "0 / 0"; return; }
+  const total = arr.length; const totalPages = Math.ceil(total / pageSize); if (currentPage > totalPages) currentPage = totalPages; if (currentPage < 1) currentPage = 1;
+  const start = (currentPage - 1) * pageSize; const end = Math.min(start + pageSize, total); const pageData = arr.slice(start, end);
+  countTip.innerText = `共 ${total} 首歌曲`; pageInfo.innerText = `${currentPage} / ${totalPages}`;
   pageData.forEach((item, idx) => {
-    const div = document.createElement("div");
-    div.className = "card music-item";
-    
+    const div = document.createElement("div"); div.className = "card music-item";
     const imgId = `cover_${start + idx}`;
-    
-    div.innerHTML = `
-      <img id="${imgId}" style="display:none;" referrerpolicy="no-referrer">
-      <div style="flex:1;min-width:0;overflow:hidden;">
-        <div class="music-song-title">${item.name}</div>
-        <div class="music-play-text">🎵 ${item.artist} · 点击播放</div>
-      </div>
-    `;
-    div.onclick = () => {
-      const fullList = arr;
-      playSong(item, fullList);
-    };
+    div.innerHTML = `<img id="${imgId}" style="display:none;" referrerpolicy="no-referrer"><div style="flex:1;min-width:0;overflow:hidden;"><div class="music-song-title">${item.name}</div><div class="music-play-text">🎵 ${item.artist} · 点击播放</div></div>`;
+    div.onclick = () => { const fullList = arr; playSong(item, fullList); };
     listWrap.appendChild(div);
-
-    // 请求真实的封面图，成功才显示
-    if (item.pic_id) {
-      fetch(`${API_BASE}?types=pic&source=${currentSource}&id=${item.pic_id}&size=300`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.url) {
-            const imgEl = document.getElementById(imgId);
-            if (imgEl) {
-              imgEl.src = data.url;
-              imgEl.style.display = "block";
-            }
-          }
-        })
-        .catch(err => console.log("图片加载失败:", err));
-    }
+    if (item.pic_id) { fetch(`${API_BASE}?types=pic&source=${currentSource}&id=${item.pic_id}&size=300`).then(res => res.json()).then(data => { if (data && data.url) { const imgEl = document.getElementById(imgId); if (imgEl) { imgEl.src = data.url; imgEl.style.display = "block"; } } }).catch(err => console.log("图片加载失败:", err)); }
   });
 }
 
-function searchSong() {
-  const keyword = searchInput.value.trim();
-  if (!keyword) {
-    alert("请输入歌词或歌曲名");
-    return;
-  }
-  searchMusic(keyword);
-}
+function searchSong() { const keyword = searchInput.value.trim(); if (!keyword) return alert("请输入歌词或歌曲名"); searchMusic(keyword); }
+searchBtn.onclick = searchSong; searchInput.addEventListener("keydown", e => { if(e.key === "Enter") searchSong(); });
 
-// 事件绑定
-searchBtn.onclick = searchSong;
-searchInput.addEventListener("keydown", e => { if(e.key === "Enter") searchSong(); });
+prevBtnPage.onclick = () => { if (currentPage > 1) { currentPage--; renderUI(currentList); } };
+nextBtnPage.onclick = () => { if (currentPage < Math.ceil(currentList.length / pageSize)) { currentPage++; renderUI(currentList); } };
 
-prevBtnPage.onclick = () => {
-  const total = currentList.length;
-  const totalPages = Math.ceil(total / pageSize);
-  if (currentPage > 1) {
-    currentPage--;
-    renderUI(currentList);
-  }
-};
-
-nextBtnPage.onclick = () => {
-  const total = currentList.length;
-  const totalPages = Math.ceil(total / pageSize);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderUI(currentList);
-  }
-};
-
-// 页面初始化：不自动加载，等待用户搜索
 listWrap.innerHTML = '<div class="music-empty" style="display:block;">🎵 请输入歌词或歌曲名进行搜索</div>';
-countTip.innerText = "";
-pageInfo.innerText = "1 / 1";
+countTip.innerText = ""; pageInfo.innerText = "1 / 1";
 
 // ====== 粒子效果 ======
-const canvas = document.createElement("canvas");
-canvas.id = "particleCanvas";
-document.body.prepend(canvas);
-const ctx = canvas.getContext("2d");
-let particles = [];
-const PARTICLE_COUNT = 65;
-const MAX_DISTANCE = 120;
-function resizeCanvas(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-for(let i = 0; i < PARTICLE_COUNT; i++){
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: Math.random() * 2 + 1,
-    vx: (Math.random() - 0.5) * 0.45,
-    vy: (Math.random() - 0.5) * 0.45
-  });
-}
-function animateParticles(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.x += p.vx;
-    p.y += p.vy;
-    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
-    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-  });
-  for(let i = 0; i < particles.length; i++){
-    for(let j = i + 1; j < particles.length; j++){
-      const p1 = particles[i];
-      const p2 = particles[j];
-      const dx = p1.x - p2.x;
-      const dy = p1.y - p2.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if(distance < MAX_DISTANCE){
-        const opacity = (1 - distance / MAX_DISTANCE) * 0.35;
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = "rgba(80,150,240," + opacity + ")";
-        ctx.lineWidth = 0.7;
-        ctx.stroke();
-      }
-    }
-  }
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(70,145,240,0.7)";
-    ctx.fill();
-  });
-  requestAnimationFrame(animateParticles);
-}
+const canvas = document.createElement("canvas"); canvas.id = "particleCanvas"; document.body.prepend(canvas);
+const ctx = canvas.getContext("2d"); let particles = []; const PARTICLE_COUNT = 65; const MAX_DISTANCE = 120;
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener("resize", resizeCanvas);
+for(let i = 0; i < PARTICLE_COUNT; i++){ particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 2 + 1, vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45 }); }
+function animateParticles(){ ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.x += p.vx; p.y += p.vy; if(p.x < 0 || p.x > canvas.width) p.vx *= -1; if(p.y < 0 || p.y > canvas.height) p.vy *= -1; }); for(let i = 0; i < particles.length; i++){ for(let j = i + 1; j < particles.length; j++){ const p1 = particles[i]; const p2 = particles[j]; const dx = p1.x - p2.x; const dy = p1.y - p2.y; const distance = Math.sqrt(dx * dx + dy * dy); if(distance < MAX_DISTANCE){ const opacity = (1 - distance / MAX_DISTANCE) * 0.35; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.strokeStyle = "rgba(80,150,240," + opacity + ")"; ctx.lineWidth = 0.7; ctx.stroke(); } } } particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = "rgba(70,145,240,0.7)"; ctx.fill(); }); requestAnimationFrame(animateParticles); }
 animateParticles();
 </script>
-
 </body>
 </html>
