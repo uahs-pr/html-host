@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏大厅测试</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 15px; margin: 0; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .card { background: #fff; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; background: #eee; }
+        .card h3 { font-size: 14px; margin: 10px 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card p { font-size: 12px; color: #888; margin: 0 0 10px; }
+        .btn { display: block; background: #007bff; color: #fff; text-decoration: none; padding: 8px; border-radius: 5px; font-size: 13px; }
+        .btn:active { background: #0056b3; }
+        #status { text-align: center; color: #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>游戏大厅</h1>
+        <p>纯前端测试（仅供本地学习）</p>
+    </div>
+    
+    <div id="status">正在加载数据...</div>
+    <div class="grid" id="gameGrid"></div>
+
+    <script>
+        // ==========================================================
+        // 👇 在这里填入你最后抓到的那个接口地址 👇
+        // 例如：https://n19.akdb.top/api/public/trial-games?page=1&pageSize=30&category=PG%E7%94%B5%E5%AD%90
+        // ==========================================================
+        const API_URL = 'https://n19.akdb.top/api/public/trial-games?page=1&pageSize=30&category=PG%E7%94%B5%E5%AD%90'; 
+
+        const statusDiv = document.getElementById('status');
+        const gridDiv = document.getElementById('gameGrid');
+
+        // 如果你没有填地址，直接弹窗提示
+        if (API_URL === '把你抓到的接口地址粘贴到这里') {
+            statusDiv.innerText = '请先在代码里填入你要测试的接口地址！';
+            statusDiv.style.color = 'red';
+        } else {
+            // 发起请求
+            fetch(API_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error('HTTP状态码: ' + response.status);
+                    return response.json();
+                })
+                .then(result => {
+                    // 这里根据你抓包的数据结构解析。你之前截图里数据在 result.data 或 result.items 里
+                    // 如果报错说 "Cannot read properties of undefined"，就换一个试试
+                    const games = result.data || result.items || result; 
+                    
+                    if (!Array.isArray(games)) {
+                        throw new Error('返回的数据不是数组格式，请检查JSON结构');
+                    }
+
+                    statusDiv.style.display = 'none';
+                    
+                    games.forEach(game => {
+                        // 兼容不同字段名（gameName/name, coverUrl/imagePath）
+                        const name = game.gameName || game.name || '未知游戏';
+                        // 如果你抓到的图片路径是类似 "/game-images/xxx.jpg"，是无法显示的，这里用占位图
+                        const imgUrl = game.coverUrl || 'https://via.placeholder.com/150?text=' + encodeURIComponent(name);
+                        const rtp = game.rtp || '96.9%';
+                        const playUrl = game.trialUrl || game.directPlayUrl || '#';
+
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <img src="${imgUrl}" alt="${name}" onerror="this.src='https://via.placeholder.com/150'">
+                            <h3>${name}</h3>
+                            <p>RTP: ${rtp}</p>
+                            <a href="${playUrl}" target="_blank" class="btn">开始试玩</a>
+                        `;
+                        gridDiv.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('请求失败，控制台报错详情：', error);
+                    statusDiv.innerText = '加载失败！按 F12 打开控制台看红色报错。';
+                    statusDiv.style.color = 'red';
+                });
+        }
+    </script>
+</body>
+</html>
